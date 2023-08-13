@@ -3,6 +3,7 @@
 
 #include "ui/Workspace.h"
 #include "Context.h"
+#include "ui/Application.h"
 
 #include <QSurfaceFormat>
 
@@ -14,8 +15,10 @@ int main(int argc, char** argv) {
 
     auto ctx = std::make_shared<Context>();
 
-    Workspace ws(ctx);
-    ws.Run();
+    Application application;
+    application.show();
+//    Workspace ws(ctx);
+//    ws.Run();
 
 
     return app.exec();
