@@ -4,6 +4,8 @@
 
 #include "QtKeyConverter.h"
 
+#include "rgaa_common/RLog.h"
+
 namespace rgaa {
 
     QtKeyConverter::QtKeyConverter() {
@@ -143,6 +145,29 @@ namespace rgaa {
             return key_mapping_[qt_key];
         }
         return -1;
+    }
+
+    std::map<int, bool> QtKeyConverter::GetSysKeyStatus() {
+        std::map<int, bool> status;
+
+        auto func_is_pressed = [](int vk) -> bool {
+            return GetKeyState(vk) < 0;
+        };
+
+        status.insert(std::make_pair(VK_SHIFT, func_is_pressed(VK_SHIFT)));
+        status.insert(std::make_pair(VK_LSHIFT, func_is_pressed(VK_LSHIFT)));
+        status.insert(std::make_pair(VK_RSHIFT, func_is_pressed(VK_RSHIFT)));
+        status.insert(std::make_pair(VK_SHIFT, func_is_pressed(VK_MBUTTON)));
+        status.insert(std::make_pair(VK_CAPITAL, func_is_pressed(VK_CAPITAL)));
+        status.insert(std::make_pair(VK_CONTROL, func_is_pressed(VK_CONTROL)));
+        status.insert(std::make_pair(VK_MENU, func_is_pressed(VK_MENU)));
+        status.insert(std::make_pair(VK_LMENU, func_is_pressed(VK_LMENU)));
+        status.insert(std::make_pair(VK_RMENU, func_is_pressed(VK_RMENU)));
+        status.insert(std::make_pair(VK_LBUTTON, func_is_pressed(VK_LBUTTON)));
+        status.insert(std::make_pair(VK_RBUTTON, func_is_pressed(VK_RBUTTON)));
+        status.insert(std::make_pair(VK_MBUTTON, func_is_pressed(VK_MBUTTON)));
+
+        return status;
     }
 
 }

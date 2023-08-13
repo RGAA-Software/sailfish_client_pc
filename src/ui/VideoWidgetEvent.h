@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <memory>
+#include <map>
 
 namespace rgaa {
 

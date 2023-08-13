@@ -103,15 +103,12 @@ namespace rgaa {
 #ifdef WIN32
         num_lock_state = GetKeyState(VK_NUMLOCK);
         caps_lock_state = GetKeyState(VK_CAPITAL);
+
+        std::map<int, bool> sys_key_status = key_converter_->GetSysKeyStatus();
+
 #endif
 		auto keyboard_msg = MessageMaker::MakeKeyboardInfo(vk, true, 0, caps_lock_state, num_lock_state);
         SendCallback(keyboard_msg);
-//		d msg;
-//		msg.type = 1;
-//		msg.vk = vk;
-//		msg.pressed = true;
-//		msg.msg = keyboard_msg->SerializeAsString();
-//		context->SendAppMessage(msg);
 	}
 
 	void VideoWidgetEvent::OnKeyReleaseEvent(QKeyEvent* e) {

@@ -8,6 +8,7 @@
 #include <QObject>
 
 #include <QMap>
+#include <map>
 
 namespace rgaa
 {
@@ -19,6 +20,8 @@ namespace rgaa
         QtKeyConverter();
 
         int ToVK(int qt_key);
+
+        std::map<int, bool> GetSysKeyStatus();
 
     private:
 
