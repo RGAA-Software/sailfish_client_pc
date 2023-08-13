@@ -8,8 +8,8 @@
 namespace rgaa {
 
     enum class VideoRenderType {
-        kOpenGL,
         kSDL,
+        kOpenGL,
         kTestQPixmap,
     };
 

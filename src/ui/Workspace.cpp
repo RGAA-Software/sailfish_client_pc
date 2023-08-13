@@ -30,6 +30,7 @@ namespace rgaa {
         auto render_type = settings_->GetVideoRenderType();
         if (render_type == VideoRenderType::kOpenGL) {
             gl_video_widget_ = new OpenGLVideoWidget(context_, RawImageFormat::kI420, this);
+            gl_video_widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1));
             layout->addWidget(gl_video_widget_);
         }
         else if (render_type == VideoRenderType::kSDL) {

@@ -32,14 +32,10 @@ namespace rgaa {
 		explicit OpenGLVideoWidget(std::shared_ptr<Context> ctx, RawImageFormat format, QWidget* parent = nullptr);
 		~OpenGLVideoWidget();
 
-		void RefreshNV12Image(const std::shared_ptr<RawImage>& image);
-		void RefreshNV12Buffer(const char* y, int y_size, const char* uv, int uv_size, int width, int height);
 		void RefreshRGBImage(const std::shared_ptr<RawImage>& image);
 		void RefreshRGBBuffer(const char* buf, int width, int height, int channel);
 		void RefreshI420Image(const std::shared_ptr<RawImage>& image);
 		void RefreshI420Buffer(const char* y, int y_size, const char* u, int u_size, const char* v, int v_size, int width, int height);
-
-		std::shared_ptr<Sprite> GetCursorSprite();
 
 	protected:
 		void resizeEvent(QResizeEvent* event) override;
@@ -56,10 +52,8 @@ namespace rgaa {
 		void keyReleaseEvent(QKeyEvent* event) override;
 
 	private:
-		void InitNV12Texture();
 		void InitRGBATexture();
 		void InitI420Texture();
-		MouseKey GetMouseKey(QMouseEvent* e);
 
 	private:
 

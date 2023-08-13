@@ -9,12 +9,6 @@
 #include <chrono>
 #include <thread>
 
-//#include "Director.h"
-//#include "Sprite.h"
-//#include "Context.h"
-//#include "KeyMapper.h"
-//#include "AppInnerMessage.h"
-//#include "ProtoMessageMaker.h"
 #include "ShaderProgram.h"
 #include "OpenGLVideoWidget.h"
 #include "OpenGLVideoWidgetShader.h"
@@ -32,12 +26,6 @@ namespace rgaa
 		context = ctx;
 		raw_image_format = format;
 //		statistics = Statistics::Instance();
-
-		auto* timer = new QTimer();
-		QObject::connect(timer, &QTimer::timeout, this, [=]() {
-			this->update(); 
-		});
-		timer->start(16);
 
 		setFocusPolicy(Qt::StrongFocus);
 		setMouseTracking(true);
@@ -75,11 +63,9 @@ namespace rgaa
 		auto functions = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_3_3_Core>(QOpenGLContext::currentContext());
 		functions->initializeOpenGLFunctions();
 
-		//director = Director::Make(functions);
-
 		auto vertex_shader = kMainVertexShader;
 		char* fragment_shader = nullptr;
-        LOGI("raw image format : {}", (int)raw_image_format);
+
 		if (raw_image_format == RawImageFormat::kNV12) {
 			fragment_shader = const_cast<char*>(kNV12FragmentShader);
 		}
@@ -133,40 +119,6 @@ namespace rgaa
 
 		glBindVertexArray(0);
 
-		// cursor
-//		cursor = std::make_shared<Sprite>(director);
-//		cursor->ForceImageSize(32, 32);
-
-	}
-
-	void OpenGLVideoWidget::RefreshNV12Image(const RawImagePtr& image) {
-		if (!image || !image->img_buf || image->img_format != RawImageFormat::kNV12
-			|| image->img_buf_size <= 0) {
-			return;
-		}
-
-		int y_size = image->img_width * image->img_height;
-		RefreshNV12Buffer(image->Data(), y_size, image->Data() + y_size, y_size / 2, image->img_width, image->img_height);
-	}
-
-	void OpenGLVideoWidget::RefreshNV12Buffer(const char* y_buf, int y_buf_size, const char* uv_buf, int uv_buf_size, int width, int height) {
-		std::lock_guard<std::mutex> guard(buf_mtx);
-		if (!y_buffer || width != tex_width || height != tex_height) {
-			free(y_buffer);
-			y_buffer = (char*)malloc(y_buf_size);
-		}
-		if (!uv_buffer || width != tex_width || height != tex_height) {
-			free(uv_buffer);
-			uv_buffer = (char*)malloc(uv_buf_size);
-		}
-
-		if (tex_width != width || tex_height != height) {
-			need_create_texture = true;
-		}
-		memcpy(y_buffer, y_buf, y_buf_size);
-		memcpy(uv_buffer, uv_buf, uv_buf_size);
-		tex_width = width;
-		tex_height = height;
 	}
 
 	void OpenGLVideoWidget::RefreshRGBImage(const std::shared_ptr<RawImage>& image) {
@@ -228,11 +180,6 @@ namespace rgaa
 	void OpenGLVideoWidget::resizeEvent(QResizeEvent* event) {
 		QOpenGLWidget::resizeEvent(event);
 
-//		VideoWidgetResized msg;
-//		msg.width = event->size().width();
-//		msg.height = event->size().height();
-//		context->SendAppMessage(msg);
-
 	}
 
 	void OpenGLVideoWidget::paintGL() {
@@ -251,32 +198,7 @@ namespace rgaa
 //		glPixelStorei(GL_PACK_ALIGNMENT, 1);
 //		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		if (raw_image_format == RawImageFormat::kNV12) {
-
-			std::lock_guard<std::mutex> guard(buf_mtx);
-
-			// 如果还没创建texture，在这里创建或者texture大小变了，重新创建
-			if (y_buffer && uv_buffer && need_create_texture) {
-				need_create_texture = false;
-				InitNV12Texture();
-			}
-			if (y_buffer) {
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, y_texture_id);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, tex_width, tex_height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, y_buffer);
-				glGenerateMipmap(GL_TEXTURE_2D);
-			}
-			if (uv_buffer) {
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, uv_texture_id);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, tex_width / 2, tex_height / 2, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, uv_buffer);
-				glGenerateMipmap(GL_TEXTURE_2D);
-			}
-		}
-		// todo : SUPPORT RGBA/RGB separate
-		else if (raw_image_format == RawImageFormat::kRGBA || raw_image_format == RawImageFormat::kRGB) {
-
-			//std::lock_guard<std::mutex> guard(buf_mtx);
+		if (raw_image_format == RawImageFormat::kRGBA || raw_image_format == RawImageFormat::kRGB) {
 
 			if (rgb_buffer && need_create_texture) {
 				need_create_texture = false;
@@ -285,14 +207,10 @@ namespace rgaa
 			if (rgb_buffer) {
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, rgb_texture_id);
-				//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgb_buffer);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width, tex_height, GL_RGB, GL_UNSIGNED_BYTE, rgb_buffer);
-				//glGenerateMipmap(GL_TEXTURE_2D);
 			}
 		}
 		else if (raw_image_format == RawImageFormat::kI420) {
-
-			//std::lock_guard<std::mutex> guard(buf_mtx);
 
 			if (y_buffer && u_buffer && v_buffer && need_create_texture) {
 				need_create_texture = false;
@@ -302,40 +220,28 @@ namespace rgaa
 			if (y_buffer) {
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, y_texture_id);
-				//glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, tex_width, tex_height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, y_buffer);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width, tex_height, GL_LUMINANCE, GL_UNSIGNED_BYTE, y_buffer);
-				//glGenerateMipmap(GL_TEXTURE_2D);
 			}
 			if (u_buffer) {
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, u_texture_id);
-				//glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, tex_width / 2, tex_height / 2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, u_buffer);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width/2, tex_height/2, GL_LUMINANCE, GL_UNSIGNED_BYTE, u_buffer);
-				//glGenerateMipmap(GL_TEXTURE_2D);
 			}
 			if (v_buffer) {
 				glActiveTexture(GL_TEXTURE2);
 				glBindTexture(GL_TEXTURE_2D, v_texture_id);
-				//glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, tex_width / 2, tex_height / 2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, v_buffer);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width / 2, tex_height / 2, GL_LUMINANCE, GL_UNSIGNED_BYTE, v_buffer);
-				//glGenerateMipmap(GL_TEXTURE_2D);
 			}
 		}
 
 		if (raw_image_format == RawImageFormat::kRGB || raw_image_format == RawImageFormat::kRGBA) {
-			//glUniform1i(glGetUniformLocation(shader, "image1"), 0);
 			shader_program->SetUniform1i("image1", 0);
 		}
 		else if (raw_image_format == RawImageFormat::kNV12) {
-			//glUniform1i(glGetUniformLocation(shader, "image1"), 0);
-			//glUniform1i(glGetUniformLocation(shader, "image2"), 1);
 			shader_program->SetUniform1i("image1", 0);
 			shader_program->SetUniform1i("image2", 1);
 		}
 		else if (raw_image_format == RawImageFormat::kI420) {
-			//glUniform1i(glGetUniformLocation(shader, "imageY"), 0);
-			//glUniform1i(glGetUniformLocation(shader, "imageU"), 1);
-			//glUniform1i(glGetUniformLocation(shader, "imageV"), 2);
 			shader_program->SetUniform1i("imageY", 0);
 			shader_program->SetUniform1i("imageU", 1);
 			shader_program->SetUniform1i("imageV", 2);
@@ -343,16 +249,10 @@ namespace rgaa
 
 		model = glm::mat4(1.0f);
 		shader_program->SetUniformMatrix("model", model);
-//		shader_program->SetUniformMatrix("view", director->GetView());
-//		shader_program->SetUniformMatrix("projection", director->GetProjection());
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		shader_program->Release();
-
-//		if (cursor) {
-//			cursor->Render(0);
-//		}
 
 		render_fps += 1;
 		auto current_time = GetCurrentTimestamp();
@@ -363,26 +263,6 @@ namespace rgaa
 		}
 	}
 
-	void OpenGLVideoWidget::InitNV12Texture() {
-		glGenTextures(1, &y_texture_id);
-		glBindTexture(GL_TEXTURE_2D, y_texture_id);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, tex_width, tex_height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, nullptr);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glGenTextures(1, &uv_texture_id);
-		glBindTexture(GL_TEXTURE_2D, uv_texture_id);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, tex_width / 2, tex_height / 2, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-
 	void OpenGLVideoWidget::InitRGBATexture() {
 		glGenTextures(1, &rgb_texture_id);
 		glBindTexture(GL_TEXTURE_2D, rgb_texture_id);
@@ -391,7 +271,6 @@ namespace rgaa
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-		//glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 	void OpenGLVideoWidget::InitI420Texture() {
@@ -403,7 +282,6 @@ namespace rgaa
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, is_uv ? width / 2 : width, is_uv ? height / 2 : height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, nullptr);
-			//glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		};
 		create_luminance_texture(y_texture_id, tex_width, tex_height, false);
@@ -415,26 +293,7 @@ namespace rgaa
 
 	void OpenGLVideoWidget::resizeGL(int width, int height) {
 		VideoWidgetEvent::OnWidgetResize(width, height);
-//		director->Init(width, height);
 		glViewport(0, 0, width, height);
-//		if (cursor) {
-//			cursor->OnWindowResized(width, height);
-//		}
-		std::cout << "resizeGL width : " << width << " height : " << height << std::endl;
-	}
-
-	MouseKey OpenGLVideoWidget::GetMouseKey(QMouseEvent* e) {
-		MouseKey key = MouseKey::kLeft;
-		if (e->button() == Qt::LeftButton) {
-			key = MouseKey::kLeft;
-		}
-		else if (e->button() == Qt::RightButton) {
-			key = MouseKey::kRight;
-		}
-		else if (e->button() == Qt::MiddleButton) {
-			key = MouseKey::kMiddle;
-		}
-		return key;
 	}
 
 	void OpenGLVideoWidget::mouseMoveEvent(QMouseEvent* e) {
@@ -469,9 +328,5 @@ namespace rgaa
 	void OpenGLVideoWidget::keyReleaseEvent(QKeyEvent* e) {
 		QOpenGLWidget::keyReleaseEvent(e);
 		VideoWidgetEvent::OnKeyReleaseEvent(e);
-	}
-
-	std::shared_ptr<Sprite> OpenGLVideoWidget::GetCursorSprite() {
-		return cursor;
 	}
 }
