@@ -15,6 +15,7 @@ namespace rgaa {
     class FFmpegVideoDecoder;
     class Thread;
     class RawImage;
+    class NetMessage;
 
     using OnVideoFrameDecodedCallback = std::function<void(const std::shared_ptr<RawImage>&)>;
 
@@ -25,7 +26,7 @@ namespace rgaa {
         ~SailfishSDK();
 
         void Init();
-
+        void PostNetMessage(const std::shared_ptr<NetMessage>& msg);
         void RegisterVideoFrameDecodedCallback(OnVideoFrameDecodedCallback cbk);
 
     private:

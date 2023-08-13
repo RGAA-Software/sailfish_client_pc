@@ -7,6 +7,12 @@
 
 namespace rgaa {
 
+    enum class VideoRenderType {
+        kOpenGL,
+        kSDL,
+        kTestQPixmap,
+    };
+
     class Settings {
     public:
 
@@ -20,10 +26,14 @@ namespace rgaa {
         int GetWSWidth();
         int GetWSHeight();
 
+        VideoRenderType GetVideoRenderType();
+
     private:
 
         int ws_width_ = 1280;
         int ws_height_ = 768;
+
+        VideoRenderType render_type_ = VideoRenderType::kSDL;
 
     };
 

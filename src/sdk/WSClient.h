@@ -40,6 +40,7 @@ namespace rgaa {
         void OnClose(client* c, websocketpp::connection_hdl hdl);
         void OnMessage(client* c, websocketpp::connection_hdl hdl, message_ptr msg);
 
+        void PostBinaryMessage(const std::string& msg);
         void PostBinaryMessage(const std::shared_ptr<Data>& msg);
         void PostTextMessage(const std::string& msg);
 

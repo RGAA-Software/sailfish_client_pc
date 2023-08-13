@@ -118,6 +118,12 @@ namespace rgaa {
         }
     }
 
+    void WSClient::PostBinaryMessage(const std::string& msg) {
+        if (ws_client && target_server.lock()) {
+            ws_client->send(target_server, msg, binary);
+        }
+    }
+
     void WSClient::PostTextMessage(const std::string& msg) {
         if (msg.empty()) {
             return;

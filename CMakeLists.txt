@@ -39,6 +39,7 @@ endif ()
 
 # find packages
 #find_package(FFMPEG REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 find_package(libyuv CONFIG REQUIRED)
 find_package(protobuf CONFIG REQUIRED)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Multimedia)

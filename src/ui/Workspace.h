@@ -7,13 +7,16 @@
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QLabel>
 
 namespace rgaa {
 
     class Settings;
     class OpenGLVideoWidget;
+    class SDLVideoWidget;
     class Context;
     class SailfishSDK;
+    class NetMessage;
 
     class Workspace : public QMainWindow {
     public:
@@ -22,7 +25,9 @@ namespace rgaa {
 
         void Run();
 
-        OpenGLVideoWidget* GetVideoWidget();
+    private:
+
+        void OnMouseKeyboardEventCallback(const std::shared_ptr<NetMessage>& msg);
 
     private:
 
@@ -30,8 +35,10 @@ namespace rgaa {
 
         std::shared_ptr<Context> context_ = nullptr;
         Settings* settings_ = nullptr;
-        OpenGLVideoWidget* video_widget_ = nullptr;
 
+        OpenGLVideoWidget* gl_video_widget_ = nullptr;
+        SDLVideoWidget* sdl_video_widget_ = nullptr;
+        QLabel* qt_video_label_ = nullptr;
     };
 
 }

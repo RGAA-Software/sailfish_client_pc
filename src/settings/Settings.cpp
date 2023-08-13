@@ -18,4 +18,7 @@ namespace rgaa {
         return ws_height_;
     }
 
+    VideoRenderType Settings::GetVideoRenderType() {
+        return render_type_;
+    }
 }

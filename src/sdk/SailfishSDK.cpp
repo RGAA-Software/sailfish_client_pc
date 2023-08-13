@@ -11,6 +11,7 @@
 #include "rgaa_common/RLog.h"
 #include "rgaa_common/RData.h"
 #include "RawImage.h"
+#include "messages.pb.h"
 
 namespace rgaa {
 
@@ -39,9 +40,10 @@ namespace rgaa {
             }));
         });
 
-        ws_client_ = std::make_shared<WSClient>("127.0.0.1", 9090);
+//        ws_client_ = std::make_shared<WSClient>("127.0.0.1", 9090);
 //        ws_client_ = std::make_shared<WSClient>("192.168.10.146", 9090);
 //        ws_client_ = std::make_shared<WSClient>("10.0.0.67", 9090);
+        ws_client_ = std::make_shared<WSClient>("10.0.0.70", 9090);
         ws_client_->SetOnMessageCallback([this](const std::string& msg) {
             msg_parser_->ParseMessage(msg);
         });
@@ -63,6 +65,14 @@ namespace rgaa {
             func_create_decoder();
         }
 
+    }
+
+    void SailfishSDK::PostNetMessage(const std::shared_ptr<NetMessage>& msg) {
+        if (!ws_client_) {
+            return;
+        }
+        auto msg_buffer = msg->SerializeAsString();
+        ws_client_->PostBinaryMessage(msg_buffer);
     }
 
     void SailfishSDK::RegisterVideoFrameDecodedCallback(OnVideoFrameDecodedCallback cbk) {
