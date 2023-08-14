@@ -14,3 +14,4 @@ add_library(sdk ${SDK_SRCS} ${PROTO_SRCS})
 
 target_link_libraries(sdk avutil avcodec yuv)
 target_link_libraries(sdk protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
+target_link_libraries(sdk sqlite_orm::sqlite_orm)

@@ -42,6 +42,7 @@ endif ()
 
 # find packages
 #find_package(FFMPEG REQUIRED)
+find_package(SqliteOrm CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(libyuv CONFIG REQUIRED)
 find_package(protobuf CONFIG REQUIRED)
