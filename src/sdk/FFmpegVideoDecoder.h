@@ -45,6 +45,8 @@ namespace rgaa {
         AVPacket packet;
         AVFrame* av_frame = nullptr;
 
+        std::shared_ptr<RawImage> decoded_image_ = nullptr;
+
         bool cvt_to_rgb = false;
     };
 

@@ -87,13 +87,11 @@ namespace rgaa {
         return 0;
     }
 
-    //https://blog.csdn.net/byhook/article/details/84475525
-    static void I420_TO_RGB24(unsigned char* yuvData, unsigned char* rgb24, int width, int height) {
+    static void I420ToRGB24(unsigned char* yuvData, unsigned char* rgb24, int width, int height) {
 
         unsigned char* ybase = yuvData;
         unsigned char* ubase = &yuvData[width * height];
         unsigned char* vbase = &yuvData[width * height * 5 / 4];
-        //YUV420PתRGB24
         libyuv::I420ToRGB24(ybase, width, ubase, width / 2, vbase, width / 2,
                             rgb24,
                             width * 3, width, height);
@@ -134,10 +132,6 @@ namespace rgaa {
         auto x3 = av_frame->linesize[2];
         width = x1;
 
-        std::shared_ptr<RawImage> image = nullptr;
-
-        //std::cout << "format : " << format << std::endl;
-
         if (format == AVPixelFormat::AV_PIX_FMT_YUV420P || format == AVPixelFormat::AV_PIX_FMT_NV12) {
             //std::cout << "width : " << width << " height : " << height << " frame width : " << frame_width_ << " frame height : " << frame_height_ << std::endl;
             //image = RawImage::MakeI420(nullptr, width * height * 1.5, width, height);
@@ -148,9 +142,10 @@ namespace rgaa {
 
             frame_width_ = std::min(frame_width_, width);
             frame_height_ = std::min(frame_height_, height);
-
-            image = RawImage::MakeI420(nullptr, frame_width_ * frame_height_ * 1.5, frame_width_, frame_height_);
-            char* buffer = image->Data();
+            if (!decoded_image_ || frame_width_ != decoded_image_->img_width || frame_height_ != decoded_image_->img_height) {
+                decoded_image_ = RawImage::MakeI420(nullptr, frame_width_ * frame_height_ * 1.5, frame_width_, frame_height_);
+            }
+            char* buffer = decoded_image_->Data();
             for (int i = 0; i < frame_height_; i++) {
                 memcpy(buffer + frame_width_*i, av_frame->data[0] + width*i, frame_width_);
             }
@@ -166,16 +161,16 @@ namespace rgaa {
             }
         }
 
-        if (image && !stop_) {
+        if (decoded_image_ && !stop_) {
             if (cvt_to_rgb) {
                 auto rgb = RawImage::MakeRGB(nullptr, frame_width_ * frame_height_ * 3, frame_width_, frame_height_);
                 auto rgb_data = rgb->Data();
-                auto yuv_data = image->Data();
-                I420_TO_RGB24((uint8_t*)yuv_data, (uint8_t*)rgb_data, frame_width_, frame_height_);
+                auto yuv_data = decoded_image_->Data();
+                I420ToRGB24((uint8_t*)yuv_data, (uint8_t*)rgb_data, frame_width_, frame_height_);
                 return rgb;
             }
         }
-        return image;
+        return decoded_image_;
     }
 
     void FFmpegVideoDecoder::Release() {

@@ -17,8 +17,9 @@ int main(int argc, char** argv) {
 
     Application application(ctx);
     application.show();
-//    Workspace ws(ctx);
-//    ws.Run();
+
+    Workspace ws(ctx);
+    ws.Run();
 
 
     return app.exec();
