@@ -20,6 +20,9 @@ include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 project(sailfish_client_pc)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 # config for each platform
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -66,7 +69,9 @@ endif()
 add_subdirectory(src)
 add_subdirectory(deps)
 
-add_executable(sailfish_client_pc main.cpp logo.rc resources.qrc)
+set(RES resources/font.qrc resources/main.qrc resources/qss.qrc resources.qrc)
+
+add_executable(sailfish_client_pc main.cpp logo.rc ${RES})
 target_link_libraries(sailfish_client_pc main sdk ui settings common)
 
 

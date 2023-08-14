@@ -4,8 +4,11 @@
 
 #include "Application.h"
 
+#include <QApplication>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
+#include <QElapsedTimer>
+#include <QFile>
 
 #include "AppMenu.h"
 #include "AppStreamList.h"
@@ -17,6 +20,8 @@ namespace rgaa {
         resize(1280, 768);
         setWindowTitle(tr("Sailfish Client"));
         CreateLayout();
+
+        LoadStyle("");
     }
 
     Application::~Application() {
@@ -41,5 +46,33 @@ namespace rgaa {
         setCentralWidget(root_widget);
     }
 
+    void Application::LoadStyle(const std::string &name) {
+        QElapsedTimer time;
+        time.start();
+
+        auto qssFile = ":/qss/lightblue.css";
+
+        QString qss;
+        QFile file(qssFile);
+        if (file.open(QFile::ReadOnly)) {
+            qDebug() << "open success...";
+            QStringList list;
+            QTextStream in(&file);
+            //in.setCodec("utf-8");
+            while (!in.atEnd()) {
+                QString line;
+                in >> line;
+                list << line;
+            }
+
+            file.close();
+            qss = list.join("\n");
+            QString paletteColor = qss.mid(20, 7);
+            qApp->setPalette(QPalette(paletteColor));
+            qApp->setStyleSheet(qss);
+        }
+
+        qDebug() << "用时:" << time.elapsed();
+    }
 
 }

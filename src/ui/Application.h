@@ -21,6 +21,8 @@ namespace rgaa {
 
         void CreateLayout();
 
+        void LoadStyle(const std::string& name);
+
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
