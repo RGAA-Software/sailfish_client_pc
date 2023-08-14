@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 
     auto ctx = std::make_shared<Context>();
 
-    Application application;
+    Application application(ctx);
     application.show();
 //    Workspace ws(ctx);
 //    ws.Run();

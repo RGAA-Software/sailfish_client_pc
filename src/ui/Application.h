@@ -9,12 +9,21 @@
 
 namespace rgaa {
 
+    class Context;
+
     class Application : public QMainWindow {
     public:
 
-        Application(QWidget* parent = nullptr);
+        Application(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
         ~Application();
 
+    private:
+
+        void CreateLayout();
+
+    private:
+
+        std::shared_ptr<Context> context_ = nullptr;
 
     };
 

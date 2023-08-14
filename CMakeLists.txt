@@ -42,8 +42,8 @@ endif ()
 find_package(SDL2 CONFIG REQUIRED)
 find_package(libyuv CONFIG REQUIRED)
 find_package(protobuf CONFIG REQUIRED)
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Multimedia)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core OpenGL OpenGLWidgets Multimedia)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Core Gui OpenGL OpenGLWidgets Multimedia)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui OpenGL OpenGLWidgets Multimedia)
 find_package(Boost COMPONENTS system filesystem thread locale program_options random)
 # find packages end
 
@@ -66,7 +66,7 @@ endif()
 add_subdirectory(src)
 add_subdirectory(deps)
 
-add_executable(sailfish_client_pc main.cpp)
+add_executable(sailfish_client_pc main.cpp logo.rc resources.qrc)
 target_link_libraries(sailfish_client_pc main sdk ui settings common)
 
 
