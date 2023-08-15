@@ -22,5 +22,5 @@ int main(int argc, char** argv) {
     ws.Run();
 
 
-    return app.exec();
+    return QApplication::exec();
 }
