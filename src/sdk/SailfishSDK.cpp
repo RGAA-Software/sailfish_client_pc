@@ -40,9 +40,9 @@ namespace rgaa {
             }));
         });
 
-//        ws_client_ = std::make_shared<WSClient>("127.0.0.1", 9090);
-//        ws_client_ = std::make_shared<WSClient>("192.168.10.130", 9090);
-        ws_client_ = std::make_shared<WSClient>("10.0.0.67", 9090);
+        ws_client_ = std::make_shared<WSClient>("127.0.0.1", 9090);
+//        ws_client_ = std::make_shared<WSClient>("192.168.10.128", 9090);
+//        ws_client_ = std::make_shared<WSClient>("10.0.0.67", 9090);
 //        ws_client_ = std::make_shared<WSClient>("10.0.0.70", 9090);
         ws_client_->SetOnMessageCallback([this](const std::string& msg) {
             msg_parser_->ParseMessage(msg);
