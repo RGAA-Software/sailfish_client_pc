@@ -20,6 +20,7 @@ namespace rgaa {
 		~SDLVideoWidget();
 
 		void Init(int frame_width, int frame_height);
+        void Exit() override;
 
 		void RefreshI420Image(const std::shared_ptr<RawImage>& image) override;
 		void RefreshI420Buffer(const char* y_buf, int y_buf_size, const char* u_buf, int u_buf_size, const char* v_buf, int v_buf_size, int width, int height) override;

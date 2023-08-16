@@ -12,6 +12,8 @@
 
 #include "AppMenu.h"
 #include "AppStreamList.h"
+#include "Workspace.h"
+#include "rgaa_common/RLog.h"
 
 namespace rgaa {
 
@@ -37,6 +39,9 @@ namespace rgaa {
         // 1. app menu
         auto app_menu = new AppMenu(context_, this);
         root_layout->addWidget(app_menu);
+        app_menu->SetOnAddCallback([=, this]() {
+            StartStreaming();
+        });
 
         // 2. stream list
         auto stream_list = new AppStreamList(context_, this);
@@ -73,6 +78,16 @@ namespace rgaa {
         }
 
         qDebug() << "用时:" << time.elapsed();
+    }
+
+    void Application::StartStreaming() {
+        workspace_ = std::make_shared<Workspace>(context_);
+        workspace_->SetOnCloseCallback([=, this]() {
+            workspace_.reset();
+            workspace_ = nullptr;
+            LOGI("Workspace closed...");
+        });
+        workspace_->Run();
     }
 
 }

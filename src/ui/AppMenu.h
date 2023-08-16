@@ -15,11 +15,15 @@ namespace rgaa {
 
     class Context;
 
+    using OnAppMenuClickCallback = std::function<void()>;
+
     class AppMenu : public QWidget {
     public:
 
         AppMenu(const std::shared_ptr<Context> ctx, QWidget* parent = nullptr);
         ~AppMenu() = default;
+
+        void SetOnAddCallback(OnAppMenuClickCallback cbk);
 
     private:
 
@@ -28,6 +32,8 @@ namespace rgaa {
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
+
+        OnAppMenuClickCallback add_cbk_;
 
     };
 

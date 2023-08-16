@@ -49,7 +49,7 @@ namespace rgaa {
     }
 
     Workspace::~Workspace() {
-
+        LOGI("Workspace exit...");
     }
 
     void Workspace::Run() {
@@ -85,6 +85,30 @@ namespace rgaa {
         if (sdk_) {
             sdk_->PostNetMessage(msg);
         }
+    }
+
+    void Workspace::Exit() {
+        if (sdk_) {
+            sdk_->Exit();
+        }
+    }
+
+    void Workspace::closeEvent(QCloseEvent *event) {
+        QWidget::closeEvent(event);
+        Exit();
+
+        if (sdl_video_widget_) {
+            sdl_video_widget_->Exit();
+            LOGI("Exit sdl video widget..");
+        }
+
+        if (close_cbk_) {
+            close_cbk_();
+        }
+    }
+
+    void Workspace::SetOnCloseCallback(OnCloseCallback cbk) {
+        close_cbk_ = std::move(cbk);
     }
 
 }

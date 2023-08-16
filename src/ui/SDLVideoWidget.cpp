@@ -42,15 +42,7 @@ namespace rgaa
 	}
 
 	SDLVideoWidget::~SDLVideoWidget() {
-		if (sdlRenderer) {
-			SDL_DestroyRenderer(sdlRenderer);
-		}
-		if (screen) {
-			SDL_DestroyWindow(screen);
-		}
-		SDL_Quit();
-
-		printf("sdl widget exit ..... \n");
+		LOGI("sdl widget exit ..... ");
 	}
 	
 	void SDLVideoWidget::Init(int frame_width, int frame_height) {
@@ -145,4 +137,15 @@ namespace rgaa
 	void SDLVideoWidget::closeEvent(QCloseEvent* event) {
 		VideoWidget::closeEvent(event);
 	}
+
+    void SDLVideoWidget::Exit() {
+        VideoWidget::Exit();
+        if (sdlRenderer) {
+            SDL_DestroyRenderer(sdlRenderer);
+        }
+        if (screen) {
+            SDL_DestroyWindow(screen);
+        }
+        SDL_Quit();
+    }
 }

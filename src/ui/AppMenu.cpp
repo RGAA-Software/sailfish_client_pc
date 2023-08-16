@@ -4,6 +4,8 @@
 
 #include "AppMenu.h"
 
+#include <utility>
+
 #include "Context.h"
 
 namespace rgaa {
@@ -22,6 +24,11 @@ namespace rgaa {
         auto btn_add = new QPushButton(tr("Add"));
         btn_add->resize(100, 40);
         root_layout->addWidget(btn_add);
+        connect(btn_add, &QPushButton::clicked, this, [=, this]() {
+            if (add_cbk_) {
+                add_cbk_();
+            }
+        });
 
         auto btn_settings = new QPushButton(tr("Settings"));
         btn_settings->resize(100, 40);
@@ -30,6 +37,10 @@ namespace rgaa {
         root_layout->addStretch();
 
         setLayout(root_layout);
+    }
+
+    void AppMenu::SetOnAddCallback(OnAppMenuClickCallback cbk) {
+        add_cbk_ = std::move(cbk);
     }
 
 }

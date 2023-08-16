@@ -11,6 +11,8 @@
 #include "rgaa_common/RLog.h"
 #include "rgaa_common/RThread.h"
 
+#include "MessageMaker.h"
+
 #define DEBUG_VIDEO_FILE 0
 
 namespace rgaa {
@@ -64,15 +66,17 @@ namespace rgaa {
                     std::this_thread::sleep_for(std::chrono::seconds(5));
                 }
             }
+
+            LOGI("Exit the loop...");
+            already_exit_loop_ = true;
         };
         ws_thread = std::make_shared<Thread>(exec_func, "ws_thread", false);
     }
 
     void WSClient::Exit() {
         stop_connecting = true;
-        if (ws_client && !ws_client->stopped()) {
+        if (ws_client) {
             try {
-                ws_client->close(target_server, websocketpp::close::status::normal, "");
                 ws_client->stop();
             }
             catch (std::exception& e) {
@@ -80,13 +84,25 @@ namespace rgaa {
             }
         }
 
+        while (!already_exit_loop_) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+
         if (ws_thread->IsJoinable()) {
             ws_thread->Join();
+            LOGI("Exit the ws_thread");
         }
     }
 
     void WSClient::OnOpen(client* c, websocketpp::connection_hdl hdl) {
         target_server = hdl;
+
+        LOGI("OnOpen, will send StartRecording");
+        auto msg = MessageMaker::MakeStartRecording(true);
+        auto msg_str = msg->SerializeAsString();
+        c->send(hdl, msg_str, binary);
+        LOGI("OnOpen, after send StartRecording");
+
     }
 
     void WSClient::OnClose(client* c, websocketpp::connection_hdl hdl) {

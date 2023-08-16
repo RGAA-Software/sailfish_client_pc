@@ -16,6 +16,8 @@ namespace rgaa
 		static std::shared_ptr<NetMessage> MakeWheelScrollMouseInfo(float x, float y, int scroll);
 		static std::shared_ptr<NetMessage> MakeKeyboardInfo(int vk, bool pressed, int scancode, bool caps_lock, bool num_lock);
 		static std::shared_ptr<NetMessage> MakeACK(MessageType type, uint64_t send_time, uint64_t frame_index);
+        static std::shared_ptr<NetMessage> MakeStartRecording(bool audio);
+        static std::shared_ptr<NetMessage> MakeStopRecording();
 
 	};
 

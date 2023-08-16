@@ -18,12 +18,18 @@ namespace rgaa {
     class SailfishSDK;
     class NetMessage;
 
+    using OnCloseCallback = std::function<void()>;
+
     class Workspace : public QMainWindow {
     public:
         Workspace(const std::shared_ptr<Context>& ctx);
         ~Workspace();
 
         void Run();
+        void Exit();
+
+        void SetOnCloseCallback(OnCloseCallback cbk);
+        void closeEvent(QCloseEvent *event) override;
 
     private:
 
@@ -39,6 +45,9 @@ namespace rgaa {
         OpenGLVideoWidget* gl_video_widget_ = nullptr;
         SDLVideoWidget* sdl_video_widget_ = nullptr;
         QLabel* qt_video_label_ = nullptr;
+
+        OnCloseCallback close_cbk_;
+
     };
 
 }
