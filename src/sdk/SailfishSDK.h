@@ -26,6 +26,7 @@ namespace rgaa {
         ~SailfishSDK();
 
         void Init();
+        void Exit();
         void PostNetMessage(const std::shared_ptr<NetMessage>& msg);
         void RegisterVideoFrameDecodedCallback(OnVideoFrameDecodedCallback cbk);
 

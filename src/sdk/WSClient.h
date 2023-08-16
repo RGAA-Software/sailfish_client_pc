@@ -59,6 +59,7 @@ namespace rgaa {
         std::shared_ptr<Thread> msg_thread = nullptr;
         std::shared_ptr<client> ws_client = nullptr;
         bool stop_connecting = false;
+        bool already_exit_loop_ = false;
 
         OnMessageCallback msg_cbk_;
 

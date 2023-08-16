@@ -23,6 +23,8 @@ namespace rgaa {
 
         void SetOnVideoFrameCallback(OnVideoFrameCallback cbk);
 
+        void Exit();
+
     private:
 
         OnVideoFrameCallback video_frame_cbk_;

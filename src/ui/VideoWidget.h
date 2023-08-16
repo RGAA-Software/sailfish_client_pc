@@ -15,6 +15,8 @@ namespace rgaa
 		VideoWidget(QWidget* parent = nullptr);
 		virtual ~VideoWidget();
 
+        virtual void Exit() {}
+
 	protected:
 
 		virtual void RefreshNV12Image(const std::shared_ptr<RawImage>& image);

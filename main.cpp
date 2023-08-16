@@ -18,9 +18,6 @@ int main(int argc, char** argv) {
     Application application(ctx);
     application.show();
 
-    Workspace ws(ctx);
-    ws.Run();
-
 
     return QApplication::exec();
 }

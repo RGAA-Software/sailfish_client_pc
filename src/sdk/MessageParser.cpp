@@ -61,4 +61,11 @@ namespace rgaa {
         video_frame_cbk_= std::move(cbk);
     }
 
+    void MessageParser::Exit() {
+        if (audio_decoder_) {
+            audio_decoder_.reset();
+        }
+
+    }
+
 }
