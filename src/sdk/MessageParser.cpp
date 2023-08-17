@@ -54,7 +54,10 @@ namespace rgaa {
             int bytes_size = decoded_frame.size() * 2;
             audio_player_->Write((char*)decoded_frame.data(), bytes_size);
         }
-
+        else if (type == MessageType::kHeartBeat) {
+            auto heart_beat = net_msg->heart_beat();
+            LOGI("Heart beat : {}", heart_beat.index());
+        }
     }
 
     void MessageParser::SetOnVideoFrameCallback(OnVideoFrameCallback cbk) {

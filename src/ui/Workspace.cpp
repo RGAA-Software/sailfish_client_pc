@@ -55,7 +55,10 @@ namespace rgaa {
     void Workspace::Run() {
 
         sdk_ = std::make_shared<SailfishSDK>();
-        sdk_->RegisterVideoFrameDecodedCallback([=, this](const std::shared_ptr<RawImage>& image) {
+        sdk_->RegisterVideoFrameDecodedCallback([=, this](int dup_idx, const std::shared_ptr<RawImage>& image) {
+            if (dup_idx != 0) {
+                return;
+            }
             auto render_type = settings_->GetVideoRenderType();
             if (render_type == VideoRenderType::kOpenGL && gl_video_widget_) {
                 gl_video_widget_->RefreshI420Image(image);

@@ -18,6 +18,7 @@ namespace rgaa
 		static std::shared_ptr<NetMessage> MakeACK(MessageType type, uint64_t send_time, uint64_t frame_index);
         static std::shared_ptr<NetMessage> MakeStartRecording(bool audio);
         static std::shared_ptr<NetMessage> MakeStopRecording();
+        static std::shared_ptr<NetMessage> MakeHeartBeat(uint64_t idx);
 
 	};
 

@@ -97,12 +97,9 @@ namespace rgaa {
     void WSClient::OnOpen(client* c, websocketpp::connection_hdl hdl) {
         target_server = hdl;
 
-        LOGI("OnOpen, will send StartRecording");
         auto msg = MessageMaker::MakeStartRecording(true);
         auto msg_str = msg->SerializeAsString();
         c->send(hdl, msg_str, binary);
-        LOGI("OnOpen, after send StartRecording");
-
     }
 
     void WSClient::OnClose(client* c, websocketpp::connection_hdl hdl) {
