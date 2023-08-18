@@ -18,6 +18,7 @@ namespace rgaa {
     class RawImage;
     class NetMessage;
     class Timer;
+    class StreamItem;
 
     using OnVideoFrameDecodedCallback = std::function<void(int dup_idx, const std::shared_ptr<RawImage>&)>;
 
