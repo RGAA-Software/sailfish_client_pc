@@ -56,7 +56,7 @@ namespace rgaa {
         }
         else if (type == MessageType::kHeartBeat) {
             auto heart_beat = net_msg->heart_beat();
-            LOGI("Heart beat : {}", heart_beat.index());
+            //LOGI("Heart beat : {}", heart_beat.index());
         }
     }
 

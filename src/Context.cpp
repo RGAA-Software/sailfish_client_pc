@@ -14,7 +14,7 @@ namespace rgaa {
         db_mgr_ = std::make_shared<StreamDBManager>();
         msg_queue_ = std::make_shared<MessageQueue>();
         msg_thread_ = std::make_shared<Thread>([=, this]() {
-            msg_queue_->Poll();
+            msg_queue_->PollBlocked();
         }, "msg thread", false);
     }
 

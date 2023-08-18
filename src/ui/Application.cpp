@@ -14,6 +14,7 @@
 #include "AppStreamList.h"
 #include "Workspace.h"
 #include "rgaa_common/RLog.h"
+#include "CreateStreamDialog.h"
 
 namespace rgaa {
 
@@ -40,7 +41,8 @@ namespace rgaa {
         auto app_menu = new AppMenu(context_, this);
         root_layout->addWidget(app_menu);
         app_menu->SetOnAddCallback([=, this]() {
-            StartStreaming();
+            CreateStreamDialog dialog;
+            dialog.exec();
         });
 
         // 2. stream list
