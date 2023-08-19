@@ -17,6 +17,7 @@
 #include "sdk/RawImage.h"
 #include "rgaa_common/RLog.h"
 #include "messages.pb.h"
+#include "WidgetHelper.h"
 
 namespace rgaa {
 
@@ -24,11 +25,14 @@ namespace rgaa {
         context_ = ctx;
         stream_item_ = item;
         settings_ = Settings::Instance();
+        QString title = "Sailfish client window [ 1 ]";
+        setWindowTitle(title);
 
         sdk_ = std::make_shared<SailfishSDK>(stream_item_);
 
         auto widget = new QWidget(this);
         auto layout = new QVBoxLayout();
+        WidgetHelper::ClearMargin(layout);
 
         auto render_type = settings_->GetVideoRenderType();
         if (render_type == VideoRenderType::kOpenGL) {

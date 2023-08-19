@@ -8,6 +8,7 @@
 #include "sdk/SailfishSDK.h"
 
 #include <QMouseEvent>
+#include <QString>
 
 namespace rgaa
 {
@@ -18,7 +19,7 @@ namespace rgaa
 		this->format = format;
 
 		//this->statistics = Statistics::Instance();
-
+        setUpdatesEnabled(false);
 		if (SDL_Init(SDL_INIT_EVERYTHING)) {
 			printf("Could not initialize SDL - %s\n", SDL_GetError());
 			return;
@@ -39,6 +40,12 @@ namespace rgaa
         setMouseTracking(true);
 
 		printf("sdl widget init success. \n");
+
+        timer_ = new QTimer(this);
+        connect(timer_, &QTimer::timeout, this, [this]() {
+            Update();
+        });
+        timer_->start(17);
 
 	}
 
@@ -82,9 +89,6 @@ namespace rgaa
 			(uint8_t*)y_buf, width,
 			(uint8_t*)u_buf, width/2,
 			(uint8_t*)v_buf, width/2);
-		ret = SDL_RenderClear(sdlRenderer);
-		ret = SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
-		SDL_RenderPresent(sdlRenderer);
 
 		render_fps += 1;
 		auto current_time = GetCurrentTimestamp();
@@ -96,6 +100,16 @@ namespace rgaa
 			//statistics->streaming_time += 1;
 		}
 	}
+
+    void SDLVideoWidget::Update() {
+        int ret = SDL_RenderClear(sdlRenderer);
+        ret = SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
+        SDL_RenderPresent(sdlRenderer);
+    }
+
+//    QPaintEngine* SDLVideoWidget::paintEngine() const {
+//        return 0;
+//    }
 
 	void SDLVideoWidget::resizeEvent(QResizeEvent* event) {
 		VideoWidget::resizeEvent(event);

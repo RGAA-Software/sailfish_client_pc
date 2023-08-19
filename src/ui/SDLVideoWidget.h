@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QTimer>
 #include <memory>
 #include "sdk/RawImage.h"
 #include "VideoWidget.h"
@@ -26,6 +27,10 @@ namespace rgaa {
 		void RefreshI420Image(const std::shared_ptr<RawImage>& image) override;
 		void RefreshI420Buffer(const char* y_buf, int y_buf_size, const char* u_buf, int u_buf_size, const char* v_buf, int v_buf_size, int width, int height) override;
 
+    private:
+
+        void Update();
+
 	protected:
 		void mouseMoveEvent(QMouseEvent*) override;
 		void mousePressEvent(QMouseEvent*) override;
@@ -37,6 +42,8 @@ namespace rgaa {
 		void keyReleaseEvent(QKeyEvent* event) override;
 
 		void closeEvent(QCloseEvent* event) override;
+
+//        QPaintEngine * paintEngine() const override;
 
 	private:
 		
@@ -60,6 +67,8 @@ namespace rgaa {
         std::shared_ptr<RawImage> last_refresh_image_ = nullptr;
         uint64_t last_refresh_image_time_ = 0;
 
+        QTimer* timer_ = nullptr;
+
 	};
 
 
@@ -67,7 +76,12 @@ namespace rgaa {
     public:
 
         SDLWidgetWrapper(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, RawImageFormat format, QWidget* parent) {
+            QString title = "Sailfish client window [ " + QString::number(dup_idx+1) + " ]";
+            setWindowTitle(title);
+
             auto layout = new QVBoxLayout();
+            layout->setSpacing(0);
+            layout->setContentsMargins(0,0,0,0);
             widget_ = new SDLVideoWidget(ctx, sdk, dup_idx, format, this);
             layout->addWidget(widget_);
             setLayout(layout);
