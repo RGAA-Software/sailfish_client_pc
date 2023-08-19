@@ -23,8 +23,14 @@ namespace rgaa {
         clipboard_ = QApplication::clipboard();
         StartMonitoringClipboard();
 
-
-        SetText("This is text...");
+//        std::thread* t = new std::thread([=](){
+//            for (int i = 0; i < 10000; i++) {
+//                auto msg = QString::number(i) + " //// test";
+//                SetText(msg);
+//                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+//            }
+//        });
+//        t->detach();
     }
 
     void ClipboardManager::OnClipboardDataChanged() {
