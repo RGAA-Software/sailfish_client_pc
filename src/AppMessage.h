@@ -6,16 +6,37 @@
 #define SAILFISH_CLIENT_PC_APPMESSAGE_H
 
 #include "rgaa_common/RMessage.h"
+#include "sdk/StreamItem.h"
 
 namespace rgaa {
 
     constexpr int kCodeTimeout1S = 0x1001;
+    constexpr int kCodeStreamAdded = 0x1002;
+
 
     class Timeout1S : public Message {
     public:
+        static std::shared_ptr<Timeout1S> Make() {
+            return std::make_shared<Timeout1S>(kCodeTimeout1S);
+        }
 
         explicit Timeout1S(int c) : Message(c) {}
+    };
 
+    // Stream item will be added in to database
+    class StreamItemAdded : public Message {
+    public:
+        static std::shared_ptr<StreamItemAdded> Make(const StreamItem& item) {
+            return std::make_shared<StreamItemAdded>(item);
+        }
+
+        explicit StreamItemAdded(const StreamItem& item) : Message(kCodeStreamAdded) {
+            this->item_ = item;
+        }
+
+    public:
+
+        StreamItem item_;
     };
 
 }

@@ -11,6 +11,10 @@
 #include "sdk/StreamItem.h"
 #include "sdk/StreamDBManager.h"
 #include "Context.h"
+#include "AppMessage.h"
+#include "rgaa_common/RMessage.h"
+#include "rgaa_common/RMessageQueue.h"
+#include "rgaa_common/RLog.h"
 
 namespace rgaa {
 
@@ -33,11 +37,13 @@ namespace rgaa {
         db_mgr_ = context_->GetDBManager();
 
         CreateLayout();
+        Init();
 
-        streams_ = db_mgr_->GetStreamItems();
-        for (const auto& stream : streams_) {
-            AddItem(stream);
-        }
+        LoadStreamItems();
+    }
+
+    AppStreamList::~AppStreamList() {
+        context_->RemoveMessageTask(stream_added_task_id_);
     }
 
     void AppStreamList::paintEvent(QPaintEvent *event) {
@@ -81,6 +87,18 @@ namespace rgaa {
         setLayout(root_layout);
     }
 
+    void AppStreamList::Init() {
+        stream_added_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeStreamAdded, [=, this](const std::shared_ptr<Message>& msg) {
+            auto target_msg = std::dynamic_pointer_cast<StreamItemAdded>(msg);
+            auto item = target_msg->item_;
+            auto db_mgr = context_->GetDBManager();
+            db_mgr->AddStream(item);
+
+            LoadStreamItems();
+
+        }));
+    }
+
     void AppStreamList::RegisterActions(int index) {
         std::vector<QString> actions = {
             tr("Start"),
@@ -107,11 +125,11 @@ namespace rgaa {
         delete menu;
     }
 
-    void AppStreamList::ProcessAction(int index, const std::shared_ptr<StreamItem>& item) {
+    void AppStreamList::ProcessAction(int index, const StreamItem& item) {
 
     }
 
-    QListWidgetItem* AppStreamList::AddItem(const std::shared_ptr<StreamItem>& stream) {
+    QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
         auto item = new QListWidgetItem(stream_list_);
         item->setSizeHint(QSize(220, 180));
         auto widget = new QWidget(stream_list_);
@@ -122,13 +140,13 @@ namespace rgaa {
         // id
         auto id = new QLabel(stream_list_);
         id->setObjectName("st_id");
-        id->setText(stream->stream_id_.c_str());
+        id->setText(stream.stream_id.c_str());
         layout->addWidget(id);
 
         // name
         auto label = new QLabel(stream_list_);
         label->setObjectName("st_name");
-        label->setText(stream->stream_name_.c_str());
+        label->setText(stream.stream_name.c_str());
         layout->addWidget(label);
 
         // alive
@@ -153,6 +171,22 @@ namespace rgaa {
         widget->setLayout(layout);
         stream_list_->setItemWidget(item, widget);
         return item;
+    }
+
+    void AppStreamList::LoadStreamItems() {
+        auto db_mgr = context_->GetDBManager();
+        streams_ = db_mgr->GetAllStreams();
+
+        context_->PostUITask([=, this]() {
+            int count = stream_list_->count();
+            for (int i = 0; i < count; i++) {
+                auto item = stream_list_->takeItem(0);
+                delete item;
+            }
+            for (const auto& stream : streams_) {
+                AddItem(stream);
+            }
+        });
     }
 
 }

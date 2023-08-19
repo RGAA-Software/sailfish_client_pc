@@ -3,3 +3,11 @@
 //
 
 #include "StreamItem.h"
+
+namespace rgaa {
+
+    bool StreamItem::IsValid() const {
+        return !stream_id.empty();
+    }
+
+}

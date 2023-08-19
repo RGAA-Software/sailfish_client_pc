@@ -27,26 +27,31 @@ namespace rgaa {
     class AppStreamList : public QWidget {
     public:
 
-        AppStreamList(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
-        ~AppStreamList() = default;
+        explicit AppStreamList(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
+        ~AppStreamList();
 
         void paintEvent(QPaintEvent *event) override;
 
 
     private:
-        QListWidgetItem* AddItem(const std::shared_ptr<StreamItem>& item);
+        QListWidgetItem* AddItem(const StreamItem& item);
         void RegisterActions(int index);
-        void ProcessAction(int index, const std::shared_ptr<StreamItem>& item);
+        void ProcessAction(int index, const StreamItem& item);
 
         void CreateLayout();
+        void Init();
+
+        void LoadStreamItems();
 
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
-        std::vector<std::shared_ptr<StreamItem>> streams_;
+        std::vector<StreamItem> streams_;
 
         QListWidget* stream_list_ = nullptr;
+
+        int stream_added_task_id_ = -1;
 
     };
 

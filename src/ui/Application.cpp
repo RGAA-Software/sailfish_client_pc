@@ -14,7 +14,11 @@
 #include "AppStreamList.h"
 #include "Workspace.h"
 #include "rgaa_common/RLog.h"
+#include "rgaa_common/RThread.h"
 #include "CreateStreamDialog.h"
+#include "Context.h"
+#include "rgaa_common/RMessageQueue.h"
+#include "AppMessage.h"
 
 namespace rgaa {
 
@@ -22,7 +26,9 @@ namespace rgaa {
         context_ = ctx;
         resize(1280, 768);
         setWindowTitle(tr("Sailfish Client"));
+
         CreateLayout();
+        Init();
 
         LoadStyle("");
     }
@@ -41,7 +47,7 @@ namespace rgaa {
         auto app_menu = new AppMenu(context_, this);
         root_layout->addWidget(app_menu);
         app_menu->SetOnAddCallback([=, this]() {
-            CreateStreamDialog dialog;
+            CreateStreamDialog dialog(context_);
             dialog.exec();
         });
 
@@ -51,6 +57,10 @@ namespace rgaa {
 
         root_widget->setLayout(root_layout);
         setCentralWidget(root_widget);
+    }
+
+    void Application::Init() {
+
     }
 
     void Application::LoadStyle(const std::string &name) {

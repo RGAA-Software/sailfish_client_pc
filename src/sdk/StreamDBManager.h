@@ -5,8 +5,12 @@
 #ifndef SAILFISH_CLIENT_PC_STREAMDBMANAGER_H
 #define SAILFISH_CLIENT_PC_STREAMDBMANAGER_H
 
+#include <any>
 #include <vector>
 #include <memory>
+
+#include <sqlite_orm/sqlite_orm.h>
+using namespace sqlite_orm;
 
 namespace rgaa {
 
@@ -18,8 +22,20 @@ namespace rgaa {
         StreamDBManager();
         ~StreamDBManager();
 
-        std::vector<std::shared_ptr<StreamItem>> GetStreamItems();
+        static std::string GenUUID();
 
+        void AddStream(StreamItem& stream);
+        void UpdateStream(const StreamItem& stream);
+        std::vector<StreamItem> GetAllStreams();
+        void DeleteStream(int id);
+
+    private:
+
+        void CreateTables();
+
+    private:
+
+        std::any db_storage;
 
     };
 

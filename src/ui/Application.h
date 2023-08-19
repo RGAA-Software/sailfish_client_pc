@@ -11,11 +11,12 @@ namespace rgaa {
 
     class Context;
     class Workspace;
+    class Thread;
 
     class Application : public QMainWindow {
     public:
 
-        Application(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
+        explicit Application(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
         ~Application();
 
     private:
@@ -23,6 +24,7 @@ namespace rgaa {
         void StartStreaming();
 
         void CreateLayout();
+        void Init();
 
         void LoadStyle(const std::string& name);
 
@@ -30,6 +32,8 @@ namespace rgaa {
 
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<Workspace> workspace_ = nullptr;
+
+
 
     };
 

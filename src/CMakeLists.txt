@@ -8,3 +8,4 @@ add_subdirectory(settings)
 
 aux_source_directory(. SRCS)
 add_library(main ${SRCS})
+target_link_libraries(main Qt6::Widgets Qt6::Core Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Multimedia)
