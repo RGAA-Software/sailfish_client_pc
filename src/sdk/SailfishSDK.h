@@ -10,6 +10,7 @@
 #include <functional>
 
 #include "StreamItem.h"
+#include "StreamConfig.h"
 
 namespace rgaa {
 
@@ -22,6 +23,7 @@ namespace rgaa {
     class Timer;
 
     using OnVideoFrameDecodedCallback = std::function<void(int dup_idx, const std::shared_ptr<RawImage>&)>;
+    using OnNetMessageCallback = std::function<void(const std::shared_ptr<NetMessage>&)>;
 
     class SailfishSDK {
     public:
@@ -32,7 +34,10 @@ namespace rgaa {
         void Init();
         void Exit();
         void PostNetMessage(const std::shared_ptr<NetMessage>& msg);
+        void RegisterConfigCallback(OnNetMessageCallback&& cbk);
         void RegisterVideoFrameDecodedCallback(OnVideoFrameDecodedCallback cbk);
+
+        StreamConfig GetStreamConfig();
 
     private:
 
@@ -40,6 +45,7 @@ namespace rgaa {
         void InitVideoDecoderIfNeeded(int dup_idx, int type, int width, int height);
         void HeartBeat();
         std::shared_ptr<FFmpegVideoDecoder> GetDecoderByDupIndex(int idx);
+        void ParseConfig(const std::shared_ptr<NetMessage>& msg);
 
     private:
 
@@ -51,6 +57,7 @@ namespace rgaa {
         std::map<int, std::shared_ptr<FFmpegVideoDecoder>> video_decoders_;
 
         OnVideoFrameDecodedCallback video_frame_cbk_;
+        OnNetMessageCallback config_msg_cbk_;
 
         std::shared_ptr<Timer> timer_ = nullptr;
         std::vector<size_t> timer_ids_;
@@ -58,6 +65,7 @@ namespace rgaa {
         uint64_t heart_beat_idx_ = 0;
 
         StreamItem stream_item_;
+        StreamConfig stream_config_;
 
     };
 

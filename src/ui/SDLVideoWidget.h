@@ -7,6 +7,7 @@
 #include "VideoWidgetEvent.h"
 
 #include <SDL2/SDL.h>
+#include <QVBoxLayout>
 
 namespace rgaa {
 	
@@ -16,7 +17,7 @@ namespace rgaa {
 
 	class SDLVideoWidget : public VideoWidget, public VideoWidgetEvent {
 	public:
-		SDLVideoWidget(std::shared_ptr<Context> ctx, RawImageFormat format, QWidget* parent = nullptr);
+		SDLVideoWidget(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, RawImageFormat format, QWidget* parent = nullptr);
 		~SDLVideoWidget();
 
 		void Init(int frame_width, int frame_height);
@@ -58,6 +59,24 @@ namespace rgaa {
 
         std::shared_ptr<RawImage> last_refresh_image_ = nullptr;
         uint64_t last_refresh_image_time_ = 0;
+
 	};
+
+
+    class SDLWidgetWrapper : public QWidget {
+    public:
+
+        SDLWidgetWrapper(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, RawImageFormat format, QWidget* parent) {
+            auto layout = new QVBoxLayout();
+            widget_ = new SDLVideoWidget(ctx, sdk, dup_idx, format, this);
+            layout->addWidget(widget_);
+            setLayout(layout);
+        }
+
+    public:
+
+        SDLVideoWidget* widget_ = nullptr;
+
+    };
 
 }

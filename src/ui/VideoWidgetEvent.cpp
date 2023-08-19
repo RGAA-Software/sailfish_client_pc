@@ -4,8 +4,8 @@
 //#include "Context.h"
 #include "sdk/MessageMaker.h"
 #include "QtKeyConverter.h"
-#include "messages.pb.h"
 #include "rgaa_common/RLog.h"
+#include "sdk/SailfishSDK.h"
 
 #ifdef WIN32
 #include <Windows.h>
@@ -13,9 +13,13 @@
 
 namespace rgaa {
 
-	VideoWidgetEvent::VideoWidgetEvent(const std::shared_ptr<Context>& ctx) {
+	VideoWidgetEvent::VideoWidgetEvent(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx) {
 		this->context = ctx;
+        this->dup_idx_ = dup_idx;
         this->key_converter_ = std::make_shared<QtKeyConverter>();
+        this->sdk_ = sdk;
+        auto config = sdk_->GetStreamConfig();
+        this->screen_size_ = config.screen_size;
 	}
 
 	VideoWidgetEvent::~VideoWidgetEvent() {
@@ -39,13 +43,25 @@ namespace rgaa {
 			key = MouseKey::kMiddle;
 		}
 		return key;
-	}
+    }
+
+    float VideoWidgetEvent::CalculateX(int x) {
+//        int total_width = screen_size_ * this->width;
+//        if (total_width == 0) {
+//            return 0;
+//        }
+//        float target_x = x + dup_idx_ * width;
+//        float x_percent = target_x / total_width;
+
+        float x_percent = dup_idx_ + x * 1.0f / this->width;
+        return x_percent;
+    }
 
 	void VideoWidgetEvent::OnMouseMoveEvent(QMouseEvent* e) {
 		if (width == 0 || height == 0) {
 			return;
 		}
-		float x = e->x() * 1.0 / width;
+		float x = CalculateX(e->x()); // e->x() * 1.0 / width;
 		float y = e->y() * 1.0 / height;
 
 		float dx = 0;
@@ -65,7 +81,7 @@ namespace rgaa {
 	}
 
 	void VideoWidgetEvent::OnMousePressEvent(QMouseEvent* e) {
-		float x = e->x() * 1.0 / width;
+		float x = CalculateX(e->x()); //e->x() * 1.0 / width;
 		float y = e->y() * 1.0 / height;
 		auto key = (MouseKey)GetMouseKey(e);
 		auto mouse_msg = MessageMaker::MakeMouseInfo(key, true, false, x, y, 0, 0);
@@ -73,7 +89,7 @@ namespace rgaa {
 	}
 
 	void VideoWidgetEvent::OnMouseReleaseEvent(QMouseEvent* e) {
-		float x = e->x() * 1.0 / width;
+		float x = CalculateX(e->x()); //e->x() * 1.0 / width;
 		float y = e->y() * 1.0 / height;
 		auto key = (MouseKey)GetMouseKey(e);
 
@@ -124,13 +140,13 @@ namespace rgaa {
         SendCallback(keyboard_msg);
 	}
 
-    void VideoWidgetEvent::RegisterMouseKeyboardEventCallback(OnMouseKeyboardEventCallback cbk) {
-        event_cbk_ = std::move(cbk);
+    void VideoWidgetEvent::RegisterMouseKeyboardEventCallback(const OnMouseKeyboardEventCallback& cbk) {
+        event_cbk_ = cbk;
     }
 
     void VideoWidgetEvent::SendCallback(const std::shared_ptr<NetMessage>& msg) {
         if (event_cbk_) {
-            event_cbk_(msg);
+            event_cbk_(dup_idx_, msg);
         }
     }
 

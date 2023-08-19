@@ -6,6 +6,7 @@
 #define SAILFISH_CLIENT_PC_MESSAGEPARSER_H
 
 #include <QObject>
+#include <memory>
 
 #include "messages.pb.h"
 
@@ -19,7 +20,7 @@ namespace rgaa {
     class MessageParser : public QObject {
     public:
 
-        void ParseMessage(const std::string& msg);
+        std::shared_ptr<NetMessage> ParseMessage(const std::string& msg);
 
         void SetOnVideoFrameCallback(OnVideoFrameCallback cbk);
 

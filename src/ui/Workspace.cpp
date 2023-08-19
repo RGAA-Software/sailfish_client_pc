@@ -16,6 +16,7 @@
 #include "sdk/SailfishSDK.h"
 #include "sdk/RawImage.h"
 #include "rgaa_common/RLog.h"
+#include "messages.pb.h"
 
 namespace rgaa {
 
@@ -23,7 +24,8 @@ namespace rgaa {
         context_ = ctx;
         stream_item_ = item;
         settings_ = Settings::Instance();
-        resize(settings_->GetWSWidth(), settings_->GetWSHeight());
+
+        sdk_ = std::make_shared<SailfishSDK>(stream_item_);
 
         auto widget = new QWidget(this);
         auto layout = new QVBoxLayout();
@@ -31,12 +33,14 @@ namespace rgaa {
         auto render_type = settings_->GetVideoRenderType();
         if (render_type == VideoRenderType::kOpenGL) {
             gl_video_widget_ = new OpenGLVideoWidget(context_, RawImageFormat::kI420, this);
-            gl_video_widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1));
+            gl_video_widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
             layout->addWidget(gl_video_widget_);
         }
         else if (render_type == VideoRenderType::kSDL) {
-            sdl_video_widget_ = new SDLVideoWidget(context_, RawImageFormat::kI420, this);
-            sdl_video_widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1));
+            int default_dup_idx = 0;
+            sdl_video_widget_ = new SDLWidgetWrapper(context_, sdk_, default_dup_idx, RawImageFormat::kI420, this);
+            video_widgets_.insert(std::make_pair(default_dup_idx, sdl_video_widget_));
+            sdl_video_widget_->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
             layout->addWidget(sdl_video_widget_);
         }
         else if (render_type == VideoRenderType::kTestQPixmap) {
@@ -47,6 +51,8 @@ namespace rgaa {
         widget->setLayout(layout);
 
         setCentralWidget(widget);
+        this->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
+        showMaximized();
     }
 
     Workspace::~Workspace() {
@@ -55,11 +61,28 @@ namespace rgaa {
 
     void Workspace::Run() {
 
-        sdk_ = std::make_shared<SailfishSDK>(stream_item_);
+        sdk_->RegisterConfigCallback([=, this](const std::shared_ptr<NetMessage>& msg) {
+            auto config = msg->config();
+            int screen_size = config.screen_size();
+            LOGI("Screen size : {}", screen_size);
+            QMetaObject::invokeMethod(this, [=]() {
+                for (int dup_idx = 1; dup_idx < screen_size; dup_idx++) {
+                    auto widget = new SDLWidgetWrapper(context_, sdk_, dup_idx, RawImageFormat::kI420, nullptr);
+                    widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
+                    video_widgets_[dup_idx] = widget;
+                    widget->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
+                    widget->showMaximized();
+                }
+            });
+        });
+
         sdk_->RegisterVideoFrameDecodedCallback([=, this](int dup_idx, const std::shared_ptr<RawImage>& image) {
-            if (dup_idx != 0) {
+            if (video_widgets_.find(dup_idx) == video_widgets_.end()) {
                 return;
             }
+
+            auto video_widget = video_widgets_[dup_idx];
+
             auto render_type = settings_->GetVideoRenderType();
             if (render_type == VideoRenderType::kOpenGL && gl_video_widget_) {
                 gl_video_widget_->RefreshI420Image(image);
@@ -68,8 +91,8 @@ namespace rgaa {
 
             QMetaObject::invokeMethod(this, [=, this](){
                 if (render_type == VideoRenderType::kSDL && sdl_video_widget_) {
-                    sdl_video_widget_->Init(image->img_width, image->img_height);
-                    sdl_video_widget_->RefreshI420Image(image);
+                    video_widget->widget_->Init(image->img_width, image->img_height);
+                    video_widget->widget_->RefreshI420Image(image);
                 }
                 else if (render_type == VideoRenderType::kTestQPixmap && qt_video_label_) {
                     QImage to_image((uint8_t*)image->img_buf, image->img_width, image->img_height, QImage::Format_RGB888);
@@ -85,7 +108,7 @@ namespace rgaa {
         show();
     }
 
-    void Workspace::OnMouseKeyboardEventCallback(const std::shared_ptr<NetMessage>& msg) {
+    void Workspace::OnMouseKeyboardEventCallback(int dup_idx, const std::shared_ptr<NetMessage>& msg) {
         if (sdk_) {
             sdk_->PostNetMessage(msg);
         }
@@ -101,10 +124,13 @@ namespace rgaa {
         QWidget::closeEvent(event);
         Exit();
 
-        if (sdl_video_widget_) {
-            sdl_video_widget_->Exit();
-            LOGI("Exit sdl video widget..");
+        for (auto& [k, v] : video_widgets_) {
+            v->widget_->Exit();
+            if (k != 0) {
+                v->deleteLater();
+            }
         }
+        LOGI("Exit sdl video widget..");
 
         if (close_cbk_) {
             close_cbk_();

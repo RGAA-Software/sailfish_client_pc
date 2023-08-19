@@ -49,7 +49,18 @@ namespace rgaa {
         LOGI("Will connect to {} {} ", stream_item_.stream_host, stream_item_.stream_port);
         ws_client_ = std::make_shared<WSClient>(stream_item_.stream_host, stream_item_.stream_port);
         ws_client_->SetOnMessageCallback([this](const std::string& msg) {
-            msg_parser_->ParseMessage(msg);
+            auto net_msg = msg_parser_->ParseMessage(msg);
+            if (!net_msg) {
+                return;
+            }
+
+            if (net_msg->has_config()) {
+                ParseConfig(net_msg);
+                if (config_msg_cbk_) {
+                    config_msg_cbk_(net_msg);
+                }
+            }
+
         });
 
         ws_client_->Connect();
@@ -111,6 +122,19 @@ namespace rgaa {
 
     void SailfishSDK::RegisterVideoFrameDecodedCallback(OnVideoFrameDecodedCallback cbk) {
         video_frame_cbk_ = std::move(cbk);
+    }
+
+    void SailfishSDK::RegisterConfigCallback(OnNetMessageCallback&& cbk) {
+        config_msg_cbk_ = std::move(cbk);
+    }
+
+    void SailfishSDK::ParseConfig(const std::shared_ptr<NetMessage>& msg) {
+        const auto& config = msg->config();
+        stream_config_.screen_size = config.screen_size();
+    }
+
+    StreamConfig SailfishSDK::GetStreamConfig() {
+        return stream_config_;
     }
 
     void SailfishSDK::Exit() {

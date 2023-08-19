@@ -12,10 +12,10 @@
 
 namespace rgaa {
 
-    void MessageParser::ParseMessage(const std::string& msg) {
+    std::shared_ptr<NetMessage> MessageParser::ParseMessage(const std::string& msg) {
         auto net_msg = std::make_shared<NetMessage>();
         if (!net_msg->ParseFromString(msg)) {
-            return;
+            return nullptr;
         }
 
         auto type = net_msg->type();
@@ -42,7 +42,7 @@ namespace rgaa {
                     audio_player_ = std::make_shared<AudioPlayer>();
                     audio_player_->Init(samples, channels);
                 });
-                return;
+                return net_msg;
             }
 
             const auto& audio_data = frame.data();
@@ -58,6 +58,8 @@ namespace rgaa {
             auto heart_beat = net_msg->heart_beat();
             //LOGI("Heart beat : {}", heart_beat.index());
         }
+
+        return net_msg;
     }
 
     void MessageParser::SetOnVideoFrameCallback(OnVideoFrameCallback cbk) {

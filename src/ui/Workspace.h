@@ -19,6 +19,7 @@ namespace rgaa {
     class Context;
     class SailfishSDK;
     class NetMessage;
+    class SDLWidgetWrapper;
 
     using OnCloseCallback = std::function<void()>;
 
@@ -37,7 +38,7 @@ namespace rgaa {
 
     private:
 
-        void OnMouseKeyboardEventCallback(const std::shared_ptr<NetMessage>& msg);
+        void OnMouseKeyboardEventCallback(int dup_idx, const std::shared_ptr<NetMessage>& msg);
 
     private:
 
@@ -47,8 +48,10 @@ namespace rgaa {
         Settings* settings_ = nullptr;
 
         OpenGLVideoWidget* gl_video_widget_ = nullptr;
-        SDLVideoWidget* sdl_video_widget_ = nullptr;
+        SDLWidgetWrapper* sdl_video_widget_ = nullptr;
         QLabel* qt_video_label_ = nullptr;
+
+        std::map<int, SDLWidgetWrapper*> video_widgets_;
 
         OnCloseCallback close_cbk_;
 

@@ -104,8 +104,8 @@ namespace rgaa {
             if (workspaces_.find(stream_id) != workspaces_.end()) {
                 workspaces_[stream_id].reset();
                 workspaces_.erase(stream_id);
+                LOGI("Workspace closed, stream id : {}", stream_id);
             }
-            LOGI("Workspace closed...");
         });
         workspace->Run();
 

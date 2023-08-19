@@ -5,14 +5,15 @@
 #include "rgaa_common/RThread.h"
 #include "rgaa_common/RLog.h"
 //#include "statistics/Statistics.h"
+#include "sdk/SailfishSDK.h"
 
 #include <QMouseEvent>
 
 namespace rgaa
 {
 
-	SDLVideoWidget::SDLVideoWidget(std::shared_ptr<Context> ctx, RawImageFormat format, QWidget* parent) 
-		: VideoWidget(parent), VideoWidgetEvent(ctx) {
+	SDLVideoWidget::SDLVideoWidget(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, RawImageFormat format, QWidget* parent)
+		: VideoWidget(sdk, dup_idx, parent), VideoWidgetEvent(ctx, sdk, dup_idx) {
 		this->context = ctx;
 		this->format = format;
 
@@ -100,16 +101,16 @@ namespace rgaa
 		VideoWidget::resizeEvent(event);
 		VideoWidgetEvent::OnWidgetResize(event->size().width(), event->size().height());
 
-        auto current_time = GetCurrentTimestamp();
-        auto time_diff = current_time - last_refresh_image_time_;
-        LOGI("resize : {} {} {}ms", event->size().width(), event->size().height(), time_diff);
-
-        if ( time_diff > 20
-            && last_refresh_image_time_ > 0
-            && last_refresh_image_) {
-            RefreshI420Image(last_refresh_image_);
-            LOGI("Update in resize event...");
-        }
+//        auto current_time = GetCurrentTimestamp();
+//        auto time_diff = current_time - last_refresh_image_time_;
+//        LOGI("resize : {} {} {}ms", event->size().width(), event->size().height(), time_diff);
+//
+//        if ( time_diff > 20
+//            && last_refresh_image_time_ > 0
+//            && last_refresh_image_) {
+//            RefreshI420Image(last_refresh_image_);
+//            LOGI("Update in resize event...");
+//        }
 	}
 
 	void SDLVideoWidget::mouseMoveEvent(QMouseEvent* e) {

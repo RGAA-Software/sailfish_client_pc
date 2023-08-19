@@ -3,13 +3,18 @@
 namespace rgaa
 {
 
-	VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent) {
-
+	VideoWidget::VideoWidget(const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, QWidget* parent) : QWidget(parent) {
+        this->sdk_ = sdk;
+        this->dup_idx_ = dup_idx;
 	}
 
 	VideoWidget::~VideoWidget() {
 
 	}
+
+    int VideoWidget::GetDupIdx() {
+        return dup_idx_;
+    }
 
 	void VideoWidget::RefreshNV12Image(const std::shared_ptr<RawImage>& image) {
 					  

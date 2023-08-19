@@ -12,13 +12,14 @@ namespace rgaa {
 	class Context;
     class NetMessage;
     class QtKeyConverter;
+    class SailfishSDK;
 
-    using OnMouseKeyboardEventCallback = std::function<void(const std::shared_ptr<NetMessage>& msg)>;
+    using OnMouseKeyboardEventCallback = std::function<void(int dup_idx, const std::shared_ptr<NetMessage>& msg)>;
 
 	class VideoWidgetEvent {
 	public:
 		
-		VideoWidgetEvent(const std::shared_ptr<Context>& ctx);
+		VideoWidgetEvent(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx);
 		virtual ~VideoWidgetEvent();
 
 		int GetMouseKey(QMouseEvent* e);
@@ -32,11 +33,13 @@ namespace rgaa {
 		void OnKeyPressEvent(QKeyEvent* event);
 		void OnKeyReleaseEvent(QKeyEvent* event);
 
-        void RegisterMouseKeyboardEventCallback(OnMouseKeyboardEventCallback cbk);
+        void RegisterMouseKeyboardEventCallback(const OnMouseKeyboardEventCallback& cbk);
 
     private:
 
         void SendCallback(const std::shared_ptr<NetMessage>& msg);
+
+        float CalculateX(int x);
 
     protected:
 		
@@ -53,6 +56,9 @@ namespace rgaa {
 
         OnMouseKeyboardEventCallback event_cbk_;
 
+        std::shared_ptr<SailfishSDK> sdk_ = nullptr;
+        int dup_idx_ = 0;
+        int screen_size_ = 0;
 	};
 
 }

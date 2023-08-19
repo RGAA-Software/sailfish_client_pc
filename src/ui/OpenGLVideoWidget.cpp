@@ -22,7 +22,7 @@ namespace rgaa
 {
 
 	OpenGLVideoWidget::OpenGLVideoWidget(std::shared_ptr<Context> ctx, RawImageFormat format, QWidget* parent) 
-		: QOpenGLWidget(parent), VideoWidgetEvent(ctx) {
+		: QOpenGLWidget(parent), VideoWidgetEvent(ctx, nullptr, 0) {
 		context = ctx;
 		raw_image_format = format;
 //		statistics = Statistics::Instance();
