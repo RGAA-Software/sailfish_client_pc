@@ -71,6 +71,9 @@ namespace rgaa
 			buf + y_buf_size + uv_buf_size, uv_buf_size, // v
 			image->img_width, image->img_height
 		);
+
+        last_refresh_image_time_ = GetCurrentTimestamp();
+        last_refresh_image_ = image;
 	}
 
 	void SDLVideoWidget::RefreshI420Buffer(const char* y_buf, int y_buf_size, const char* u_buf, int u_buf_size, const char* v_buf, int v_buf_size, int width, int height) {
@@ -96,7 +99,17 @@ namespace rgaa
 	void SDLVideoWidget::resizeEvent(QResizeEvent* event) {
 		VideoWidget::resizeEvent(event);
 		VideoWidgetEvent::OnWidgetResize(event->size().width(), event->size().height());
-        LOGI("resize : {} {} ", event->size().width(), event->size().height());
+
+        auto current_time = GetCurrentTimestamp();
+        auto time_diff = current_time - last_refresh_image_time_;
+        LOGI("resize : {} {} {}ms", event->size().width(), event->size().height(), time_diff);
+
+        if ( time_diff > 20
+            && last_refresh_image_time_ > 0
+            && last_refresh_image_) {
+            RefreshI420Image(last_refresh_image_);
+            LOGI("Update in resize event...");
+        }
 	}
 
 	void SDLVideoWidget::mouseMoveEvent(QMouseEvent* e) {

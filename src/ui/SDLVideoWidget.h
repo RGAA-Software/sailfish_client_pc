@@ -56,6 +56,8 @@ namespace rgaa {
 
 //		Statistics* statistics = nullptr;
 
+        std::shared_ptr<RawImage> last_refresh_image_ = nullptr;
+        uint64_t last_refresh_image_time_ = 0;
 	};
 
 }
