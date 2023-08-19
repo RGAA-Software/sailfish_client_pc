@@ -11,22 +11,37 @@
 #include <QClipboard>
 #include <QApplication>
 #include <QMimeData>
+#include <QString>
+
+#include <atomic>
 
 namespace rgaa {
 
     class SailfishSDK;
 
     class ClipboardManager : public QObject {
+        //Q_OBJECT
     public:
 
         explicit ClipboardManager(const std::shared_ptr<SailfishSDK>& ctx);
         ~ClipboardManager();
 
         void Init();
+        void SetText(const QString& msg);
+
+    private slots:
+        void OnClipboardDataChanged();
+
+    private:
+
+        void StartMonitoringClipboard();
+        void StopMonitoringClipboard();
 
     private:
 
         std::shared_ptr<SailfishSDK> sdk_ = nullptr;
+
+        QClipboard* clipboard_ = nullptr;
 
     };
 

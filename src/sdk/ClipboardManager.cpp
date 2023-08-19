@@ -7,10 +7,11 @@
 #include "SailfishSDK.h"
 #include "rgaa_common/RLog.h"
 #include <QObject>
+#include <QTimer>
 
 namespace rgaa {
 
-    ClipboardManager::ClipboardManager(const std::shared_ptr<SailfishSDK>& sdk) {
+    ClipboardManager::ClipboardManager(const std::shared_ptr<SailfishSDK> &sdk) {
         this->sdk_ = sdk;
     }
 
@@ -19,16 +20,40 @@ namespace rgaa {
     }
 
     void ClipboardManager::Init() {
+        clipboard_ = QApplication::clipboard();
+        StartMonitoringClipboard();
 
+
+        SetText("This is text...");
+    }
+
+    void ClipboardManager::OnClipboardDataChanged() {
         QClipboard *clipboard = QApplication::clipboard();
-        clipboard->setText("hello，我是QT复制到剪切板的文本.");
-        QObject::connect(clipboard, &QClipboard::dataChanged, this, [=, this] () {
-            auto text = clipboard->text();
-            if (!text.isEmpty()) {
-                LOGI("clip board : {}", text.toStdString());
-                return;
-            }
+        auto text = clipboard->text();
+        if (text.isEmpty()) {
+            return;
+        }
+
+        LOGI("clip board : {} {}", text.toStdString(), (void*)this);
+    }
+
+    void ClipboardManager::SetText(const QString &msg) {
+        QTimer::singleShot(0, this, [=, this](){
+            StopMonitoringClipboard();
+            clipboard_->setText(msg);
+            StartMonitoringClipboard();
         });
     }
 
+    void ClipboardManager::StartMonitoringClipboard() {
+        QTimer::singleShot(0, this, [=, this]() {
+            connect(clipboard_, &QClipboard::dataChanged, this,
+                             &ClipboardManager::OnClipboardDataChanged);
+        });
+    }
+
+    void ClipboardManager::StopMonitoringClipboard() {
+        disconnect(clipboard_, &QClipboard::dataChanged, this,
+                            &ClipboardManager::OnClipboardDataChanged);
+    }
 }
