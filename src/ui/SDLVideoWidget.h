@@ -86,9 +86,16 @@ namespace rgaa {
             widget_ = new SDLVideoWidget(ctx, sdk, dup_idx, format, this);
             layout->addWidget(widget_);
             setLayout(layout);
+
+            setAcceptDrops(true);
         }
 
+    protected:
+
         void closeEvent(QCloseEvent *event) override;
+        void dragEnterEvent(QDragEnterEvent *event) override;
+        void dragLeaveEvent(QDragLeaveEvent *event) override;
+        void dropEvent(QDropEvent *event) override;
 
     public:
 

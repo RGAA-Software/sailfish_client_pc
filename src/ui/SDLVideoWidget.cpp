@@ -11,6 +11,7 @@
 
 #include <QMouseEvent>
 #include <QString>
+#include <QMimeData>
 
 namespace rgaa
 {
@@ -188,5 +189,27 @@ namespace rgaa
         auto msg = CloseWorkspace::Make();
         context_->SendAppMessage(msg);
     }
+
+    void SDLWidgetWrapper::dragEnterEvent(QDragEnterEvent *event) {
+        if (event->mimeData()->hasUrls()) {
+            event->acceptProposedAction();
+        }
+    }
+
+    void SDLWidgetWrapper::dragLeaveEvent(QDragLeaveEvent *event) {
+
+    }
+
+    void SDLWidgetWrapper::dropEvent(QDropEvent *event) {
+        if (!event->mimeData()->hasUrls()) {
+            return;
+        }
+
+        auto urls = event->mimeData()->urls();
+        for (auto& url : urls) {
+            LOGI("URL : {}", url.toLocalFile().toStdString());
+        }
+    }
+
 
 }
