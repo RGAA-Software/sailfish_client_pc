@@ -19,8 +19,9 @@
 
 namespace rgaa {
 
-    Workspace::Workspace(const std::shared_ptr<Context>& ctx) : QMainWindow(nullptr) {
+    Workspace::Workspace(const std::shared_ptr<Context>& ctx, const StreamItem& item) : QMainWindow(nullptr) {
         context_ = ctx;
+        stream_item_ = item;
         settings_ = Settings::Instance();
         resize(settings_->GetWSWidth(), settings_->GetWSHeight());
 
@@ -54,7 +55,7 @@ namespace rgaa {
 
     void Workspace::Run() {
 
-        sdk_ = std::make_shared<SailfishSDK>();
+        sdk_ = std::make_shared<SailfishSDK>(stream_item_);
         sdk_->RegisterVideoFrameDecodedCallback([=, this](int dup_idx, const std::shared_ptr<RawImage>& image) {
             if (dup_idx != 0) {
                 return;
@@ -112,6 +113,10 @@ namespace rgaa {
 
     void Workspace::SetOnCloseCallback(OnCloseCallback cbk) {
         close_cbk_ = std::move(cbk);
+    }
+
+    StreamItem Workspace::GetStreamItem() {
+        return stream_item_;
     }
 
 }

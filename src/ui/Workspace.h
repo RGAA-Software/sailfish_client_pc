@@ -9,6 +9,8 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QLabel>
 
+#include "sdk/StreamItem.h"
+
 namespace rgaa {
 
     class Settings;
@@ -22,7 +24,7 @@ namespace rgaa {
 
     class Workspace : public QMainWindow {
     public:
-        Workspace(const std::shared_ptr<Context>& ctx);
+        Workspace(const std::shared_ptr<Context>& ctx, const StreamItem& item);
         ~Workspace();
 
         void Run();
@@ -30,6 +32,8 @@ namespace rgaa {
 
         void SetOnCloseCallback(OnCloseCallback cbk);
         void closeEvent(QCloseEvent *event) override;
+
+        StreamItem GetStreamItem();
 
     private:
 
@@ -47,6 +51,8 @@ namespace rgaa {
         QLabel* qt_video_label_ = nullptr;
 
         OnCloseCallback close_cbk_;
+
+        StreamItem stream_item_;
 
     };
 

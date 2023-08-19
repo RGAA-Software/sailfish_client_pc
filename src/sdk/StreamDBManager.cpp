@@ -5,6 +5,7 @@
 #include "StreamDBManager.h"
 
 #include <QUuid>
+#include <QRandomGenerator>
 
 #include <vector>
 #include <sqlite3.h>
@@ -47,7 +48,9 @@ namespace rgaa {
                 make_column("app_args", &StreamItem::app_args),
                 make_column("auto_exit", &StreamItem::auto_exit),
                 make_column("auto_exit_period", &StreamItem::auto_exit_period),
-                make_column("enable_multi_players", &StreamItem::enable_multi_players)
+                make_column("enable_multi_players", &StreamItem::enable_multi_players),
+                make_column("bg_color", &StreamItem::bg_color),
+                make_column("encode_fps", &StreamItem::encode_fps)
             )
         );
         return st;
@@ -92,7 +95,9 @@ namespace rgaa {
 				app_args               TEXT,
 				auto_exit              INTEGER,
 				auto_exit_period       INTEGER,
-				enable_multi_players   INTEGER
+				enable_multi_players   INTEGER,
+                bg_color               INTEGER,
+                encode_fps             INTEGER
 			);
 		)";
 
@@ -110,6 +115,7 @@ namespace rgaa {
 
     void StreamDBManager::AddStream(StreamItem& stream) {
         stream.stream_id = GenUUID();
+        stream.bg_color = RandomColor();
         using Storage = decltype(GetStorageTypeValue());
         auto storage = std::any_cast<Storage>(db_storage);
         storage.insert(stream);
@@ -141,5 +147,17 @@ namespace rgaa {
         QString str_id = id.toString();
         str_id.remove("{").remove("}").remove("-");
         return str_id.toStdString();
+    }
+
+    int StreamDBManager::RandomColor() {
+        // Colors form [Claude Monet]'s arts
+        static std::vector<int> colors = {
+                0xBFC8D7, 0xE2D2D2, 0xE3E2B4, 0xA2B59F,
+                0xF7EAE2, 0xEADB80, 0xAEDDEF, 0xE1B4D3,
+                0xE1F1E7, 0xB2D3C5, 0xCFDD8E, 0xE4BEB3,
+                0xF2EEE5, 0xE5C1C5, 0xC3E2DD, 0x6ECEDA,
+        };
+        int random_idx = QRandomGenerator::global()->bounded(0, (int)colors.size());
+        return colors.at(random_idx);
     }
 }

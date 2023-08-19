@@ -19,6 +19,7 @@
 #include "Context.h"
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
+#include "WidgetHelper.h"
 
 namespace rgaa {
 
@@ -42,6 +43,7 @@ namespace rgaa {
         auto root_layout = new QVBoxLayout(this);
         root_layout->setSpacing(0);
         root_layout->setContentsMargins(0,0,0,0);
+        WidgetHelper::ClearMargin(root_layout);
 
         // 1. app menu
         auto app_menu = new AppMenu(context_, this);
@@ -53,6 +55,7 @@ namespace rgaa {
 
         // 2. stream list
         auto stream_list = new AppStreamList(context_, this);
+        stream_list_ = stream_list;
         root_layout->addWidget(stream_list);
 
         root_widget->setLayout(root_layout);
@@ -60,7 +63,9 @@ namespace rgaa {
     }
 
     void Application::Init() {
-
+        stream_list_->SetOnItemDoubleClickedCallback([=, this](const StreamItem& item) {
+            StartStreaming(item);
+        });
     }
 
     void Application::LoadStyle(const std::string &name) {
@@ -92,14 +97,19 @@ namespace rgaa {
         qDebug() << "用时:" << time.elapsed();
     }
 
-    void Application::StartStreaming() {
-        workspace_ = std::make_shared<Workspace>(context_);
-        workspace_->SetOnCloseCallback([=, this]() {
-            workspace_.reset();
-            workspace_ = nullptr;
+    void Application::StartStreaming(const StreamItem& item) {
+        std::shared_ptr<Workspace> workspace = std::make_shared<Workspace>(context_, item);
+        workspace->SetOnCloseCallback([=, this]() {
+            auto stream_id = workspace->GetStreamItem().stream_id;
+            if (workspaces_.find(stream_id) != workspaces_.end()) {
+                workspaces_[stream_id].reset();
+                workspaces_.erase(stream_id);
+            }
             LOGI("Workspace closed...");
         });
-        workspace_->Run();
+        workspace->Run();
+
+        workspaces_.insert(std::make_pair(item.stream_id, workspace));
     }
 
 }

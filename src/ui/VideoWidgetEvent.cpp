@@ -97,7 +97,7 @@ namespace rgaa {
 
 	void VideoWidgetEvent::OnKeyPressEvent(QKeyEvent* e) {
         int vk = key_converter_->ToVK(e->key());
-        LOGI("Key pressed , vk : {}", vk);
+        //LOGI("Key pressed , vk : {}", vk);
         int num_lock_state;
         int caps_lock_state;
 #ifdef WIN32

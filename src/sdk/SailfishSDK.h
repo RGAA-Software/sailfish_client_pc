@@ -9,6 +9,8 @@
 #include <memory>
 #include <functional>
 
+#include "StreamItem.h"
+
 namespace rgaa {
 
     class WSClient;
@@ -18,14 +20,13 @@ namespace rgaa {
     class RawImage;
     class NetMessage;
     class Timer;
-    class StreamItem;
 
     using OnVideoFrameDecodedCallback = std::function<void(int dup_idx, const std::shared_ptr<RawImage>&)>;
 
     class SailfishSDK {
     public:
 
-        SailfishSDK();
+        SailfishSDK(const StreamItem& item);
         ~SailfishSDK();
 
         void Init();
@@ -55,6 +56,8 @@ namespace rgaa {
         std::vector<size_t> timer_ids_;
 
         uint64_t heart_beat_idx_ = 0;
+
+        StreamItem stream_item_;
 
     };
 

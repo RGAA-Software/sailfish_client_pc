@@ -86,6 +86,10 @@ namespace rgaa {
         // all players can operate the same game/app/monitor
         int enable_multi_players = true;
 
+        int bg_color = 0;
+
+        int encode_fps;
+
     };
 
 }

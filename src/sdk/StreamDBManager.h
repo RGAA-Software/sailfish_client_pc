@@ -28,6 +28,7 @@ namespace rgaa {
         void UpdateStream(const StreamItem& stream);
         std::vector<StreamItem> GetAllStreams();
         void DeleteStream(int id);
+        int RandomColor();
 
     private:
 

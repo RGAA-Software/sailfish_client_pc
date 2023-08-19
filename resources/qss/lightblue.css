@@ -440,8 +440,9 @@ QScrollArea{
 border:0px;
 }
 
+/* border:1px solid #C0DCF2; */
 QTreeView,QListView,QTableView,QTabWidget::pane{
-border:1px solid #C0DCF2;
+border:0px solid #C0DCF2;
 selection-background-color:#F2F9FF;
 selection-color:#386487;
 alternate-background-color:#DAEFFF;
@@ -462,12 +463,14 @@ QTreeView,QListView,QTableView,QSplitter::handle,QTreeView::branch{
 background:#EAF7FF;
 }
 
-QTableView::item:selected,QListView::item:selected,QTreeView::item:selected{
+/*QTableView::item:selected,QListView::item:selected,QTreeView::item:selected{*/
+QTableView::item:selected,QTreeView::item:selected{
 color:#386487;
 background:#C0DEF6;
 }
 
-QTableView::item:hover,QListView::item:hover,QTreeView::item:hover,QHeaderView,QHeaderView::section,QTableCornerButton:section{
+/*QTableView::item:hover,QListView::item:hover,QTreeView::item:hover,QHeaderView,QHeaderView::section,QTableCornerButton:section{*/
+QTableView::item:hover,QTreeView::item:hover,QHeaderView,QHeaderView::section,QTableCornerButton:section{
 color:#386487;
 background:#DAEFFF;
 }

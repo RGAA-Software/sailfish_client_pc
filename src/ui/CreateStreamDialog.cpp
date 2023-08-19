@@ -191,7 +191,7 @@ namespace rgaa {
 
     bool CreateStreamDialog::GenStream() {
         auto host = ed_host_->text().toStdString();
-        auto port = std::atoi(ed_host_->text().toStdString().c_str());
+        auto port = std::atoi(ed_port_->text().toStdString().c_str());
         auto name = ed_name_->text().toStdString();
         auto bitrate = std::atoi(ed_bitrate_->text().toStdString().c_str());
 
@@ -206,6 +206,7 @@ namespace rgaa {
         item.stream_host = host;
         item.stream_port = port;
         item.encode_bps = bitrate;
+        item.encode_fps = std::atoi(cb_fps_->currentText().toStdString().c_str());
 
         auto msg = StreamItemAdded::Make(item);
         context_->SendAppMessage(msg);

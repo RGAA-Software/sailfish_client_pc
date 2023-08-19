@@ -16,13 +16,15 @@ namespace rgaa {
     }
 
     void AppMenu::CreateLayout() {
-        setFixedHeight(50);
+        setFixedHeight(60);
+        auto btn_size = QSize(100, 30);
         auto root_layout = new QHBoxLayout(this);
         root_layout->setContentsMargins(0,0,0,0);
         root_layout->setSpacing(0);
 
         auto btn_add = new QPushButton(tr("Add"));
-        btn_add->resize(100, 40);
+        btn_add->setFixedSize(btn_size);
+        root_layout->addSpacing(20);
         root_layout->addWidget(btn_add);
         connect(btn_add, &QPushButton::clicked, this, [=, this]() {
             if (add_cbk_) {
@@ -31,7 +33,8 @@ namespace rgaa {
         });
 
         auto btn_settings = new QPushButton(tr("Settings"));
-        btn_settings->resize(100, 40);
+        btn_settings->setFixedSize(btn_size);
+        root_layout->addSpacing(20);
         root_layout->addWidget(btn_settings);
 
         root_layout->addStretch();

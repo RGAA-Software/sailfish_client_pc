@@ -18,11 +18,14 @@
 #include <QString>
 #include <QPaintEvent>
 
+#include "sdk/StreamItem.h"
+
 namespace rgaa {
 
     class Context;
-    class StreamItem;
     class StreamDBManager;
+
+    using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
 
     class AppStreamList : public QWidget {
     public:
@@ -32,6 +35,7 @@ namespace rgaa {
 
         void paintEvent(QPaintEvent *event) override;
 
+        void SetOnItemDoubleClickedCallback(OnItemDoubleClickedCallback&& cbk);
 
     private:
         QListWidgetItem* AddItem(const StreamItem& item);
@@ -45,6 +49,10 @@ namespace rgaa {
 
     private:
 
+        void DeleteStream(const StreamItem& item);
+
+    private:
+
         std::shared_ptr<Context> context_ = nullptr;
         std::shared_ptr<StreamDBManager> db_mgr_ = nullptr;
         std::vector<StreamItem> streams_;
@@ -52,6 +60,8 @@ namespace rgaa {
         QListWidget* stream_list_ = nullptr;
 
         int stream_added_task_id_ = -1;
+
+        OnItemDoubleClickedCallback dbk_callback_;
 
     };
 

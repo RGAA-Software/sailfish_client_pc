@@ -7,11 +7,14 @@
 
 #include <QtWidgets/QMainWindow>
 
+#include "sdk/StreamItem.h"
+
 namespace rgaa {
 
     class Context;
     class Workspace;
     class Thread;
+    class AppStreamList;
 
     class Application : public QMainWindow {
     public:
@@ -21,7 +24,7 @@ namespace rgaa {
 
     private:
 
-        void StartStreaming();
+        void StartStreaming(const StreamItem& item);
 
         void CreateLayout();
         void Init();
@@ -31,9 +34,8 @@ namespace rgaa {
     private:
 
         std::shared_ptr<Context> context_ = nullptr;
-        std::shared_ptr<Workspace> workspace_ = nullptr;
-
-
+        std::map<std::string, std::shared_ptr<Workspace>> workspaces_;
+        AppStreamList* stream_list_ = nullptr;
 
     };
 

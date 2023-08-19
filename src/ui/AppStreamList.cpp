@@ -15,6 +15,9 @@
 #include "rgaa_common/RMessage.h"
 #include "rgaa_common/RMessageQueue.h"
 #include "rgaa_common/RLog.h"
+#include "WidgetHelper.h"
+#include "MessageDialog.h"
+#include "StreamItemWidget.h"
 
 namespace rgaa {
 
@@ -49,15 +52,16 @@ namespace rgaa {
     void AppStreamList::paintEvent(QPaintEvent *event) {
         QWidget::paintEvent(event);
 
-        QPainter painter(this);
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(QBrush(QColor(0x07a7374)));
-        painter.drawRect(0, 0, width(), height());
+//        QPainter painter(this);
+//        painter.setPen(Qt::NoPen);
+//        painter.setBrush(QBrush(QColor(0x07a7374)));
+//        painter.drawRect(0, 0, width(), height());
 
     }
 
     void AppStreamList::CreateLayout() {
         auto root_layout = new QHBoxLayout(this);
+        WidgetHelper::ClearMargin(root_layout);
 
         auto delegate = new MainItemDelegate(this);
         stream_list_ = new QListWidget(this);
@@ -78,11 +82,17 @@ namespace rgaa {
             RegisterActions(index);
         });
 
-        QObject::connect(stream_list_, &QListWidget::itemDoubleClicked, this, [](QListWidgetItem *item) {
-
+        QObject::connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
+            int index = stream_list_->row(item);
+            StreamItem stream_item = streams_.at(index);
+            if (dbk_callback_) {
+                dbk_callback_(stream_item);
+            }
         });
 
+        root_layout->addSpacing(10);
         root_layout->addWidget(stream_list_);
+        root_layout->addSpacing(10);
 
         setLayout(root_layout);
     }
@@ -126,49 +136,82 @@ namespace rgaa {
     }
 
     void AppStreamList::ProcessAction(int index, const StreamItem& item) {
-
+        if (index == 0) {
+            // start
+        }
+        else if (index == 1) {
+            // stop
+        }
+        else if (index == 3) {
+            // edit
+        }
+        else if (index == 4) {
+            // delete
+            DeleteStream(item);
+        }
     }
 
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
         auto item = new QListWidgetItem(stream_list_);
-        item->setSizeHint(QSize(220, 180));
-        auto widget = new QWidget(stream_list_);
-        widget->setStyleSheet("background:#dddddd;");
+        item->setSizeHint(QSize(220, 145));
+        auto widget = new StreamItemWidget(stream.bg_color, stream_list_);
+
+        auto root_layout = new QVBoxLayout();
+        WidgetHelper::ClearMargin(root_layout);
+        root_layout->setContentsMargins(20, 0, 20, 0);
 
         auto layout = new QVBoxLayout();
+        layout->addStretch();
+        WidgetHelper::ClearMargin(layout);
+        root_layout->addLayout(layout);
 
-        // id
-        auto id = new QLabel(stream_list_);
-        id->setObjectName("st_id");
-        id->setText(stream.stream_id.c_str());
-        layout->addWidget(id);
+        auto gap = 5;
 
         // name
-        auto label = new QLabel(stream_list_);
-        label->setObjectName("st_name");
-        label->setText(stream.stream_name.c_str());
-        layout->addWidget(label);
+        auto name = new QLabel(stream_list_);
+        name->setObjectName("st_name");
+        name->setText(stream.stream_name.c_str());
+        name->setStyleSheet(R"(color:#386487; font-size:14px; font-weight:bold;)");
+        layout->addWidget(name);
 
-        // alive
-        auto alive = new QLabel(stream_list_);
-        alive->setObjectName("st_alive");
-        alive->setText("not alive");
-        layout->addWidget(alive);
+        // host
+        auto host = new QLabel(stream_list_);
+        host->setObjectName("st_host");
+        host->setText(stream.stream_host.c_str());
+        host->setStyleSheet(R"(color:#386487; font-size:14px; )");
+        layout->addSpacing(gap);
+        layout->addWidget(host);
 
-        // pid
-        auto pid = new QLabel(stream_list_);
-        pid->setObjectName("st_pid");
-        pid->setText("Non");
-        layout->addWidget(pid);
+        //
+        auto port = new QLabel(stream_list_);
+        port->setObjectName("st_port");
+        port->setText(std::to_string(stream.stream_port).c_str());
+        port->setStyleSheet(R"(color:#386487; font-size:14px; )");
+        layout->addSpacing(gap);
+        layout->addWidget(port);
 
-        // index
-        auto heart_index = new QLabel(stream_list_);
-        heart_index->setObjectName("st_index");
-        heart_index->setText("0");
-        layout->addWidget(heart_index);
+        //
+        auto bitrate = new QLabel(stream_list_);
+        bitrate->setObjectName("st_bitrate");
+        std::string bt_str = std::to_string(stream.encode_bps) + " Mbps";
+        bitrate->setText(bt_str.c_str());
+        bitrate->setStyleSheet(R"(color:#386487; font-size:14px; )");
+        layout->addSpacing(gap);
+        layout->addWidget(bitrate);
+
+        auto fps = new QLabel(stream_list_);
+        fps->setObjectName("st_fps");
+        std::string fps_str = std::to_string(stream.encode_fps) + " FPS";
+        fps->setText(fps_str.c_str());
+        fps->setStyleSheet(R"(color:#386487; font-size:14px; )");
+        layout->addSpacing(gap);
+        layout->addWidget(fps);
 
         layout->addStretch();
-        widget->setLayout(layout);
+
+        root_layout->addLayout(layout);
+        layout->addSpacing(6);
+        widget->setLayout(root_layout);
         stream_list_->setItemWidget(item, widget);
         return item;
     }
@@ -187,6 +230,22 @@ namespace rgaa {
                 AddItem(stream);
             }
         });
+    }
+
+    void AppStreamList::DeleteStream(const StreamItem& item) {
+        auto alert = MessageDialog::Make(context_, tr("Do you want to *DELETE* the stream ?"));
+        if (alert->exec() == DialogButton::kCancel) {
+            return;
+        }
+
+        auto mgr = context_->GetDBManager();
+        mgr->DeleteStream(item._id);
+
+        LoadStreamItems();
+    }
+
+    void AppStreamList::SetOnItemDoubleClickedCallback(OnItemDoubleClickedCallback&& cbk) {
+        dbk_callback_ = std::move(cbk);
     }
 
 }
