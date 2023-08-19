@@ -21,14 +21,15 @@ namespace rgaa {
     class RawImage;
     class NetMessage;
     class Timer;
+    class ClipboardManager;
 
     using OnVideoFrameDecodedCallback = std::function<void(int dup_idx, const std::shared_ptr<RawImage>&)>;
     using OnNetMessageCallback = std::function<void(const std::shared_ptr<NetMessage>&)>;
 
-    class SailfishSDK {
+    class SailfishSDK : public std::enable_shared_from_this<SailfishSDK> {
     public:
 
-        SailfishSDK(const StreamItem& item);
+        explicit SailfishSDK(const StreamItem& item);
         ~SailfishSDK();
 
         void Init();
@@ -50,7 +51,7 @@ namespace rgaa {
     private:
 
         std::shared_ptr<WSClient> ws_client_ = nullptr;
-
+        std::shared_ptr<ClipboardManager> clipboard_manager_ = nullptr;
         std::shared_ptr<MessageParser> msg_parser_ = nullptr;
 
         std::shared_ptr<Thread> video_decoder_thread_ = nullptr;

@@ -15,6 +15,7 @@
 #include "messages.pb.h"
 #include "MessageMaker.h"
 #include "StreamItem.h"
+#include "ClipboardManager.h"
 
 namespace rgaa {
 
@@ -30,6 +31,9 @@ namespace rgaa {
         video_decoder_thread_ = Thread::Make("video_decoder", 128);
         video_decoder_thread_->Poll();
 
+        clipboard_manager_ = std::make_shared<ClipboardManager>(shared_from_this());
+        clipboard_manager_->Init();
+
         InitTimers();
 
         msg_parser_ = std::make_shared<MessageParser>();
@@ -41,7 +45,6 @@ namespace rgaa {
                 auto raw_image = decoder->Decode(data);
                 if (raw_image && video_frame_cbk_) {
                     video_frame_cbk_(frame.dup_idx(), raw_image);
-                    //LOGI("Decode success: {} x {}", raw_image->img_width, raw_image->img_height);
                 }
             }));
         });
