@@ -18,6 +18,9 @@
 #include "rgaa_common/RLog.h"
 #include "messages.pb.h"
 #include "WidgetHelper.h"
+#include "MessageDialog.h"
+#include "rgaa_common/RMessageQueue.h"
+#include "AppMessage.h"
 
 namespace rgaa {
 
@@ -53,10 +56,15 @@ namespace rgaa {
         }
 
         widget->setLayout(layout);
-
         setCentralWidget(widget);
         this->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
-        showMaximized();
+
+        close_msg_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeCloseWorkspace, [this] (auto& msg) {
+            if (CloseWorkspace()) {
+                this->deleteLater();
+            }
+        }));
+
     }
 
     Workspace::~Workspace() {
@@ -75,7 +83,6 @@ namespace rgaa {
                     widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
                     video_widgets_[dup_idx] = widget;
                     widget->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
-                    widget->showMaximized();
                 }
             });
         });
@@ -122,10 +129,28 @@ namespace rgaa {
         if (sdk_) {
             sdk_->Exit();
         }
+        if (close_msg_task_id_ != -1) {
+            context_->RemoveMessageTask(close_msg_task_id_);
+        }
     }
 
     void Workspace::closeEvent(QCloseEvent *event) {
-        QWidget::closeEvent(event);
+        LOGI("Workspace closeEvent...");
+        if (CloseWorkspace()) {
+            QWidget::closeEvent(event);
+        }
+        else {
+            event->ignore();
+        }
+    }
+
+    bool Workspace::CloseWorkspace() {
+
+        auto dialog = MessageDialog::Make(context_, tr("Do you want to exit the stream ?"));
+        if (dialog->exec() == DialogButton::kCancel) {
+            return false;
+        }
+
         Exit();
 
         for (auto& [k, v] : video_widgets_) {
@@ -139,6 +164,8 @@ namespace rgaa {
         if (close_cbk_) {
             close_cbk_();
         }
+
+        return true;
     }
 
     void Workspace::SetOnCloseCallback(OnCloseCallback cbk) {

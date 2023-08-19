@@ -50,6 +50,7 @@ namespace rgaa {
     private:
 
         void DeleteStream(const StreamItem& item);
+        void NotifyStartStream(const StreamItem& item);
 
     private:
 

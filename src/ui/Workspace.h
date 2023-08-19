@@ -39,6 +39,7 @@ namespace rgaa {
     private:
 
         void OnMouseKeyboardEventCallback(int dup_idx, const std::shared_ptr<NetMessage>& msg);
+        bool CloseWorkspace();
 
     private:
 
@@ -54,6 +55,7 @@ namespace rgaa {
         std::map<int, SDLWidgetWrapper*> video_widgets_;
 
         OnCloseCallback close_cbk_;
+        int close_msg_task_id_ = -1;
 
         StreamItem stream_item_;
 

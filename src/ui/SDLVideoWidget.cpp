@@ -6,6 +6,8 @@
 #include "rgaa_common/RLog.h"
 //#include "statistics/Statistics.h"
 #include "sdk/SailfishSDK.h"
+#include "rgaa_common/RMessageQueue.h"
+#include "AppMessage.h"
 
 #include <QMouseEvent>
 #include <QString>
@@ -176,4 +178,15 @@ namespace rgaa
         }
         SDL_Quit();
     }
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+    void SDLWidgetWrapper::closeEvent(QCloseEvent *event) {
+        //QWidget::closeEvent(event);
+        LOGI("SDLWidgetWrapper closeEvent...");
+
+        auto msg = CloseWorkspace::Make();
+        context_->SendAppMessage(msg);
+    }
+
 }

@@ -12,7 +12,7 @@ namespace rgaa {
 
     constexpr int kCodeTimeout1S = 0x1001;
     constexpr int kCodeStreamAdded = 0x1002;
-
+    constexpr int kCodeCloseWorkspace = 0x1003;
 
     class Timeout1S : public Message {
     public:
@@ -37,6 +37,20 @@ namespace rgaa {
     public:
 
         StreamItem item_;
+    };
+
+    // Close workspace
+    class CloseWorkspace : public Message {
+    public:
+
+        static std::shared_ptr<CloseWorkspace> Make() {
+            return std::make_shared<CloseWorkspace>();
+        }
+
+        explicit CloseWorkspace() : Message(kCodeCloseWorkspace) {
+
+        }
+
     };
 
 }

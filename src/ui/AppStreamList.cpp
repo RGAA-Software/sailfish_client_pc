@@ -85,9 +85,7 @@ namespace rgaa {
         QObject::connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
             int index = stream_list_->row(item);
             StreamItem stream_item = streams_.at(index);
-            if (dbk_callback_) {
-                dbk_callback_(stream_item);
-            }
+            NotifyStartStream(stream_item);
         });
 
         root_layout->addSpacing(10);
@@ -138,6 +136,7 @@ namespace rgaa {
     void AppStreamList::ProcessAction(int index, const StreamItem& item) {
         if (index == 0) {
             // start
+            NotifyStartStream(item);
         }
         else if (index == 1) {
             // stop
@@ -148,6 +147,12 @@ namespace rgaa {
         else if (index == 4) {
             // delete
             DeleteStream(item);
+        }
+    }
+
+    void AppStreamList::NotifyStartStream(const StreamItem& item) {
+        if (dbk_callback_) {
+            dbk_callback_(item);
         }
     }
 
