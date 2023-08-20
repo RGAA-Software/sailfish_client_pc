@@ -33,6 +33,8 @@ namespace rgaa {
         QString title = "Sailfish client window [ 1 ]";
         setWindowTitle(title);
 
+        //QWidget::setCursor(QCursor(Qt::BlankCursor));
+
         sdk_ = std::make_shared<SailfishSDK>(ctx, stream_item_);
 
         //auto widget = new QWidget(this);

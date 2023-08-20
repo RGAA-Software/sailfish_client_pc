@@ -43,6 +43,8 @@ namespace rgaa {
 		void wheelEvent(QWheelEvent* event) override;
 		void keyPressEvent(QKeyEvent* event) override;
 		void keyReleaseEvent(QKeyEvent* event) override;
+        void enterEvent(QEnterEvent *event) override;
+        void leaveEvent(QEvent *event) override;
 
 		void closeEvent(QCloseEvent* event) override;
 
@@ -64,6 +66,8 @@ namespace rgaa {
 		int target_cursor_size_ = 0;
 		int target_x_ = 0;
 		int target_y_ = 0;
+        float target_x_scale_ = 1.0f;
+        float target_y_scale_ = 1.0f;
         SDL_Texture* target_cursor_texture_ = nullptr;
 
 		SDL_Rect sdl_rect_;

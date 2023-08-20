@@ -13,6 +13,7 @@
 #include <QMouseEvent>
 #include <QString>
 #include <QMimeData>
+#include <QApplication>
 
 namespace rgaa
 {
@@ -117,14 +118,13 @@ namespace rgaa
         {
             std::lock_guard<std::mutex> guard(cursor_mtx_);
             if (target_cursor_texture_ && target_cursor_size_ > 0) {
-
-				// test beg //
-//				target_x_ = 0;
-//				target_y_ = 0;
-				// test end //
-
 				SDL_Rect src_rect = {0, 0, target_cursor_size_, target_cursor_size_};
-				SDL_Rect dst_rect = {target_x_, target_y_, target_cursor_size_, target_cursor_size_};
+				SDL_Rect dst_rect = {
+                    (int)(target_x_ * target_x_scale_),
+                    (int)(target_y_ * target_y_scale_),
+                    target_cursor_size_,
+                    target_cursor_size_
+                };
                 SDL_RenderCopy(sdl_renderer_, target_cursor_texture_, &src_rect, &dst_rect);
             }
         }
@@ -140,8 +140,7 @@ namespace rgaa
         }
 
         auto texture = sdl_cursor_textures_[cursor->img_width];
-        SDL_Rect rect;
-
+        //SDL_Rect rect;
         //SDL_UpdateTexture(texture, &rect, cursor->Data(), cursor->img_width * cursor->img_ch);
 
 		void* pixels = nullptr;
@@ -159,6 +158,17 @@ namespace rgaa
 		target_cursor_size_ = cursor->img_width;
 		target_x_ = x;
 		target_y_ = y;
+
+        QScreen* screen = QGuiApplication::primaryScreen();
+        qreal scaleFactor = screen->devicePixelRatio();
+        int after_adapter_width = VideoWidget::width() * scaleFactor;
+        int after_adapter_height = VideoWidget::height() * scaleFactor;
+
+        target_x_scale_ = after_adapter_width * 1.0f / this->frame_width_;
+        target_y_scale_ = after_adapter_height * 1.0f / this->frame_height_;
+
+        LOGI("target x: {} y: {} size: {}, window: {}x{}, frame : {}x{}, after_adapter: {}, after_adapter height ; {}, scale factor: {}", target_x_, target_y_, target_cursor_size_,
+             VideoWidget::width(), VideoWidget::height(), this->frame_width_, this->frame_height_, after_adapter_width, after_adapter_height, scaleFactor);
     }
 
 	void SDLVideoWidget::resizeEvent(QResizeEvent* event) {
@@ -215,6 +225,16 @@ namespace rgaa
 	void SDLVideoWidget::closeEvent(QCloseEvent* event) {
 		VideoWidget::closeEvent(event);
 	}
+
+    void SDLVideoWidget::enterEvent(QEnterEvent *event) {
+        QCursor cursor(Qt::BlankCursor);
+        //QApplication::setOverrideCursor(cursor);
+    }
+
+    void SDLVideoWidget::leaveEvent(QEvent *event) {
+        QCursor cursor(Qt::ArrowCursor);
+        //QApplication::setOverrideCursor(cursor);
+    }
 
     void SDLVideoWidget::Exit() {
         VideoWidget::Exit();
