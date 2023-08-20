@@ -12,6 +12,7 @@
 
 #include "StreamItem.h"
 #include "StreamConfig.h"
+#include "Context.h"
 
 namespace rgaa {
 
@@ -23,6 +24,7 @@ namespace rgaa {
     class NetMessage;
     class Timer;
     class ClipboardManager;
+    class Context;
 
     using OnVideoFrameDecodedCallback = std::function<void(int dup_idx, const std::shared_ptr<RawImage>&)>;
     using OnNetMessageCallback = std::function<void(const std::shared_ptr<NetMessage>&)>;
@@ -30,7 +32,7 @@ namespace rgaa {
     class SailfishSDK : public std::enable_shared_from_this<SailfishSDK> {
     public:
 
-        explicit SailfishSDK(const StreamItem& item);
+        explicit SailfishSDK(const std::shared_ptr<Context> ctx, const StreamItem& item);
         ~SailfishSDK();
 
         void Init();
@@ -71,6 +73,9 @@ namespace rgaa {
 
         std::atomic_bool exit_ = false;
 
+        std::shared_ptr<Context> context_ = nullptr;
+
+        int clipboard_task_id_ = -1;
 
     };
 

@@ -4,10 +4,12 @@
 
 #include "ClipboardManager.h"
 
-#include "SailfishSDK.h"
-#include "rgaa_common/RLog.h"
 #include <QObject>
 #include <QTimer>
+
+#include "SailfishSDK.h"
+#include "rgaa_common/RLog.h"
+#include "MessageMaker.h"
 
 namespace rgaa {
 
@@ -41,6 +43,8 @@ namespace rgaa {
         }
 
         LOGI("clip board : {} {}", text.toStdString(), (void*)this);
+        auto msg = MessageMaker::MakeClipboard(text.toStdString());
+        sdk_->PostNetMessage(msg);
     }
 
     void ClipboardManager::SetText(const QString &msg) {

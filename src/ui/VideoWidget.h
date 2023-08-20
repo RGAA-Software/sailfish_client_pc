@@ -4,6 +4,7 @@
 #include <QMouseEvent>
 #include "messages.pb.h"
 #include <memory>
+#include <atomic>
 
 namespace rgaa
 {
@@ -17,7 +18,10 @@ namespace rgaa
 		VideoWidget(const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, QWidget* parent = nullptr);
 		virtual ~VideoWidget();
 
-        virtual void Exit() {}
+        virtual void Exit() {
+            exit_ = true;
+        }
+
         int GetDupIdx();
 
 	protected:
@@ -30,6 +34,8 @@ namespace rgaa
 		virtual void RefreshI420Buffer(const char* y_buf, int y_buf_size, const char* u_buf, int u_buf_size, const char* v_buf, int v_buf_size, int width, int height);
 
     protected:
+
+        std::atomic_bool exit_ = false;
 
         int dup_idx_ = -1;
 

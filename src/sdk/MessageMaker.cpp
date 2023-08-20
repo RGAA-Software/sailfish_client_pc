@@ -85,4 +85,13 @@ namespace rgaa
         return message;
     }
 
+	std::shared_ptr<NetMessage> MessageMaker::MakeClipboard(const std::string& text) {
+		auto message = std::make_shared<NetMessage>();
+		message->set_type(MessageType::kClipboard);
+		auto clipboard = new Clipboard();
+		clipboard->set_msg(text);
+		message->set_allocated_clipboard(clipboard);
+		return message;
+	}
+
 }

@@ -16,10 +16,13 @@
 #include "MessageMaker.h"
 #include "StreamItem.h"
 #include "ClipboardManager.h"
+#include "rgaa_common/RMessageQueue.h"
+#include "AppMessage.h"
 
 namespace rgaa {
 
-    SailfishSDK::SailfishSDK(const StreamItem& item) {
+    SailfishSDK::SailfishSDK(const std::shared_ptr<Context> ctx, const StreamItem& item) {
+        context_ = ctx;
         stream_item_ = item;
     }
 
@@ -36,7 +39,7 @@ namespace rgaa {
 
         InitTimers();
 
-        msg_parser_ = std::make_shared<MessageParser>();
+        msg_parser_ = std::make_shared<MessageParser>(context_);
         msg_parser_->SetOnVideoFrameCallback([this](const std::shared_ptr<NetMessage>& msg, const VideoFrameSync& frame) {
             InitVideoDecoderIfNeeded(frame.dup_idx(), frame.type(), frame.width(), frame.height());
             auto data = Data::Make(frame.data().data(), frame.data().size());
@@ -63,8 +66,14 @@ namespace rgaa {
                     config_msg_cbk_(net_msg);
                 }
             }
-
         });
+
+        clipboard_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeClipboard, [=, this](auto& msg) {
+            auto target_msg = std::dynamic_pointer_cast<ClipboardMessage>(msg);
+            if (!target_msg) {return;}
+            clipboard_manager_->SetText(target_msg->msg_.c_str());
+            LOGI("clipboard setText : {}", target_msg->msg_);
+        }));
 
         ws_client_->Connect();
     }
@@ -142,6 +151,8 @@ namespace rgaa {
 
     void SailfishSDK::Exit() {
         exit_ = true;
+
+        context_->RemoveMessageTask(clipboard_task_id_);
 
         for (const auto& id : timer_ids_) {
             timer_->remove(id);

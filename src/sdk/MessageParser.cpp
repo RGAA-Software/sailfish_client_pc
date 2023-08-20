@@ -7,10 +7,16 @@
 #include "rgaa_common/RLog.h"
 #include "rgaa_opus_codec/OpusCodec.h"
 #include "AudioPlayer.h"
+#include "AppMessage.h"
+#include "Context.h"
 
 #include <utility>
 
 namespace rgaa {
+
+    MessageParser::MessageParser(const std::shared_ptr<Context>& ctx) {
+        context_ = ctx;
+    }
 
     std::shared_ptr<NetMessage> MessageParser::ParseMessage(const std::string& msg) {
         if (exit_) {
@@ -60,6 +66,12 @@ namespace rgaa {
         else if (type == MessageType::kHeartBeat) {
             auto heart_beat = net_msg->heart_beat();
             //LOGI("Heart beat : {}", heart_beat.index());
+        }
+        else if (type == MessageType::kClipboard) {
+            auto clipboard = net_msg->clipboard();
+            auto text = clipboard.msg();
+            auto msg = ClipboardMessage::Make(text);
+            context_->SendAppMessage(msg);
         }
 
         return net_msg;

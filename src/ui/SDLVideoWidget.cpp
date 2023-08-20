@@ -74,6 +74,9 @@ namespace rgaa
 	}
 
 	void SDLVideoWidget::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
+        if (exit_) {
+            return;
+        }
 		int y_buf_size = image->img_width * image->img_height;
 		int uv_buf_size = y_buf_size / 4;
 		char* buf = image->Data();
@@ -105,6 +108,9 @@ namespace rgaa
 	}
 
     void SDLVideoWidget::Update() {
+        if (exit_) {
+            return;
+        }
         int ret = SDL_RenderClear(sdlRenderer);
         ret = SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
         SDL_RenderPresent(sdlRenderer);
@@ -171,6 +177,9 @@ namespace rgaa
 
     void SDLVideoWidget::Exit() {
         VideoWidget::Exit();
+        if (timer_) {
+            timer_->stop();
+        }
         if (sdlTexture) {
             SDL_DestroyTexture(sdlTexture);
         }

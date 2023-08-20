@@ -5,6 +5,8 @@
 #ifndef SAILFISH_CLIENT_PC_APPMESSAGE_H
 #define SAILFISH_CLIENT_PC_APPMESSAGE_H
 
+#include <utility>
+
 #include "rgaa_common/RMessage.h"
 #include "sdk/StreamItem.h"
 
@@ -14,6 +16,7 @@ namespace rgaa {
     constexpr int kCodeStreamAdded = 0x1002;
     constexpr int kCodeCloseWorkspace = 0x1003;
     constexpr int kCodeClearWorkspace = 0x1004;
+    constexpr int kCodeClipboard = 0x1005;
 
     class Timeout1S : public Message {
     public:
@@ -65,6 +68,19 @@ namespace rgaa {
 
     public:
         StreamItem item_;
+    };
+
+    // Clipboard
+    class ClipboardMessage : public Message {
+    public:
+        static std::shared_ptr<ClipboardMessage> Make(const std::string& msg) {
+            return std::make_shared<ClipboardMessage>(msg);
+        }
+
+        explicit ClipboardMessage(std::string  msg) : Message(kCodeClipboard), msg_(std::move(msg)) {}
+
+    public:
+        std::string msg_;
     };
 
 }

@@ -32,7 +32,7 @@ namespace rgaa {
         QString title = "Sailfish client window [ 1 ]";
         setWindowTitle(title);
 
-        sdk_ = std::make_shared<SailfishSDK>(stream_item_);
+        sdk_ = std::make_shared<SailfishSDK>(ctx, stream_item_);
 
         //auto widget = new QWidget(this);
         auto layout = new QVBoxLayout();

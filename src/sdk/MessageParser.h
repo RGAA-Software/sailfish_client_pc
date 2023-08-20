@@ -17,9 +17,12 @@ namespace rgaa {
 
     class AudioPlayer;
     class Decoder;
+    class Context;
 
     class MessageParser : public QObject {
     public:
+
+        explicit MessageParser(const std::shared_ptr<Context>& ctx);
 
         std::shared_ptr<NetMessage> ParseMessage(const std::string& msg);
 
@@ -33,6 +36,7 @@ namespace rgaa {
 
         std::shared_ptr<Decoder> audio_decoder_ = nullptr;
         std::shared_ptr<AudioPlayer> audio_player_ = nullptr;
+        std::shared_ptr<Context> context_ = nullptr;
 
         bool exit_ = false;
 
