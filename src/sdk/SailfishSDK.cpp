@@ -149,6 +149,10 @@ namespace rgaa {
         return stream_config_;
     }
 
+    std::shared_ptr<MessageParser> SailfishSDK::GetMsgParser() {
+        return msg_parser_;
+    }
+
     void SailfishSDK::Exit() {
         exit_ = true;
 

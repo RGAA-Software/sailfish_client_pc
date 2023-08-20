@@ -6,6 +6,7 @@
 #include "rgaa_common/RLog.h"
 //#include "statistics/Statistics.h"
 #include "sdk/SailfishSDK.h"
+#include "rgaa_common/RData.h"
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
 
@@ -33,8 +34,8 @@ namespace rgaa
 			printf("Could not create window - %s\n", SDL_GetError());
 			return;
 		}
-		sdlRenderer = SDL_CreateRenderer(screen, -1, 0);
-		if (!sdlRenderer) {
+        sdl_renderer_ = SDL_CreateRenderer(screen, -1, 0);
+		if (!sdl_renderer_) {
 			printf("create renderer failed !");
 			return;
 		}
@@ -65,12 +66,12 @@ namespace rgaa
 		this->frame_width_ = frame_width;
 		this->frame_height_ = frame_height;
 
-		sdlTexture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_IYUV, SDL_TEXTUREACCESS_STREAMING, frame_width, frame_height);
-        SDL_SetTextureScaleMode(sdlTexture, SDL_ScaleMode::SDL_ScaleModeBest);
-		sdlRect.x = 0;
-		sdlRect.y = 0;
-		sdlRect.w = frame_width;
-		sdlRect.h = frame_height;
+        sdl_texture_ = SDL_CreateTexture(sdl_renderer_, SDL_PIXELFORMAT_IYUV, SDL_TEXTUREACCESS_STREAMING, frame_width, frame_height);
+        SDL_SetTextureScaleMode(sdl_texture_, SDL_ScaleMode::SDL_ScaleModeBest);
+        sdl_rect_.x = 0;
+        sdl_rect_.y = 0;
+        sdl_rect_.w = frame_width;
+        sdl_rect_.h = frame_height;
 	}
 
 	void SDLVideoWidget::RefreshI420Image(const std::shared_ptr<RawImage>& image) {
@@ -91,10 +92,10 @@ namespace rgaa
 	}
 
 	void SDLVideoWidget::RefreshI420Buffer(const char* y_buf, int y_buf_size, const char* u_buf, int u_buf_size, const char* v_buf, int v_buf_size, int width, int height) {
-		int ret = SDL_UpdateYUVTexture(sdlTexture, NULL,
-			(uint8_t*)y_buf, width,
-			(uint8_t*)u_buf, width/2,
-			(uint8_t*)v_buf, width/2);
+		int ret = SDL_UpdateYUVTexture(sdl_texture_, NULL,
+                                       (uint8_t*)y_buf, width,
+                                       (uint8_t*)u_buf, width/2,
+                                       (uint8_t*)v_buf, width/2);
 
 		render_fps += 1;
 		auto current_time = GetCurrentTimestamp();
@@ -111,14 +112,54 @@ namespace rgaa
         if (exit_) {
             return;
         }
-        int ret = SDL_RenderClear(sdlRenderer);
-        ret = SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
-        SDL_RenderPresent(sdlRenderer);
+        SDL_RenderClear(sdl_renderer_);
+        SDL_RenderCopy(sdl_renderer_, sdl_texture_, nullptr, nullptr);
+        {
+            std::lock_guard<std::mutex> guard(cursor_mtx_);
+            if (target_cursor_texture_ && target_cursor_size_ > 0) {
+
+				// test beg //
+//				target_x_ = 0;
+//				target_y_ = 0;
+				// test end //
+
+				SDL_Rect src_rect = {0, 0, target_cursor_size_, target_cursor_size_};
+				SDL_Rect dst_rect = {target_x_, target_y_, target_cursor_size_, target_cursor_size_};
+                SDL_RenderCopy(sdl_renderer_, target_cursor_texture_, &src_rect, &dst_rect);
+            }
+        }
+        SDL_RenderPresent(sdl_renderer_);
     }
 
-//    QPaintEngine* SDLVideoWidget::paintEngine() const {
-//        return 0;
-//    }
+    void SDLVideoWidget::RefreshCursor(int x, int y, const std::shared_ptr<RawImage>& cursor) {
+        if (sdl_cursor_textures_.find(cursor->img_width) == sdl_cursor_textures_.end()) {
+            auto texture = SDL_CreateTexture(sdl_renderer_, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, cursor->img_width, cursor->img_height);
+			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+            SDL_SetTextureScaleMode(texture, SDL_ScaleMode::SDL_ScaleModeBest);
+            sdl_cursor_textures_[cursor->img_width] = texture;
+        }
+
+        auto texture = sdl_cursor_textures_[cursor->img_width];
+        SDL_Rect rect;
+
+        //SDL_UpdateTexture(texture, &rect, cursor->Data(), cursor->img_width * cursor->img_ch);
+
+		void* pixels = nullptr;
+		int pitch = 0;
+		SDL_LockTexture(texture, nullptr, &pixels, &pitch);
+
+		if (pixels) {
+			memcpy(pixels, cursor->Data(), cursor->Size());
+		}
+
+		SDL_UnlockTexture(texture);
+
+        std::lock_guard<std::mutex> guard(cursor_mtx_);
+        target_cursor_texture_ = texture;
+		target_cursor_size_ = cursor->img_width;
+		target_x_ = x;
+		target_y_ = y;
+    }
 
 	void SDLVideoWidget::resizeEvent(QResizeEvent* event) {
 		VideoWidget::resizeEvent(event);
@@ -180,11 +221,11 @@ namespace rgaa
         if (timer_) {
             timer_->stop();
         }
-        if (sdlTexture) {
-            SDL_DestroyTexture(sdlTexture);
+        if (sdl_texture_) {
+            SDL_DestroyTexture(sdl_texture_);
         }
-        if (sdlRenderer) {
-            SDL_DestroyRenderer(sdlRenderer);
+        if (sdl_renderer_) {
+            SDL_DestroyRenderer(sdl_renderer_);
         }
         if (screen) {
             SDL_DestroyWindow(screen);

@@ -42,6 +42,7 @@ namespace rgaa {
         void RegisterVideoFrameDecodedCallback(OnVideoFrameDecodedCallback cbk);
 
         StreamConfig GetStreamConfig();
+        std::shared_ptr<MessageParser> GetMsgParser();
 
     private:
 

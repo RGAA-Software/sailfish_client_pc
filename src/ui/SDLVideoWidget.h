@@ -12,7 +12,7 @@
 #include <QVBoxLayout>
 
 namespace rgaa {
-	
+
 	class Thread;
 	class Context; 
 	class Statistics;
@@ -27,6 +27,8 @@ namespace rgaa {
 
 		void RefreshI420Image(const std::shared_ptr<RawImage>& image) override;
 		void RefreshI420Buffer(const char* y_buf, int y_buf_size, const char* u_buf, int u_buf_size, const char* v_buf, int v_buf_size, int width, int height) override;
+
+        void RefreshCursor(int x, int y, const std::shared_ptr<RawImage>& cursor);
 
     private:
 
@@ -54,9 +56,17 @@ namespace rgaa {
 		RawImageFormat format;
 
 		SDL_Window* screen = nullptr;
-		SDL_Renderer* sdlRenderer = nullptr;
-		SDL_Texture* sdlTexture = nullptr;
-		SDL_Rect sdlRect;
+		SDL_Renderer* sdl_renderer_ = nullptr;
+		SDL_Texture* sdl_texture_ = nullptr;
+
+        std::mutex cursor_mtx_;
+        std::map<int, SDL_Texture*> sdl_cursor_textures_;
+		int target_cursor_size_ = 0;
+		int target_x_ = 0;
+		int target_y_ = 0;
+        SDL_Texture* target_cursor_texture_ = nullptr;
+
+		SDL_Rect sdl_rect_;
 		
 		bool init = false;
 

@@ -13,11 +13,14 @@
 
 namespace rgaa {
 
-    using OnVideoFrameCallback = std::function<void(const std::shared_ptr<NetMessage>&, const VideoFrameSync&)>;
-
     class AudioPlayer;
     class Decoder;
     class Context;
+    class RawImage;
+
+    using OnVideoFrameCallback = std::function<void(const std::shared_ptr<NetMessage>&, const VideoFrameSync&)>;
+    using OnCursorCallback = std::function<void(int dup_idx, int x, int y, const std::shared_ptr<RawImage>&)>;
+
 
     class MessageParser : public QObject {
     public:
@@ -27,12 +30,14 @@ namespace rgaa {
         std::shared_ptr<NetMessage> ParseMessage(const std::string& msg);
 
         void SetOnVideoFrameCallback(OnVideoFrameCallback cbk);
+        void SetOnCursorCallback(OnCursorCallback cbk);
 
         void Exit();
 
     private:
 
         OnVideoFrameCallback video_frame_cbk_;
+        OnCursorCallback cursor_cbk_;
 
         std::shared_ptr<Decoder> audio_decoder_ = nullptr;
         std::shared_ptr<AudioPlayer> audio_player_ = nullptr;

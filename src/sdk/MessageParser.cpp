@@ -9,6 +9,7 @@
 #include "AudioPlayer.h"
 #include "AppMessage.h"
 #include "Context.h"
+#include "sdk/RawImage.h"
 
 #include <utility>
 
@@ -73,12 +74,24 @@ namespace rgaa {
             auto msg = ClipboardMessage::Make(text);
             context_->SendAppMessage(msg);
         }
+        else if (type == MessageType::kCursorInfo) {
+            auto info = net_msg->cursor_info();
+            //LOGI("x : {}, y : {}, size : {} x {}", info.x(), info.y(), info.width(), info.height());
+            if (cursor_cbk_) {
+                auto raw_image = RawImage::MakeRGBA(const_cast<char *>(info.data().c_str()), info.data().size(), info.width(), info.height());
+                cursor_cbk_(0, info.x(), info.y(), raw_image);
+            }
+        }
 
         return net_msg;
     }
 
     void MessageParser::SetOnVideoFrameCallback(OnVideoFrameCallback cbk) {
         video_frame_cbk_= std::move(cbk);
+    }
+
+    void MessageParser::SetOnCursorCallback(OnCursorCallback cbk) {
+        cursor_cbk_ = std::move(cbk);
     }
 
     void MessageParser::Exit() {
