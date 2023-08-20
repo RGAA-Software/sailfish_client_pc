@@ -7,6 +7,7 @@
 
 #include <QObject>
 #include <memory>
+#include <atomic>
 
 #include "messages.pb.h"
 
@@ -32,6 +33,8 @@ namespace rgaa {
 
         std::shared_ptr<Decoder> audio_decoder_ = nullptr;
         std::shared_ptr<AudioPlayer> audio_player_ = nullptr;
+
+        bool exit_ = false;
 
     };
 

@@ -60,7 +60,7 @@ namespace rgaa {
     }
 
     void AppStreamList::CreateLayout() {
-        auto root_layout = new QHBoxLayout(this);
+        auto root_layout = new QHBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
 
         auto delegate = new MainItemDelegate(this);

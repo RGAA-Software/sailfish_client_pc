@@ -6,6 +6,7 @@
 #include "sdk/RawImage.h"
 #include "VideoWidget.h"
 #include "VideoWidgetEvent.h"
+#include "sdk/StreamItem.h"
 
 #include <SDL2/SDL.h>
 #include <QVBoxLayout>
@@ -73,10 +74,12 @@ namespace rgaa {
 
 
     class SDLWidgetWrapper : public QWidget {
+        Q_OBJECT
     public:
 
-        SDLWidgetWrapper(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, RawImageFormat format, QWidget* parent) {
+        SDLWidgetWrapper(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, const StreamItem& item, int dup_idx, RawImageFormat format, QWidget* parent) {
             this->context_ = ctx;
+			this->item_ = item;
             QString title = "Sailfish client window [ " + QString::number(dup_idx+1) + " ]";
             setWindowTitle(title);
 
@@ -90,6 +93,10 @@ namespace rgaa {
             setAcceptDrops(true);
         }
 
+    signals:
+
+        void OnCloseEvent();
+
     protected:
 
         void closeEvent(QCloseEvent *event) override;
@@ -101,6 +108,8 @@ namespace rgaa {
 
         SDLVideoWidget* widget_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
+
+		StreamItem item_;
 
     };
 

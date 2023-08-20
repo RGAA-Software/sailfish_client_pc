@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <functional>
+#include <atomic>
 
 #include "StreamItem.h"
 #include "StreamConfig.h"
@@ -67,6 +68,9 @@ namespace rgaa {
 
         StreamItem stream_item_;
         StreamConfig stream_config_;
+
+        std::atomic_bool exit_ = false;
+
 
     };
 

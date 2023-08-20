@@ -13,6 +13,9 @@
 namespace rgaa {
 
     std::shared_ptr<NetMessage> MessageParser::ParseMessage(const std::string& msg) {
+        if (exit_) {
+            return nullptr;
+        }
         auto net_msg = std::make_shared<NetMessage>();
         if (!net_msg->ParseFromString(msg)) {
             return nullptr;
@@ -67,6 +70,7 @@ namespace rgaa {
     }
 
     void MessageParser::Exit() {
+        exit_ = true;
         if (audio_decoder_) {
             audio_decoder_.reset();
         }

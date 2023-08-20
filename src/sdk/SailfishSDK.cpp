@@ -43,7 +43,7 @@ namespace rgaa {
             std::shared_ptr<FFmpegVideoDecoder> decoder = GetDecoderByDupIndex(frame.dup_idx());
             video_decoder_thread_->Post(SimpleThreadTask::Make([=, this]() {
                 auto raw_image = decoder->Decode(data);
-                if (raw_image && video_frame_cbk_) {
+                if (raw_image && video_frame_cbk_ && !exit_) {
                     video_frame_cbk_(frame.dup_idx(), raw_image);
                 }
             }));
@@ -115,7 +115,7 @@ namespace rgaa {
     }
 
     void SailfishSDK::HeartBeat() {
-        if (ws_client_) {
+        if (ws_client_ && !exit_ ) {
             heart_beat_idx_++;
             auto msg = MessageMaker::MakeHeartBeat(heart_beat_idx_);
             auto payload = msg->SerializeAsString();
@@ -141,6 +141,8 @@ namespace rgaa {
     }
 
     void SailfishSDK::Exit() {
+        exit_ = true;
+
         for (const auto& id : timer_ids_) {
             timer_->remove(id);
         }

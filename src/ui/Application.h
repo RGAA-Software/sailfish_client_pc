@@ -37,6 +37,9 @@ namespace rgaa {
         std::map<std::string, std::shared_ptr<Workspace>> workspaces_;
         AppStreamList* stream_list_ = nullptr;
 
+        int clear_ws_task_id_ = -1;
+        int close_ws_task_id_ = -1;
+
     };
 
 }

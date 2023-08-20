@@ -21,9 +21,7 @@ namespace rgaa {
     class NetMessage;
     class SDLWidgetWrapper;
 
-    using OnCloseCallback = std::function<void()>;
-
-    class Workspace : public QMainWindow {
+    class Workspace : public QWidget {
     public:
         Workspace(const std::shared_ptr<Context>& ctx, const StreamItem& item);
         ~Workspace();
@@ -31,15 +29,14 @@ namespace rgaa {
         void Run();
         void Exit();
 
-        void SetOnCloseCallback(OnCloseCallback cbk);
         void closeEvent(QCloseEvent *event) override;
 
         StreamItem GetStreamItem();
+        bool CloseWorkspace();
 
     private:
 
         void OnMouseKeyboardEventCallback(int dup_idx, const std::shared_ptr<NetMessage>& msg);
-        bool CloseWorkspace();
 
     private:
 
@@ -49,13 +46,9 @@ namespace rgaa {
         Settings* settings_ = nullptr;
 
         OpenGLVideoWidget* gl_video_widget_ = nullptr;
-        SDLWidgetWrapper* sdl_video_widget_ = nullptr;
         QLabel* qt_video_label_ = nullptr;
 
         std::map<int, SDLWidgetWrapper*> video_widgets_;
-
-        OnCloseCallback close_cbk_;
-        int close_msg_task_id_ = -1;
 
         StreamItem stream_item_;
 

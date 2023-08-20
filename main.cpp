@@ -4,12 +4,15 @@
 #include "ui/Workspace.h"
 #include "Context.h"
 #include "ui/Application.h"
+#include "rgaa_common/RDump.h"
 
 #include <QSurfaceFormat>
 
 using namespace rgaa;
 
 int main(int argc, char** argv) {
+
+    CaptureDump();
 
     QApplication app(argc, argv);
 

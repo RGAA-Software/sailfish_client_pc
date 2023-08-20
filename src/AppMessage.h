@@ -13,13 +13,13 @@ namespace rgaa {
     constexpr int kCodeTimeout1S = 0x1001;
     constexpr int kCodeStreamAdded = 0x1002;
     constexpr int kCodeCloseWorkspace = 0x1003;
+    constexpr int kCodeClearWorkspace = 0x1004;
 
     class Timeout1S : public Message {
     public:
         static std::shared_ptr<Timeout1S> Make() {
             return std::make_shared<Timeout1S>(kCodeTimeout1S);
         }
-
         explicit Timeout1S(int c) : Message(c) {}
     };
 
@@ -42,15 +42,29 @@ namespace rgaa {
     // Close workspace
     class CloseWorkspace : public Message {
     public:
-
-        static std::shared_ptr<CloseWorkspace> Make() {
-            return std::make_shared<CloseWorkspace>();
+        static std::shared_ptr<CloseWorkspace> Make(const StreamItem& item) {
+            return std::make_shared<CloseWorkspace>(item);
+        }
+        explicit CloseWorkspace(const StreamItem& item) : Message(kCodeCloseWorkspace) {
+            this->item_ = item;
         }
 
-        explicit CloseWorkspace() : Message(kCodeCloseWorkspace) {
+    public:
+        StreamItem item_;
+    };
 
+    // Close workspace
+    class ClearWorkspace : public Message {
+    public:
+        static std::shared_ptr<ClearWorkspace> Make(const StreamItem& item) {
+            return std::make_shared<ClearWorkspace>(item);
+        }
+        explicit ClearWorkspace(const StreamItem& item) : Message(kCodeClearWorkspace) {
+            this->item_ = item;
         }
 
+    public:
+        StreamItem item_;
     };
 
 }

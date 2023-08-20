@@ -18,7 +18,7 @@ namespace rgaa {
     void AppMenu::CreateLayout() {
         setFixedHeight(60);
         auto btn_size = QSize(100, 30);
-        auto root_layout = new QHBoxLayout(this);
+        auto root_layout = new QHBoxLayout();
         root_layout->setContentsMargins(0,0,0,0);
         root_layout->setSpacing(0);
 

@@ -24,7 +24,8 @@
 
 namespace rgaa {
 
-    Workspace::Workspace(const std::shared_ptr<Context>& ctx, const StreamItem& item) : QMainWindow(nullptr) {
+    Workspace::Workspace(const std::shared_ptr<Context>& ctx, const StreamItem& item) : QWidget(nullptr) {
+        LOGI("Workspace : {}", (void*)this);
         context_ = ctx;
         stream_item_ = item;
         settings_ = Settings::Instance();
@@ -33,7 +34,7 @@ namespace rgaa {
 
         sdk_ = std::make_shared<SailfishSDK>(stream_item_);
 
-        auto widget = new QWidget(this);
+        //auto widget = new QWidget(this);
         auto layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(layout);
 
@@ -45,30 +46,24 @@ namespace rgaa {
         }
         else if (render_type == VideoRenderType::kSDL) {
             int default_dup_idx = 0;
-            sdl_video_widget_ = new SDLWidgetWrapper(context_, sdk_, default_dup_idx, RawImageFormat::kI420, this);
-            video_widgets_.insert(std::make_pair(default_dup_idx, sdl_video_widget_));
-            sdl_video_widget_->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
-            layout->addWidget(sdl_video_widget_);
+            auto video_widget = new SDLWidgetWrapper(context_, sdk_, stream_item_, default_dup_idx, RawImageFormat::kI420, this);
+            video_widgets_.insert(std::make_pair(default_dup_idx, video_widget));
+            video_widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
+            layout->addWidget(video_widget);
         }
         else if (render_type == VideoRenderType::kTestQPixmap) {
             qt_video_label_ = new QLabel(this);
             layout->addWidget(qt_video_label_);
         }
 
-        widget->setLayout(layout);
-        setCentralWidget(widget);
+        //widget->setLayout(layout);
+        setLayout(layout);
         this->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
-
-        close_msg_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeCloseWorkspace, [this] (auto& msg) {
-            if (CloseWorkspace()) {
-                this->deleteLater();
-            }
-        }));
 
     }
 
     Workspace::~Workspace() {
-        LOGI("Workspace exit...");
+        LOGI("Workspace exit... {}", (void*)this);
     }
 
     void Workspace::Run() {
@@ -79,10 +74,16 @@ namespace rgaa {
             LOGI("Screen size : {}", screen_size);
             QMetaObject::invokeMethod(this, [=]() {
                 for (int dup_idx = 1; dup_idx < screen_size; dup_idx++) {
-                    auto widget = new SDLWidgetWrapper(context_, sdk_, dup_idx, RawImageFormat::kI420, nullptr);
+                    auto widget = new SDLWidgetWrapper(context_, sdk_, stream_item_, dup_idx, RawImageFormat::kI420, nullptr);
                     widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
                     video_widgets_[dup_idx] = widget;
                     widget->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
+                    widget->show();
+
+                    connect(widget, &SDLWidgetWrapper::OnCloseEvent, this, [=, this]() {
+                        auto msg = ClearWorkspace::Make(stream_item_);
+                        context_->SendAppMessage(msg);
+                    });
                 }
             });
         });
@@ -101,7 +102,7 @@ namespace rgaa {
             }
 
             QMetaObject::invokeMethod(this, [=, this](){
-                if (render_type == VideoRenderType::kSDL && sdl_video_widget_) {
+                if (render_type == VideoRenderType::kSDL && video_widget) {
                     video_widget->widget_->Init(image->img_width, image->img_height);
                     video_widget->widget_->RefreshI420Image(image);
                 }
@@ -129,19 +130,12 @@ namespace rgaa {
         if (sdk_) {
             sdk_->Exit();
         }
-        if (close_msg_task_id_ != -1) {
-            context_->RemoveMessageTask(close_msg_task_id_);
-        }
     }
 
     void Workspace::closeEvent(QCloseEvent *event) {
         LOGI("Workspace closeEvent...");
-        if (CloseWorkspace()) {
-            QWidget::closeEvent(event);
-        }
-        else {
-            event->ignore();
-        }
+        event->ignore();
+        CloseWorkspace();
     }
 
     bool Workspace::CloseWorkspace() {
@@ -161,15 +155,9 @@ namespace rgaa {
         }
         LOGI("Exit sdl video widget..");
 
-        if (close_cbk_) {
-            close_cbk_();
-        }
+        context_->SendAppMessage(CloseWorkspace::Make(stream_item_));
 
         return true;
-    }
-
-    void Workspace::SetOnCloseCallback(OnCloseCallback cbk) {
-        close_cbk_ = std::move(cbk);
     }
 
     StreamItem Workspace::GetStreamItem() {

@@ -53,7 +53,7 @@ namespace rgaa
 	}
 
 	SDLVideoWidget::~SDLVideoWidget() {
-		LOGI("sdl widget exit ..... ");
+		LOGI("sdl widget exit ..... {} ", VideoWidget::dup_idx_);
 	}
 	
 	void SDLVideoWidget::Init(int frame_width, int frame_height) {
@@ -171,6 +171,9 @@ namespace rgaa
 
     void SDLVideoWidget::Exit() {
         VideoWidget::Exit();
+        if (sdlTexture) {
+            SDL_DestroyTexture(sdlTexture);
+        }
         if (sdlRenderer) {
             SDL_DestroyRenderer(sdlRenderer);
         }
@@ -183,11 +186,10 @@ namespace rgaa
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
     void SDLWidgetWrapper::closeEvent(QCloseEvent *event) {
-        //QWidget::closeEvent(event);
         LOGI("SDLWidgetWrapper closeEvent...");
+        event->ignore();
 
-        auto msg = CloseWorkspace::Make();
-        context_->SendAppMessage(msg);
+        emit OnCloseEvent();
     }
 
     void SDLWidgetWrapper::dragEnterEvent(QDragEnterEvent *event) {

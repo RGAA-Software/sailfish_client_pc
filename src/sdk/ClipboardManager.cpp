@@ -16,7 +16,7 @@ namespace rgaa {
     }
 
     ClipboardManager::~ClipboardManager() {
-
+        StopMonitoringClipboard();
     }
 
     void ClipboardManager::Init() {
