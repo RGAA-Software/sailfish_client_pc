@@ -129,7 +129,7 @@ namespace rgaa {
 
 	void VideoWidgetEvent::OnKeyReleaseEvent(QKeyEvent* e) {
 		int vk = key_converter_->ToVK(e->key());
-		LOGI("Key release , vk : {}", vk);
+		//LOGI("Key release , vk : {}", vk);
         int num_lock_state;
         int caps_lock_state;
 #ifdef WIN32

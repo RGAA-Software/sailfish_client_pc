@@ -79,7 +79,7 @@ namespace rgaa {
             //LOGI("x : {}, y : {}, size : {} x {}", info.x(), info.y(), info.width(), info.height());
             if (cursor_cbk_) {
                 auto raw_image = RawImage::MakeRGBA(const_cast<char *>(info.data().c_str()), info.data().size(), info.width(), info.height());
-                cursor_cbk_(0, info.x(), info.y(), raw_image);
+                cursor_cbk_(0, info.x(), info.y(), info.hotspot_x(), info.hotspot_y(), raw_image);
             }
         }
 

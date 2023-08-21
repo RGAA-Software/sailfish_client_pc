@@ -120,13 +120,13 @@ namespace rgaa {
 
         sdk_->Init();
 
-        sdk_->GetMsgParser()->SetOnCursorCallback([=, this](int dup_idx, int x, int y, const RawImagePtr& image) {
+        sdk_->GetMsgParser()->SetOnCursorCallback([=, this](int dup_idx, int x, int y, int hpx, int hpy, const RawImagePtr& image) {
             if (video_widgets_.find(dup_idx) == video_widgets_.end()) {
                 return;
             }
             QMetaObject::invokeMethod(this, [=, this](){
                 auto video_widget = video_widgets_[dup_idx];
-                video_widget->widget_->RefreshCursor(x, y, image);
+                video_widget->widget_->RefreshCursor(x, y, hpx, hpy, image);
             });
         });
 

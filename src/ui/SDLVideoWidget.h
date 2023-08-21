@@ -28,7 +28,7 @@ namespace rgaa {
 		void RefreshI420Image(const std::shared_ptr<RawImage>& image) override;
 		void RefreshI420Buffer(const char* y_buf, int y_buf_size, const char* u_buf, int u_buf_size, const char* v_buf, int v_buf_size, int width, int height) override;
 
-        void RefreshCursor(int x, int y, const std::shared_ptr<RawImage>& cursor);
+        void RefreshCursor(int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor);
 
     private:
 
@@ -57,7 +57,7 @@ namespace rgaa {
 		int frame_height_ = 0;
 		RawImageFormat format;
 
-		SDL_Window* screen = nullptr;
+		SDL_Window* sdl_window_ = nullptr;
 		SDL_Renderer* sdl_renderer_ = nullptr;
 		SDL_Texture* sdl_texture_ = nullptr;
 
@@ -68,9 +68,11 @@ namespace rgaa {
 		int target_y_ = 0;
         float target_x_scale_ = 1.0f;
         float target_y_scale_ = 1.0f;
+        int target_hotspot_x_ = 0;
+        int target_hotspot_y_ = 0;
         SDL_Texture* target_cursor_texture_ = nullptr;
 
-		SDL_Rect sdl_rect_;
+		SDL_Rect sdl_rect_{};
 		
 		bool init = false;
 
