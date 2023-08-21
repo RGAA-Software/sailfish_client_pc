@@ -20,6 +20,8 @@
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
 #include "WidgetHelper.h"
+#include "StreamContent.h"
+#include "SettingsContent.h"
 
 namespace rgaa {
 
@@ -45,30 +47,46 @@ namespace rgaa {
 
     void Application::CreateLayout() {
         auto root_widget = new QWidget(this);
-        auto root_layout = new QVBoxLayout();
-        root_layout->setSpacing(0);
-        root_layout->setContentsMargins(0,0,0,0);
+        auto root_layout = new QHBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
 
         // 1. app menu
-        auto app_menu = new AppMenu(context_, this);
-        root_layout->addWidget(app_menu);
-        app_menu->SetOnAddCallback([=, this]() {
-            CreateStreamDialog dialog(context_);
-            dialog.exec();
+        content_widget_ = new QStackedWidget(this);
+        content_widget_->setContentsMargins(0,0,0,0);
+
+        std::vector<QString> menus = {
+                tr("Streams"),
+                tr("Settings"),
+        };
+        app_menu_ = new AppMenu(menus, this);
+        app_menu_->SetOnItemClickedCallback([this](const QString& name, int idx) {
+            content_widget_->setCurrentIndex(idx);
         });
+        root_layout->addWidget(app_menu_);
+
+//        CreateStreamDialog dialog(context_);
+//        dialog.exec();
 
         // 2. stream list
-        auto stream_list = new AppStreamList(context_, this);
-        stream_list_ = stream_list;
-        root_layout->addWidget(stream_list);
 
+        // streams
+        auto stream_content = new StreamContent(context_, content_widget_);
+        content_widget_->addWidget(stream_content);
+        stream_content_ = stream_content;
+
+        // settings
+        auto settings_content = new SettingsContent(context_, content_widget_);
+        content_widget_->addWidget(settings_content);
+
+        root_layout->addWidget(content_widget_);
         root_widget->setLayout(root_layout);
         setCentralWidget(root_widget);
+
+        content_widget_->setCurrentIndex(0);
     }
 
     void Application::Init() {
-        stream_list_->SetOnItemDoubleClickedCallback([=, this](const StreamItem& item) {
+        stream_content_->SetOnStartingStreamCallback([=, this](const StreamItem& item){
             StartStreaming(item);
         });
 

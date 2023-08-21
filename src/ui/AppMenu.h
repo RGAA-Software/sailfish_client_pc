@@ -5,25 +5,62 @@
 #ifndef SAILFISH_CLIENT_PC_APPMENU_H
 #define SAILFISH_CLIENT_PC_APPMENU_H
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QVBoxLayout>
+#include <QWidget>
+#include <QString>
+#include <QLabel>
+
+#include <memory>
+#include <functional>
 
 namespace rgaa {
 
-    class Context;
+    using OnItemClickedCallback = std::function<void(const QString& name, int idx)>;
 
-    using OnAppMenuClickCallback = std::function<void()>;
+    class AppMenuItem : public QWidget {
+    public:
+
+        AppMenuItem(const QString& name, int idx, QWidget* parent = nullptr);
+        ~AppMenuItem();
+
+        void SetOnItemClickedCallback(const OnItemClickedCallback& cbk);
+        void Select();
+        void UnSelect();
+        QString GetName();
+        bool IsSelected();
+
+    protected:
+        void paintEvent(QPaintEvent *event) override;
+        void enterEvent(QEnterEvent *event) override;
+        void leaveEvent(QEvent *event) override;
+        void mousePressEvent(QMouseEvent *event) override;
+        void mouseReleaseEvent(QMouseEvent *event) override;
+
+    private:
+
+        bool entered_ = false;
+        bool pressed_ = false;
+        bool selected_ = false;
+
+        float round_radius_ = 6.0f;
+
+        QString name_;
+        int idx_;
+        OnItemClickedCallback callback_;
+
+        QLabel* icon_ = nullptr;
+        QLabel* text_ = nullptr;
+    };
+
 
     class AppMenu : public QWidget {
     public:
 
-        AppMenu(const std::shared_ptr<Context> ctx, QWidget* parent = nullptr);
-        ~AppMenu() = default;
+        AppMenu(const std::vector<QString>& items, QWidget* parent = nullptr);
+        ~AppMenu();
 
-        void SetOnAddCallback(OnAppMenuClickCallback cbk);
+        void SetOnItemClickedCallback(OnItemClickedCallback cbk);
+
+        void paintEvent(QPaintEvent *event) override;
 
     private:
 
@@ -31,9 +68,8 @@ namespace rgaa {
 
     private:
 
-        std::shared_ptr<Context> context_ = nullptr;
-
-        OnAppMenuClickCallback add_cbk_;
+        OnItemClickedCallback callback_;
+        std::vector<AppMenuItem*> app_items;
 
     };
 

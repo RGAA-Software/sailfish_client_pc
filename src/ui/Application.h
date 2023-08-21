@@ -6,6 +6,7 @@
 #define SAILFISH_CLIENT_PC_APPLICATION_H
 
 #include <QtWidgets/QMainWindow>
+#include <QStackedWidget>
 
 #include "sdk/StreamItem.h"
 
@@ -15,6 +16,8 @@ namespace rgaa {
     class Workspace;
     class Thread;
     class AppStreamList;
+    class AppMenu;
+    class StreamContent;
 
     class Application : public QMainWindow {
     public:
@@ -35,7 +38,9 @@ namespace rgaa {
 
         std::shared_ptr<Context> context_ = nullptr;
         std::map<std::string, std::shared_ptr<Workspace>> workspaces_;
-        AppStreamList* stream_list_ = nullptr;
+        AppMenu* app_menu_ = nullptr;
+        QStackedWidget* content_widget_ = nullptr;
+        StreamContent* stream_content_ = nullptr;
 
         int clear_ws_task_id_ = -1;
         int close_ws_task_id_ = -1;
