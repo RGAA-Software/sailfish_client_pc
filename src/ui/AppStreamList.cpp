@@ -80,6 +80,22 @@ namespace rgaa {
         stream_list_->setResizeMode(QListWidget::Adjust);
         stream_list_->setContextMenuPolicy(Qt::CustomContextMenu);
         stream_list_->setSpacing(10);
+        stream_list_->setStyleSheet(R"(
+            QListWidget::item {
+                background-color: #DEF0FE;
+                color: #000000;
+                border: transparent;
+                border-bottom: 0px solid #dbdbdb;
+            }
+
+            QListWidget::item:hover {
+                background-color: #DEF0FE;
+            }
+
+            QListWidget::item:selected {
+                border-left: 0px solid #777777;
+            }
+        )");
 
         QObject::connect(stream_list_, &QListWidget::customContextMenuRequested, this, [=](const QPoint& pos) {
             QListWidgetItem* cur_item = stream_list_->itemAt(pos);

@@ -22,6 +22,8 @@ namespace rgaa {
         QPainter painter(this);
         painter.setRenderHint(QPainter::RenderHint::Antialiasing);
         painter.setPen(Qt::NoPen);
+        painter.setBrush(QBrush(0xEAF7FF));
+        painter.drawRect(0, 0, QWidget::width(), QWidget::height());
         painter.setBrush(QBrush(QColor(bg_color_)));
         int radius = 12;
         painter.drawRoundedRect(0, 0, width(), height(), radius, radius);
