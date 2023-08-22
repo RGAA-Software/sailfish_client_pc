@@ -1,0 +1,44 @@
+//
+// Created by RGAA on 2023-08-22.
+//
+
+#ifndef SAILFISH_CLIENT_PC_FLOATBUTTON_H
+#define SAILFISH_CLIENT_PC_FLOATBUTTON_H
+
+#include <QWidget>
+#include <QPixmap>
+
+#include <functional>
+
+namespace rgaa {
+
+    class FloatButton : public QWidget {
+    public:
+
+        explicit FloatButton(QWidget* parent = nullptr);
+        ~FloatButton();
+
+        void paintEvent(QPaintEvent *event) override;
+        void enterEvent(QEnterEvent *event) override;
+        void leaveEvent(QEvent *event) override;
+        void mousePressEvent(QMouseEvent *event) override;
+        void mouseReleaseEvent(QMouseEvent *event) override;
+
+        void SetOnClickCallback(std::function<void()>&& cbk) {
+            click_cbk_ = std::move(cbk);
+        }
+
+    private:
+
+        bool enter_ = false;
+        bool pressed_ = false;
+
+        QPixmap expand_pixmap_;
+
+        std::function<void()> click_cbk_;
+
+    };
+
+}
+
+#endif //SAILFISH_CLIENT_PC_FLOATBUTTON_H

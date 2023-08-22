@@ -3,6 +3,7 @@
         <file>resources/image/logo.png</file>
         <file>resources/image/empty.svg</file>
         <file>resources/image/windows.svg</file>
+        <file>resources/image/ic_expand.svg</file>
 
 <!--        <file>resources/font/SourceHanSansCN-Regular.otf</file>-->
     </qresource>

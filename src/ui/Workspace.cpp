@@ -22,6 +22,7 @@
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
 #include "sdk/MessageParser.h"
+#include "WorkspaceCover.h"
 
 namespace rgaa {
 
@@ -62,6 +63,10 @@ namespace rgaa {
         //widget->setLayout(layout);
         setLayout(layout);
         this->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
+
+        cover_ = new WorkspaceCover(context_,  this);
+        cover_->show();
+        installEventFilter(this);
 
     }
 
@@ -149,6 +154,25 @@ namespace rgaa {
         LOGI("Workspace closeEvent...");
         event->ignore();
         CloseWorkspace();
+    }
+
+    void Workspace::resizeEvent(QResizeEvent *event) {
+        QWidget::resizeEvent(event);
+        cover_->resize(event->size());
+    }
+
+    bool Workspace::eventFilter(QObject *watched, QEvent *event) {
+        if (watched == this) {
+            if (event->type() == QEvent::Move) {
+                QMoveEvent* move_event = static_cast<QMoveEvent*>(event);
+                if (cover_) {
+                    auto point = move_event->pos();
+                    cover_->move(point);
+                }
+            }
+        }
+
+        return QWidget::eventFilter(watched, event);
     }
 
     bool Workspace::CloseWorkspace() {

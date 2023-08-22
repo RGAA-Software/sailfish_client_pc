@@ -8,6 +8,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QLabel>
+#include <QEvent>
 
 #include "sdk/StreamItem.h"
 
@@ -20,6 +21,7 @@ namespace rgaa {
     class SailfishSDK;
     class NetMessage;
     class SDLWidgetWrapper;
+    class WorkspaceCover;
 
     class Workspace : public QWidget {
     public:
@@ -30,6 +32,9 @@ namespace rgaa {
         void Exit();
 
         void closeEvent(QCloseEvent *event) override;
+        void resizeEvent(QResizeEvent *event) override;
+
+        bool eventFilter(QObject *watched, QEvent *event) override;
 
         StreamItem GetStreamItem();
         bool CloseWorkspace();
@@ -51,6 +56,8 @@ namespace rgaa {
         std::map<int, SDLWidgetWrapper*> video_widgets_;
 
         StreamItem stream_item_;
+
+        WorkspaceCover* cover_ = nullptr;
 
     };
 
