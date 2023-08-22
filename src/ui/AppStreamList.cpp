@@ -22,6 +22,7 @@
 #include "Application.h"
 #include "AppMessage.h"
 #include "CreateStreamDialog.h"
+#include "StreamContent.h"
 
 namespace rgaa {
 
@@ -42,12 +43,11 @@ namespace rgaa {
     AppStreamList::AppStreamList(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
         context_ = ctx;
         db_mgr_ = context_->GetDBManager();
+        stream_content_ = (StreamContent*)parent;
         application_ = (Application*)parent->parent();
 
         CreateLayout();
         Init();
-
-        LoadStreamItems();
     }
 
     AppStreamList::~AppStreamList() {
@@ -274,6 +274,13 @@ namespace rgaa {
             }
             for (const auto& stream : streams_) {
                 AddItem(stream);
+            }
+
+            if (!streams_.empty()) {
+                stream_content_->HideEmptyTip();
+            }
+            else {
+                stream_content_->ShowEmptyTip();
             }
         });
     }

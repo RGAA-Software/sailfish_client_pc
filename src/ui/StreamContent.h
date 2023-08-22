@@ -54,11 +54,15 @@ namespace rgaa {
 
         void resizeEvent(QResizeEvent *event) override;
 
+        void ShowEmptyTip();
+        void HideEmptyTip();
+
     private:
 
         AppStreamList* stream_list_ = nullptr;
         OnStartingStreamCallback starting_stream_cbk_;
         AddButton* add_btn_ = nullptr;
+        QLabel* empty_tip_ = nullptr;
 
     };
 

@@ -93,6 +93,7 @@ namespace rgaa {
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
     StreamContent::StreamContent(const std::shared_ptr<Context>& ctx, QWidget* parent) : AppContent(ctx, parent) {
+
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
 
@@ -113,6 +114,16 @@ namespace rgaa {
             CreateStreamDialog dialog(context_);
             dialog.exec();
         });
+
+        empty_tip_ = new QLabel(this);
+        int empty_size = 64;
+        empty_tip_->resize(empty_size, empty_size);
+        auto pixmap = QPixmap::fromImage(QImage(":/resources/image/empty.svg"));
+        pixmap = pixmap.scaled(empty_size, empty_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        empty_tip_->setPixmap(pixmap);
+
+        //
+        stream_list_->LoadStreamItems();
     }
 
     StreamContent::~StreamContent() {
@@ -139,6 +150,16 @@ namespace rgaa {
 
         add_btn_->setGeometry(width - add_btn_->width() - gap, height - add_btn_->height() - gap, add_btn_->width(), add_btn_->height());
 
+        empty_tip_->setGeometry((width - empty_tip_->width())/2, (height - empty_tip_->height())/2, empty_tip_->width(), empty_tip_->height());
+
+    }
+
+    void StreamContent::ShowEmptyTip() {
+        empty_tip_->show();
+    }
+
+    void StreamContent::HideEmptyTip() {
+        empty_tip_->hide();
     }
 
 }

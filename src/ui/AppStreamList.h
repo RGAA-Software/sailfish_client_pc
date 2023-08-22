@@ -25,6 +25,7 @@ namespace rgaa {
     class Context;
     class StreamDBManager;
     class Application;
+    class StreamContent;
 
     using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
 
@@ -37,6 +38,7 @@ namespace rgaa {
         void paintEvent(QPaintEvent *event) override;
 
         void SetOnItemDoubleClickedCallback(OnItemDoubleClickedCallback&& cbk);
+        void LoadStreamItems();
 
     private:
         QListWidgetItem* AddItem(const StreamItem& item);
@@ -46,7 +48,7 @@ namespace rgaa {
         void CreateLayout();
         void Init();
 
-        void LoadStreamItems();
+
 
     private:
 
@@ -69,7 +71,7 @@ namespace rgaa {
         OnItemDoubleClickedCallback dbk_callback_;
 
         Application* application_ = nullptr;
-
+        StreamContent* stream_content_ = nullptr;
     };
 
 }

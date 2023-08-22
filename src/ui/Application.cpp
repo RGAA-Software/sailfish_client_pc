@@ -55,8 +55,8 @@ namespace rgaa {
         content_widget_->setContentsMargins(0,0,0,0);
 
         std::vector<QString> menus = {
-                tr("Streams"),
-                tr("Settings"),
+                tr("STREAMS"),
+                tr("SETTINGS"),
         };
         app_menu_ = new AppMenu(menus, this);
         app_menu_->SetOnItemClickedCallback([this](const QString& name, int idx) {
