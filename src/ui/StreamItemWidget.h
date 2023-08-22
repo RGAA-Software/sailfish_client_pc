@@ -10,6 +10,7 @@
 #include <QPen>
 #include <QBrush>
 #include <QPaintEvent>
+#include <QPixmap>
 
 namespace rgaa {
 
@@ -26,8 +27,9 @@ namespace rgaa {
     private:
 
         int bg_color_ = 0;
-
         bool enter_ = false;
+
+        QPixmap icon_;
 
     };
 

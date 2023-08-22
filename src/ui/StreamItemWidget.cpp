@@ -10,6 +10,8 @@ namespace rgaa {
 
     StreamItemWidget::StreamItemWidget(int bg_color, QWidget* parent) : QWidget(parent) {
         this->bg_color_ = bg_color;
+        icon_ = QPixmap::fromImage(QImage(":/resources/image/windows.svg"));
+        icon_ = icon_.scaled(icon_.width()/3, icon_.height()/3, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
 
     StreamItemWidget::~StreamItemWidget() {
@@ -28,14 +30,22 @@ namespace rgaa {
         int radius = 12;
         painter.drawRoundedRect(0, 0, width(), height(), radius, radius);
 
+        QPen pen;
+        int border_width = 2;;
         if (enter_) {
-            int border_width = 2;
-            QPen pen(0x386487);
-            pen.setWidth(border_width);
-            painter.setPen(pen);
-            painter.setBrush(Qt::NoBrush);
-            painter.drawRoundedRect(1, 1, width() - border_width, height() - border_width, radius, radius);
+            pen.setColor(QColor(0x38, 0x64, 0x87));
         }
+        else {
+            pen.setColor(QColor(0x38, 0x64, 0x87, 0x11));
+        }
+        pen.setWidth(border_width);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRoundedRect(1, 1, width() - border_width, height() - border_width, radius, radius);
+
+        int margin = 20;
+        painter.drawPixmap(QWidget::width() - icon_.width() - margin, margin, icon_);
+
     }
 
     void StreamItemWidget::enterEvent(QEnterEvent *event) {
