@@ -19,6 +19,13 @@ namespace rgaa {
         CreateLayout();
     }
 
+    CreateStreamDialog::CreateStreamDialog(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent) : QDialog(parent) {
+        context_ = ctx;
+        stream_item_ = item;
+        setFixedSize(500, 400);
+        CreateLayout();
+    }
+
     CreateStreamDialog::~CreateStreamDialog() {
 
     }
@@ -46,6 +53,9 @@ namespace rgaa {
 
             auto edit = new QLineEdit(this);
             ed_name_ = edit;
+            if (stream_item_.IsValid()) {
+                ed_name_->setText(stream_item_.stream_name.c_str());
+            }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
@@ -70,6 +80,9 @@ namespace rgaa {
 
             auto edit = new QLineEdit(this);
             ed_host_ = edit;
+            if (stream_item_.IsValid()) {
+                ed_host_->setText(stream_item_.stream_host.c_str());
+            }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
@@ -95,6 +108,9 @@ namespace rgaa {
             auto validator = new QIntValidator(this);
             edit->setValidator(validator);
             ed_port_ = edit;
+            if (stream_item_.IsValid()) {
+                ed_port_->setText(QString::number(stream_item_.stream_port));
+            }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
@@ -120,7 +136,12 @@ namespace rgaa {
             auto validator = new QIntValidator(this);
             edit->setValidator(validator);
             ed_bitrate_ = edit;
-            ed_bitrate_->setText("5");
+            if (stream_item_.IsValid()) {
+                ed_bitrate_->setText(QString::number(stream_item_.encode_bps));
+            }
+            else {
+                ed_bitrate_->setText("5");
+            }
             edit->setFixedSize(edit_size);
             layout->addWidget(edit);
             layout->addStretch();
@@ -149,6 +170,18 @@ namespace rgaa {
             cb->setFixedSize(edit_size);
             layout->addWidget(cb);
             layout->addStretch();
+
+            if (stream_item_.IsValid()) {
+                if (stream_item_.encode_fps == 15) {
+                    cb_fps_->setCurrentIndex(0);
+                }
+                else if (stream_item_.encode_fps == 30) {
+                    cb_fps_->setCurrentIndex(1);
+                }
+                else if (stream_item_.encode_fps == 60) {
+                    cb_fps_->setCurrentIndex(2);
+                }
+            }
 
             root_layout->addSpacing(10);
             root_layout->addLayout(layout);
@@ -201,15 +234,26 @@ namespace rgaa {
             return false;
         }
 
-        StreamItem item;
-        item.stream_name = name;
-        item.stream_host = host;
-        item.stream_port = port;
-        item.encode_bps = bitrate;
-        item.encode_fps = std::atoi(cb_fps_->currentText().toStdString().c_str());
+        auto func_update_stream = [&](StreamItem& item) {
+            item.stream_name = name;
+            item.stream_host = host;
+            item.stream_port = port;
+            item.encode_bps = bitrate;
+            item.encode_fps = std::atoi(cb_fps_->currentText().toStdString().c_str());
+        };
 
-        auto msg = StreamItemAdded::Make(item);
-        context_->SendAppMessage(msg);
+        if (stream_item_.IsValid()) {
+            func_update_stream(stream_item_);
+            auto msg = StreamItemUpdated::Make(stream_item_);
+            context_->SendAppMessage(msg);
+        }
+        else {
+            StreamItem item;
+            func_update_stream(item);
+
+            auto msg = StreamItemAdded::Make(item);
+            context_->SendAppMessage(msg);
+        }
         return true;
     }
 

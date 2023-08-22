@@ -24,6 +24,7 @@ namespace rgaa {
 
     class Context;
     class StreamDBManager;
+    class Application;
 
     using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
 
@@ -50,7 +51,9 @@ namespace rgaa {
     private:
 
         void DeleteStream(const StreamItem& item);
-        void NotifyStartStream(const StreamItem& item);
+        void StartStream(const StreamItem& item);
+        void StopStream(const StreamItem& item);
+        void EditStream(const StreamItem& item);
 
     private:
 
@@ -61,8 +64,11 @@ namespace rgaa {
         QListWidget* stream_list_ = nullptr;
 
         int stream_added_task_id_ = -1;
+        int stream_updated_task_id_ = -1;
 
         OnItemDoubleClickedCallback dbk_callback_;
+
+        Application* application_ = nullptr;
 
     };
 

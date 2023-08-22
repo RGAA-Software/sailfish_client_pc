@@ -70,12 +70,12 @@ namespace rgaa {
         // 2. stream list
 
         // streams
-        auto stream_content = new StreamContent(context_, content_widget_);
+        auto stream_content = new StreamContent(context_, this);
         content_widget_->addWidget(stream_content);
         stream_content_ = stream_content;
 
         // settings
-        auto settings_content = new SettingsContent(context_, content_widget_);
+        auto settings_content = new SettingsContent(context_, this);
         content_widget_->addWidget(settings_content);
 
         root_layout->addWidget(content_widget_);
@@ -155,17 +155,11 @@ namespace rgaa {
 
     void Application::StartStreaming(const StreamItem& item) {
         std::shared_ptr<Workspace> workspace = std::make_shared<Workspace>(context_, item);
-//        workspace->SetOnCloseCallback([=, this]() {
-//            auto stream_id = workspace->GetStreamItem().stream_id;
-//            if (workspaces_.find(stream_id) != workspaces_.end()) {
-//                workspaces_[stream_id].reset();
-//                workspaces_.erase(stream_id);
-//                LOGI("Workspace closed, stream id : {}", stream_id);
-//            }
-//        });
         workspace->Run();
-
         workspaces_.insert(std::make_pair(item.stream_id, workspace));
     }
 
+    bool Application::HasWorkspace(const std::string &stream_id) {
+        return workspaces_.find(stream_id) != workspaces_.end();
+    }
 }

@@ -9,8 +9,88 @@
 #include "Context.h"
 #include "AppStreamList.h"
 #include "WidgetHelper.h"
+#include "CreateStreamDialog.h"
+
+#include <QPainter>
+#include <QPen>
+#include <QBrush>
+#include <QResizeEvent>
 
 namespace rgaa {
+
+    AddButton::AddButton(QWidget* parent) : QLabel(parent) {
+        setFixedSize(50, 50);
+    }
+
+    void AddButton::paintEvent(QPaintEvent *) {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::RenderHint::Antialiasing);
+
+        int gap = 2;
+
+        {
+            QPen pen;
+            QColor c;
+            if (pressed_) {
+                c = QColor(0x38, 0x64, 0x87, 0xFF);
+            } else if (enter_) {
+                c = QColor(0x38, 0x64, 0x87, 0xBB);
+            } else {
+                c = QColor(0x38, 0x64, 0x87, 0x66);
+            }
+            painter.setBrush(QBrush(c));
+            pen.setColor(c);
+            pen.setWidth(2);
+            painter.setPen(pen);
+
+            int w = QWidget::width() - 2 * gap;
+            int h = QWidget::height() - 2 * gap;
+
+            painter.drawRoundedRect(gap, gap, w, h, w / 2, h / 2);
+        }
+
+        {
+            painter.setBrush(Qt::NoBrush);
+            QPen pen(QColor(0xFFFFFF));
+            pen.setWidth(2);
+            painter.setPen(pen);
+
+            int w = QWidget::width();
+            int h = QWidget::height();
+            int line_size = 16;
+            int x_offset = (w - line_size) / 2;
+            painter.drawLine(x_offset, h/2, x_offset + line_size, h / 2);
+
+            int y_offset = (h - line_size) / 2;
+            painter.drawLine(w/2, y_offset, w/2, y_offset + line_size);
+        }
+    }
+
+    void AddButton::enterEvent(QEnterEvent *event) {
+        enter_ = true;
+        update();
+    }
+
+    void AddButton::leaveEvent(QEvent *event) {
+        enter_ = false;
+        update();
+    }
+
+    void AddButton::mousePressEvent(QMouseEvent *ev) {
+        pressed_ = true;
+        update();
+    }
+
+    void AddButton::mouseReleaseEvent(QMouseEvent *ev) {
+        pressed_ = false;
+        update();
+
+        if (click_cbk_) {
+            click_cbk_();
+        }
+    }
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
     StreamContent::StreamContent(const std::shared_ptr<Context>& ctx, QWidget* parent) : AppContent(ctx, parent) {
         auto root_layout = new QVBoxLayout();
@@ -26,6 +106,12 @@ namespace rgaa {
             if (starting_stream_cbk_) {
                 starting_stream_cbk_(item);
             }
+        });
+
+        add_btn_ = new AddButton(this);
+        add_btn_->SetOnClickCallback([=, this]() {
+            CreateStreamDialog dialog(context_);
+            dialog.exec();
         });
     }
 
@@ -43,6 +129,16 @@ namespace rgaa {
 
     void StreamContent::OnContentHide() {
         AppContent::OnContentHide();
+    }
+
+    void StreamContent::resizeEvent(QResizeEvent *event) {
+        int width = event->size().width();
+        int height = event->size().height();
+
+        int gap = 20;
+
+        add_btn_->setGeometry(width - add_btn_->width() - gap, height - add_btn_->height() - gap, add_btn_->width(), add_btn_->height());
+
     }
 
 }

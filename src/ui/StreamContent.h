@@ -16,6 +16,31 @@ namespace rgaa {
 
     using OnStartingStreamCallback = std::function<void(const StreamItem&)>;
 
+    class AddButton : public QLabel {
+    public:
+
+        explicit AddButton(QWidget* parent = nullptr);
+
+        void SetOnClickCallback(std::function<void()>&& cbk) {
+            click_cbk_ = std::move(cbk);
+        }
+
+        void paintEvent(QPaintEvent *) override;
+        void enterEvent(QEnterEvent *event) override;
+        void leaveEvent(QEvent *event) override;
+        void mousePressEvent(QMouseEvent *ev) override;
+        void mouseReleaseEvent(QMouseEvent *ev) override;
+
+    private:
+        std::function<void()> click_cbk_;
+
+        bool enter_ = false;
+        bool pressed_ = false;
+
+    };
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
     class StreamContent : public AppContent {
     public:
 
@@ -27,10 +52,13 @@ namespace rgaa {
         void OnContentShow() override;
         void OnContentHide() override;
 
+        void resizeEvent(QResizeEvent *event) override;
+
     private:
 
         AppStreamList* stream_list_ = nullptr;
         OnStartingStreamCallback starting_stream_cbk_;
+        AddButton* add_btn_ = nullptr;
 
     };
 

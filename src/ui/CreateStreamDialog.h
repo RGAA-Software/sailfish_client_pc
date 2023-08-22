@@ -15,6 +15,8 @@
 #include <QRadioButton>
 #include <QComboBox>
 
+#include "sdk/StreamItem.h"
+
 namespace rgaa {
 
     class Context;
@@ -23,6 +25,7 @@ namespace rgaa {
     public:
 
         explicit CreateStreamDialog(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
+        CreateStreamDialog(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent = nullptr);
         ~CreateStreamDialog();
 
     private:
@@ -38,6 +41,8 @@ namespace rgaa {
         QLineEdit* ed_port_ = nullptr;
         QLineEdit* ed_bitrate_ = nullptr;
         QComboBox* cb_fps_ = nullptr;
+
+        StreamItem stream_item_;
 
     };
 

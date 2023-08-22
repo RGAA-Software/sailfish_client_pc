@@ -7,6 +7,7 @@
 #include <QStyledItemDelegate>
 #include <QStyleOptionViewItem>
 #include <QtWidgets/QMenu>
+#include <QWidget>
 
 #include "sdk/StreamItem.h"
 #include "sdk/StreamDBManager.h"
@@ -18,6 +19,9 @@
 #include "WidgetHelper.h"
 #include "MessageDialog.h"
 #include "StreamItemWidget.h"
+#include "Application.h"
+#include "AppMessage.h"
+#include "CreateStreamDialog.h"
 
 namespace rgaa {
 
@@ -38,6 +42,7 @@ namespace rgaa {
     AppStreamList::AppStreamList(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
         context_ = ctx;
         db_mgr_ = context_->GetDBManager();
+        application_ = (Application*)parent->parent();
 
         CreateLayout();
         Init();
@@ -47,6 +52,7 @@ namespace rgaa {
 
     AppStreamList::~AppStreamList() {
         context_->RemoveMessageTask(stream_added_task_id_);
+        context_->RemoveMessageTask(stream_updated_task_id_);
     }
 
     void AppStreamList::paintEvent(QPaintEvent *event) {
@@ -85,7 +91,7 @@ namespace rgaa {
         QObject::connect(stream_list_, &QListWidget::itemDoubleClicked, this, [=, this](QListWidgetItem *item) {
             int index = stream_list_->row(item);
             StreamItem stream_item = streams_.at(index);
-            NotifyStartStream(stream_item);
+            StartStream(stream_item);
         });
 
         root_layout->addSpacing(10);
@@ -99,11 +105,16 @@ namespace rgaa {
         stream_added_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeStreamAdded, [=, this](const std::shared_ptr<Message>& msg) {
             auto target_msg = std::dynamic_pointer_cast<StreamItemAdded>(msg);
             auto item = target_msg->item_;
-            auto db_mgr = context_->GetDBManager();
-            db_mgr->AddStream(item);
-
+            db_mgr_->AddStream(item);
             LoadStreamItems();
+        }));
 
+        stream_updated_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeStreamUpdated, [=, this](const std::shared_ptr<Message>& msg) {
+            auto target_msg = std::dynamic_pointer_cast<StreamItemUpdated>(msg);
+            auto item = target_msg->item_;
+            db_mgr_->UpdateStream(item);
+            LoadStreamItems();
+            LOGI("Update stream : {}", item.stream_id);
         }));
     }
 
@@ -136,13 +147,15 @@ namespace rgaa {
     void AppStreamList::ProcessAction(int index, const StreamItem& item) {
         if (index == 0) {
             // start
-            NotifyStartStream(item);
+            StartStream(item);
         }
         else if (index == 1) {
             // stop
+            StopStream(item);
         }
         else if (index == 3) {
             // edit
+            EditStream(item);
         }
         else if (index == 4) {
             // delete
@@ -150,10 +163,38 @@ namespace rgaa {
         }
     }
 
-    void AppStreamList::NotifyStartStream(const StreamItem& item) {
+    void AppStreamList::StartStream(const StreamItem& item) {
         if (dbk_callback_) {
             dbk_callback_(item);
         }
+    }
+
+    void AppStreamList::StopStream(const StreamItem& item) {
+        auto msg = ClearWorkspace::Make(item);
+        context_->SendAppMessage(msg);
+    }
+
+    void AppStreamList::EditStream(const StreamItem& item) {
+        CreateStreamDialog dialog(context_, item);
+        dialog.exec();
+    }
+
+    void AppStreamList::DeleteStream(const StreamItem& item) {
+        if (application_->HasWorkspace(item.stream_id)) {
+            auto dialog = MessageDialog::Make(context_, tr("The stream is running, please exit streaming then delete it."));
+            dialog->exec();
+            return;
+        }
+
+        auto alert = MessageDialog::Make(context_, tr("Do you want to *DELETE* the stream ?"));
+        if (alert->exec() == DialogButton::kCancel) {
+            return;
+        }
+
+        auto mgr = context_->GetDBManager();
+        mgr->DeleteStream(item._id);
+
+        LoadStreamItems();
     }
 
     QListWidgetItem* AppStreamList::AddItem(const StreamItem& stream) {
@@ -235,18 +276,6 @@ namespace rgaa {
                 AddItem(stream);
             }
         });
-    }
-
-    void AppStreamList::DeleteStream(const StreamItem& item) {
-        auto alert = MessageDialog::Make(context_, tr("Do you want to *DELETE* the stream ?"));
-        if (alert->exec() == DialogButton::kCancel) {
-            return;
-        }
-
-        auto mgr = context_->GetDBManager();
-        mgr->DeleteStream(item._id);
-
-        LoadStreamItems();
     }
 
     void AppStreamList::SetOnItemDoubleClickedCallback(OnItemDoubleClickedCallback&& cbk) {

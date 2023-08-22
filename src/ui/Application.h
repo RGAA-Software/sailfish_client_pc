@@ -25,6 +25,8 @@ namespace rgaa {
         explicit Application(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
         ~Application();
 
+        bool HasWorkspace(const std::string& stream_id);
+
     private:
 
         void StartStreaming(const StreamItem& item);

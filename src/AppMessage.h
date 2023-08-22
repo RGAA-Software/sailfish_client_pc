@@ -17,6 +17,7 @@ namespace rgaa {
     constexpr int kCodeCloseWorkspace = 0x1003;
     constexpr int kCodeClearWorkspace = 0x1004;
     constexpr int kCodeClipboard = 0x1005;
+    constexpr int kCodeStreamUpdated = 0x1006;
 
     class Timeout1S : public Message {
     public:
@@ -34,6 +35,22 @@ namespace rgaa {
         }
 
         explicit StreamItemAdded(const StreamItem& item) : Message(kCodeStreamAdded) {
+            this->item_ = item;
+        }
+
+    public:
+
+        StreamItem item_;
+    };
+
+    // Stream will be updated
+    class StreamItemUpdated : public Message {
+    public:
+        static std::shared_ptr<StreamItemUpdated> Make(const StreamItem& item) {
+            return std::make_shared<StreamItemUpdated>(item);
+        }
+
+        explicit StreamItemUpdated(const StreamItem& item) : Message(kCodeStreamUpdated) {
             this->item_ = item;
         }
 
