@@ -213,13 +213,13 @@ namespace rgaa
     void SDLVideoWidget::enterEvent(QEnterEvent *event) {
         QCursor cursor(Qt::BlankCursor);
         //QApplication::setOverrideCursor(cursor);
-        LOGI("EnterEvent");
+        //LOGI("EnterEvent");
     }
 
     void SDLVideoWidget::leaveEvent(QEvent *event) {
         QCursor cursor(Qt::ArrowCursor);
         //QApplication::setOverrideCursor(cursor);
-        LOGI("LeaveEvent");
+        //LOGI("LeaveEvent");
     }
 
     void SDLVideoWidget::Exit() {

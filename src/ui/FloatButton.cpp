@@ -28,13 +28,13 @@ namespace rgaa {
 
         painter.setPen(Qt::NoPen);
         if (pressed_) {
-            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x99 * transparency_)));
+            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0xBB * transparency_)));
         }
         else if (enter_) {
-            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x77 * transparency_)));
+            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x99 * transparency_)));
         }
         else {
-            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x55 * transparency_)));
+            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x77 * transparency_)));
         }
         int w = QWidget::width();
         int h = QWidget::height();
