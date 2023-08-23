@@ -18,8 +18,9 @@
 
 namespace rgaa {
 
-    WorkspaceCover::WorkspaceCover(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+    WorkspaceCover::WorkspaceCover(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent) : QWidget(parent) {
         this->context_ = ctx;
+        this->item_ = item;
         setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
         setAttribute(Qt::WA_TranslucentBackground);
 
@@ -45,7 +46,7 @@ namespace rgaa {
         auto float_menu_layout = new QHBoxLayout();
         float_menu_layout->addStretch();
 
-        auto float_menu = new FloatMenu(this);
+        auto float_menu = new FloatMenu(context_, item_, this);
         float_menu_ = float_menu;
         float_menu_->hide();
         float_menu->setFixedSize(400, 60);

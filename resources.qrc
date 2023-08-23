@@ -4,6 +4,14 @@
         <file>resources/image/empty.svg</file>
         <file>resources/image/windows.svg</file>
         <file>resources/image/ic_expand.svg</file>
+        <file>resources/image/ic_audio_off.svg</file>
+        <file>resources/image/ic_audio_on.svg</file>
+        <file>resources/image/ic_clipboard_off.svg</file>
+        <file>resources/image/ic_clipboard_on.svg</file>
+        <file>resources/image/ic_close.svg</file>
+        <file>resources/image/ic_debug.svg</file>
+        <file>resources/image/ic_exit_fullscreen.svg</file>
+        <file>resources/image/ic_fullscreen.svg</file>
 
 <!--        <file>resources/font/SourceHanSansCN-Regular.otf</file>-->
     </qresource>

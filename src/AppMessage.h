@@ -19,6 +19,8 @@ namespace rgaa {
     constexpr int kCodeClipboard = 0x1005;
     constexpr int kCodeStreamUpdated = 0x1006;
     constexpr int kCodeMousePressed = 0x1007;
+    constexpr int kCodeFullscreen = 0x1008;
+    constexpr int kCodeExitFullscreen = 0x1009;
 
     class Timeout1S : public Message {
     public:
@@ -60,7 +62,7 @@ namespace rgaa {
         StreamItem item_;
     };
 
-    // Close workspace
+    // Close workspace, close -> clear, with dialog
     class CloseWorkspace : public Message {
     public:
         static std::shared_ptr<CloseWorkspace> Make(const StreamItem& item) {
@@ -109,6 +111,26 @@ namespace rgaa {
         }
 
         explicit MousePressedMessage() : Message(kCodeMousePressed) {}
+    };
+
+    // Fullscreen
+    class FullscreenMessage : public Message {
+    public:
+        static std::shared_ptr<FullscreenMessage> Make() {
+            return std::make_shared<FullscreenMessage>();
+        }
+
+        explicit FullscreenMessage() : Message(kCodeFullscreen) {}
+    };
+
+    // Exit fullscreen
+    class ExitFullscreenMessage : public Message {
+    public:
+        static std::shared_ptr<ExitFullscreenMessage> Make() {
+            return std::make_shared<ExitFullscreenMessage>();
+        }
+
+        explicit ExitFullscreenMessage() : Message(kCodeExitFullscreen) {}
     };
 }
 

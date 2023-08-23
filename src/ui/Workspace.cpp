@@ -27,18 +27,14 @@
 namespace rgaa {
 
     Workspace::Workspace(const std::shared_ptr<Context>& ctx, const StreamItem& item) : QWidget(nullptr) {
-        LOGI("Workspace : {}", (void*)this);
         context_ = ctx;
         stream_item_ = item;
         settings_ = Settings::Instance();
         QString title = "Sailfish client window [ 1 ]";
         setWindowTitle(title);
 
-        //QWidget::setCursor(QCursor(Qt::BlankCursor));
-
         sdk_ = std::make_shared<SailfishSDK>(ctx, stream_item_);
 
-        //auto widget = new QWidget(this);
         auto layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(layout);
 
@@ -60,14 +56,38 @@ namespace rgaa {
             layout->addWidget(qt_video_label_);
         }
 
-        //widget->setLayout(layout);
         setLayout(layout);
         this->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
 
-        cover_ = new WorkspaceCover(context_,  this);
+        cover_ = new WorkspaceCover(context_, stream_item_, this);
         cover_->show();
         installEventFilter(this);
 
+        // messages //
+        fullscreen_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeFullscreen, [=, this](auto& msg) {
+            context_->PostUITask([=, this]() {
+                showFullScreen();
+                for (const auto& [idx, w] : video_widgets_) {
+                    if (idx == 0) {
+                        continue;
+                    }
+                    w->showFullScreen();
+                }
+            });
+        }));
+
+        exit_fullscreen_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeExitFullscreen, [=, this](auto& msg) {
+            context_->PostUITask([=, this]() {
+                showNormal();
+                for (const auto& [idx, w] : video_widgets_) {
+                    if (idx == 0) {
+                        continue;
+                    }
+                    w->showNormal();
+                }
+            });
+        }));
+        // messages //
     }
 
     Workspace::~Workspace() {
@@ -148,6 +168,8 @@ namespace rgaa {
         if (sdk_) {
             sdk_->Exit();
         }
+        context_->RemoveMessageTask(fullscreen_task_id_);
+        context_->RemoveMessageTask(exit_fullscreen_task_id_);
     }
 
     void Workspace::closeEvent(QCloseEvent *event) {

@@ -59,6 +59,9 @@ namespace rgaa {
 
         WorkspaceCover* cover_ = nullptr;
 
+        int fullscreen_task_id_ = -1;
+        int exit_fullscreen_task_id_ = -1;
+
     };
 
 }

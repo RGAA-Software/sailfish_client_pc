@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include "sdk/StreamItem.h"
+
 namespace rgaa {
 
     class Context;
@@ -18,7 +20,7 @@ namespace rgaa {
     class WorkspaceCover : public QWidget {
     public:
 
-        explicit WorkspaceCover(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
+        explicit WorkspaceCover(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent = nullptr);
         ~WorkspaceCover();
 
     private:
@@ -29,6 +31,8 @@ namespace rgaa {
         FloatMenu* float_menu_ = nullptr;
 
         int mouse_pressed_task_id_ = -1;
+
+        StreamItem item_;
 
     };
 
