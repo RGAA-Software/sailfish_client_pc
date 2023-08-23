@@ -67,6 +67,8 @@ namespace rgaa {
         void Hide();
         void HideWithAnim(std::function<void()>&& finished_task = nullptr);
 
+        void SetOnDebugStatusCallback(std::function<void(bool)>&& cbk);
+
     private:
 
         float transparency_ = 0.0f;
@@ -74,6 +76,8 @@ namespace rgaa {
         std::vector<FloatMenuItem*> menu_items_;
         std::shared_ptr<Context> context_ = nullptr;
         StreamItem item_;
+
+        std::function<void(bool)> debug_status_cbk_;
 
     };
 

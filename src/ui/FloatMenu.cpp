@@ -102,7 +102,7 @@ namespace rgaa {
         if (pressed_) {
             painter.setBrush(QBrush(QColor(0x66, 0x66, 0x66, 0x55 * transparency_)));
         }
-        else if (enter_) {
+        else if (enter_ || expand_) {
             painter.setBrush(QBrush(QColor(0x55, 0x55, 0x55, 0x55 * transparency_)));
         }
         else {
@@ -151,6 +151,14 @@ namespace rgaa {
         item_layout->addWidget(item_debug);
         item_layout->addStretch();
         menu_items_.push_back(item_debug);
+        item_debug->SetOnClickCallback([=, this]() {
+            auto expand = item_debug->GetExpand();
+            auto to_status = !expand;
+            item_debug->SetExpand(to_status);
+            if (debug_status_cbk_) {
+                debug_status_cbk_(to_status);
+            }
+        });
 
         // 2.
         auto item_clipboard = new FloatMenuItem(tr("Clipboard"), ":/resources/image/ic_clipboard_on.svg", "", this);
@@ -270,6 +278,10 @@ namespace rgaa {
         });
         animation->setEasingCurve(QEasingCurve::OutCubic);
         animation->start();
+    }
+
+    void FloatMenu::SetOnDebugStatusCallback(std::function<void(bool)>&& cbk) {
+        debug_status_cbk_ = std::move(cbk);
     }
 
 }

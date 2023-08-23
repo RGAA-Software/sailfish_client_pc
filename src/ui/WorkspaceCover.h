@@ -36,6 +36,8 @@ namespace rgaa {
 
         StreamItem item_;
 
+        bool debug_showing_ = false;
+
     };
 
 }

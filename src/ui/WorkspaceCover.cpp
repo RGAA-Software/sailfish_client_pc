@@ -70,6 +70,11 @@ namespace rgaa {
                 }
             });
         }));
+
+        float_menu->SetOnDebugStatusCallback([this](bool status) {
+            this->debug_showing_ = status;
+            update();
+        });
     }
 
     WorkspaceCover::~WorkspaceCover() {
@@ -78,10 +83,11 @@ namespace rgaa {
     }
 
     void WorkspaceCover::paintEvent(QPaintEvent *event) {
-        QPainter painter(this);
-        painter.setBrush(QBrush(QColor(0x33, 0x00, 0x00, 0x55)));
-        painter.drawRect(0,0, QWidget::width(), QWidget::height());
-
+        if (this->debug_showing_) {
+            QPainter painter(this);
+            painter.setBrush(QBrush(QColor(0x33, 0x33, 0x33, 0xbb)));
+            painter.drawRect(0, 0, QWidget::width(), QWidget::height());
+        }
     }
 
 }
