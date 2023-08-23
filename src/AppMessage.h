@@ -21,6 +21,8 @@ namespace rgaa {
     constexpr int kCodeMousePressed = 0x1007;
     constexpr int kCodeFullscreen = 0x1008;
     constexpr int kCodeExitFullscreen = 0x1009;
+    constexpr int kCodeClipboardStatus = 0x1010;
+    constexpr int kCodeAudioStatus = 0x1011;
 
     class Timeout1S : public Message {
     public:
@@ -132,6 +134,37 @@ namespace rgaa {
 
         explicit ExitFullscreenMessage() : Message(kCodeExitFullscreen) {}
     };
+
+    // Change clipboard status
+    class ClipboardStatusMessage : public Message {
+    public:
+
+        static std::shared_ptr<ClipboardStatusMessage> Make(bool on) {
+            return std::make_shared<ClipboardStatusMessage>(on);
+        }
+
+        explicit ClipboardStatusMessage(bool on) : Message (kCodeClipboardStatus) {
+            this->on = on;
+        };
+
+        bool on = false;
+    };
+
+    // Change audio status
+    class AudioStatusMessage : public Message {
+    public:
+
+        static std::shared_ptr<AudioStatusMessage> Make(bool on) {
+            return std::make_shared<AudioStatusMessage>(on);
+        }
+
+        explicit AudioStatusMessage(bool on) : Message(kCodeAudioStatus) {
+            this->on = on;
+        }
+
+        bool on = false;
+    };
+
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

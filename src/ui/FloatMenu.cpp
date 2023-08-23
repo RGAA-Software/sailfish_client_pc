@@ -147,7 +147,7 @@ namespace rgaa {
         item_layout->addStretch();
 
         // 1.
-        auto item_debug = new FloatMenuItem(tr("Debug"), ":/resources/image/ic_debug.svg", "", this);
+        auto item_debug = new FloatMenuItem(tr("Debug"), ":/resources/image/ic_debug_off.svg", ":/resources/image/ic_debug_on.svg", this);
         item_layout->addWidget(item_debug);
         item_layout->addStretch();
         menu_items_.push_back(item_debug);
@@ -161,16 +161,28 @@ namespace rgaa {
         });
 
         // 2.
-        auto item_clipboard = new FloatMenuItem(tr("Clipboard"), ":/resources/image/ic_clipboard_on.svg", "", this);
+        auto item_clipboard = new FloatMenuItem(tr("Clipboard"), ":/resources/image/ic_clipboard_off.svg", ":/resources/image/ic_clipboard_on.svg", this);
         item_layout->addWidget(item_clipboard);
         item_layout->addStretch();
         menu_items_.push_back(item_clipboard);
+        item_clipboard->SetOnClickCallback([=, this] () {
+            auto expand = item_clipboard->GetExpand();
+            auto to_status = !expand;
+            item_clipboard->SetExpand(to_status);
+            context_->SendAppMessage(ClipboardStatusMessage::Make(to_status));
+        });
 
         // 3.
-        auto item_audio = new FloatMenuItem(tr("Audio"), ":/resources/image/ic_audio_on.svg", "", this);
+        auto item_audio = new FloatMenuItem(tr("Audio"), ":/resources/image/ic_audio_off.svg", ":/resources/image/ic_audio_on.svg", this);
         item_layout->addWidget(item_audio);
         item_layout->addStretch();
         menu_items_.push_back(item_audio);
+        item_audio->SetOnClickCallback([=, this] () {
+            auto expand = item_audio->GetExpand();
+            auto to_status = !expand;
+            item_audio->SetExpand(to_status);
+            context_->SendAppMessage(AudioStatusMessage::Make(to_status));
+        });
 
         // 4.
         auto item_fullscreen = new FloatMenuItem(tr("Fullscreen"), ":/resources/image/ic_fullscreen.svg", ":/resources/image/ic_exit_fullscreen.svg", this);

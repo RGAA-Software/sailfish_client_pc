@@ -9,7 +9,8 @@
         <file>resources/image/ic_clipboard_off.svg</file>
         <file>resources/image/ic_clipboard_on.svg</file>
         <file>resources/image/ic_close.svg</file>
-        <file>resources/image/ic_debug.svg</file>
+        <file>resources/image/ic_debug_on.svg</file>
+        <file>resources/image/ic_debug_off.svg</file>
         <file>resources/image/ic_exit_fullscreen.svg</file>
         <file>resources/image/ic_fullscreen.svg</file>
 
