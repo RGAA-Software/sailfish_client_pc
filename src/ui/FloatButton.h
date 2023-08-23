@@ -28,6 +28,10 @@ namespace rgaa {
             click_cbk_ = std::move(cbk);
         }
 
+        void ShowWithAnim();
+        void HideWithAnim(std::function<void()>&& finished_task = nullptr);
+        void Hide();
+
     private:
 
         bool enter_ = false;
@@ -36,6 +40,8 @@ namespace rgaa {
         QPixmap expand_pixmap_;
 
         std::function<void()> click_cbk_;
+
+        float transparency_ = 0.0f;
 
     };
 

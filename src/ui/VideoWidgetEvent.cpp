@@ -6,6 +6,8 @@
 #include "QtKeyConverter.h"
 #include "rgaa_common/RLog.h"
 #include "sdk/SailfishSDK.h"
+#include "AppMessage.h"
+#include "Context.h"
 
 #ifdef WIN32
 #include <Windows.h>
@@ -86,6 +88,9 @@ namespace rgaa {
 		auto key = (MouseKey)GetMouseKey(e);
 		auto mouse_msg = MessageMaker::MakeMouseInfo(key, true, false, x, y, 0, 0);
         SendCallback(mouse_msg);
+
+        // app message
+        context->SendAppMessage(MousePressedMessage::Make());
 	}
 
 	void VideoWidgetEvent::OnMouseReleaseEvent(QMouseEvent* e) {

@@ -11,10 +11,15 @@
 #include "WidgetHelper.h"
 #include "FloatButton.h"
 #include "FloatMenu.h"
+#include "Context.h"
+#include "rgaa_common/RLog.h"
+#include "rgaa_common/RMessageQueue.h"
+#include "AppMessage.h"
 
 namespace rgaa {
 
     WorkspaceCover::WorkspaceCover(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+        this->context_ = ctx;
         setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
         setAttribute(Qt::WA_TranslucentBackground);
 
@@ -26,9 +31,10 @@ namespace rgaa {
         float_btn_layout->addStretch();
         auto float_btn = new FloatButton(this);
         float_button_ = float_btn;
+        float_button_->ShowWithAnim();
         float_button_->SetOnClickCallback([=, this]() {
-            float_menu_->show();
-            float_button_->hide();
+            float_menu_->ShowWithAnim();
+            float_button_->Hide();
         });
 
         float_btn->setFixedSize(100, 26);
@@ -50,10 +56,21 @@ namespace rgaa {
 
         root_layout->addStretch();
         setLayout(root_layout);
+
+        mouse_pressed_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeMousePressed, [=, this](auto& msg) {
+            context_->PostUITask([=]() {
+                if (!float_menu_->isHidden()) {
+                    float_menu_->HideWithAnim([=](){
+                        float_button_->ShowWithAnim();
+                    });
+                }
+            });
+        }));
     }
 
     WorkspaceCover::~WorkspaceCover() {
-
+        LOGI("~~~WorkspaceCover");
+        context_->RemoveMessageTask(mouse_pressed_task_id_);
     }
 
 

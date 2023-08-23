@@ -18,6 +18,7 @@ namespace rgaa {
     constexpr int kCodeClearWorkspace = 0x1004;
     constexpr int kCodeClipboard = 0x1005;
     constexpr int kCodeStreamUpdated = 0x1006;
+    constexpr int kCodeMousePressed = 0x1007;
 
     class Timeout1S : public Message {
     public:
@@ -100,6 +101,15 @@ namespace rgaa {
         std::string msg_;
     };
 
+    // Mouse pressed
+    class MousePressedMessage : public Message {
+    public:
+        static std::shared_ptr<MousePressedMessage> Make() {
+            return std::make_shared<MousePressedMessage>();
+        }
+
+        explicit MousePressedMessage() : Message(kCodeMousePressed) {}
+    };
 }
 
 #endif //SAILFISH_CLIENT_PC_APPMESSAGE_H

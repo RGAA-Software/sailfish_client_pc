@@ -164,7 +164,7 @@ namespace rgaa {
     bool Workspace::eventFilter(QObject *watched, QEvent *event) {
         if (watched == this) {
             if (event->type() == QEvent::Move) {
-                QMoveEvent* move_event = static_cast<QMoveEvent*>(event);
+                auto move_event = dynamic_cast<QMoveEvent*>(event);
                 if (cover_) {
                     auto point = move_event->pos();
                     cover_->move(point);

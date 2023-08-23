@@ -7,6 +7,9 @@
 #include <QPainter>
 #include <QPen>
 #include <QBrush>
+#include <QPropertyAnimation>
+
+#include "rgaa_common/RLog.h"
 
 namespace rgaa {
 
@@ -25,15 +28,14 @@ namespace rgaa {
 
         painter.setPen(Qt::NoPen);
         if (pressed_) {
-            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x99)));
+            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x99 * transparency_)));
         }
         else if (enter_) {
-            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x77)));
+            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x77 * transparency_)));
         }
         else {
-            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x55)));
+            painter.setBrush(QBrush(QColor(0x00, 0x00, 0x00, 0x55 * transparency_)));
         }
-
         int w = QWidget::width();
         int h = QWidget::height();
         int radius = QWidget::height()/2;
@@ -66,5 +68,44 @@ namespace rgaa {
         }
     }
 
+    void FloatButton::ShowWithAnim() {
+        auto animation = new QPropertyAnimation();
+        animation->setDuration(350);
+        animation->setStartValue(0.0);
+        animation->setEndValue(1.0);
+        connect(animation, &QPropertyAnimation::finished, this, [=]() {
+            delete animation;
+        });
+        connect(animation, &QPropertyAnimation::valueChanged, this, [=](const QVariant &value) {
+            this->transparency_ = value.toFloat();
+            this->update();
+        });
+        animation->setEasingCurve(QEasingCurve::OutCubic);
+        animation->start();
+        show();
+    }
 
+    void FloatButton::HideWithAnim(std::function<void()>&& finished_task) {
+        auto animation = new QPropertyAnimation(this, "windowOpacity");
+        animation->setDuration(350);
+        animation->setStartValue(1.0);
+        animation->setEndValue(0.0);
+        connect(animation, &QPropertyAnimation::finished, this, [=]() {
+            if (finished_task) {
+                finished_task();
+            }
+            this->hide();
+            delete animation;
+        });
+        connect(animation, &QPropertyAnimation::valueChanged, this, [=] (const QVariant& value) {
+            this->transparency_ = value.toFloat();
+            this->update();
+        });
+        animation->start();
+    }
+
+    void FloatButton::Hide() {
+        this->transparency_ = 0;
+        hide();
+    }
 }

@@ -28,6 +28,8 @@ namespace rgaa {
         FloatButton* float_button_ = nullptr;
         FloatMenu* float_menu_ = nullptr;
 
+        int mouse_pressed_task_id_ = -1;
+
     };
 
 }
