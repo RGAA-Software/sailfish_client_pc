@@ -7,6 +7,8 @@
 #include <QPalette>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QPainter>
+#include <QEvent>
 
 #include "WidgetHelper.h"
 #include "FloatButton.h"
@@ -21,8 +23,9 @@ namespace rgaa {
     WorkspaceCover::WorkspaceCover(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent) : QWidget(parent) {
         this->context_ = ctx;
         this->item_ = item;
-        setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+        setWindowFlags(Qt::FramelessWindowHint | Qt::Tool );
         setAttribute(Qt::WA_TranslucentBackground);
+        setAttribute(Qt::WA_TransparentForMouseEvents);
 
         auto root_layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
@@ -74,6 +77,11 @@ namespace rgaa {
         context_->RemoveMessageTask(mouse_pressed_task_id_);
     }
 
+    void WorkspaceCover::paintEvent(QPaintEvent *event) {
+        QPainter painter(this);
+        painter.setBrush(QBrush(QColor(0x33, 0x00, 0x00, 0x55)));
+        painter.drawRect(0,0, QWidget::width(), QWidget::height());
 
+    }
 
 }

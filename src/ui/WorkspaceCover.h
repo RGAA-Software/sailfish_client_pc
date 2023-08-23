@@ -21,7 +21,9 @@ namespace rgaa {
     public:
 
         explicit WorkspaceCover(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent = nullptr);
-        ~WorkspaceCover();
+        ~WorkspaceCover() override;
+
+        void paintEvent(QPaintEvent *event) override;
 
     private:
 

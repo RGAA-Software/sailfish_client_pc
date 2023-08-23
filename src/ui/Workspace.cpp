@@ -180,7 +180,8 @@ namespace rgaa {
 
     void Workspace::resizeEvent(QResizeEvent *event) {
         QWidget::resizeEvent(event);
-        cover_->resize(event->size());
+        // use Widget size!!! QResizeEvent give a different size of the widget.
+        cover_->setFixedSize(this->size());
     }
 
     bool Workspace::eventFilter(QObject *watched, QEvent *event) {
@@ -188,8 +189,7 @@ namespace rgaa {
             if (event->type() == QEvent::Move) {
                 auto move_event = dynamic_cast<QMoveEvent*>(event);
                 if (cover_) {
-                    auto point = move_event->pos();
-                    cover_->move(point);
+                    cover_->move(move_event->pos());
                 }
             }
         }
