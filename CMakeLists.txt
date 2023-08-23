@@ -50,6 +50,7 @@ find_package(Opus CONFIG REQUIRED)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets Core Gui OpenGL OpenGLWidgets Multimedia)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui OpenGL OpenGLWidgets Multimedia)
 find_package(Boost COMPONENTS system filesystem thread locale program_options random)
+find_package(leveldb CONFIG REQUIRED)
 # find packages end
 
 # include

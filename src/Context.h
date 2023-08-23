@@ -18,6 +18,7 @@ namespace rgaa {
     class Thread;
     class Message;
     class MessageTask;
+    class SharedPreference;
 
     class Context : public QObject {
     Q_OBJECT
@@ -41,6 +42,7 @@ namespace rgaa {
         std::shared_ptr<MessageQueue> msg_queue_ = nullptr;
         std::shared_ptr<Thread> msg_thread_ = nullptr;
         std::shared_ptr<Thread> task_thread_ = nullptr;
+        std::shared_ptr<SharedPreference> sp_ = nullptr;
 
     };
 
