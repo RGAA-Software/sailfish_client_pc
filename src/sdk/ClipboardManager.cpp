@@ -18,27 +18,20 @@ namespace rgaa {
     }
 
     ClipboardManager::~ClipboardManager() {
+        LOGI("~~~ClipboardManager");
         StopMonitoringClipboard();
     }
 
     void ClipboardManager::Init() {
         clipboard_ = QApplication::clipboard();
-        StartMonitoringClipboard();
-
-//        std::thread* t = new std::thread([=](){
-//            for (int i = 0; i < 10000; i++) {
-//                auto msg = QString::number(i) + " //// test";
-//                SetText(msg);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-//            }
-//        });
-//        t->detach();
+        connect(clipboard_, &QClipboard::dataChanged, this, &ClipboardManager::OnClipboardDataChanged);
     }
 
     void ClipboardManager::OnClipboardDataChanged() {
         QClipboard *clipboard = QApplication::clipboard();
         auto text = clipboard->text();
-        if (text.isEmpty()) {
+        if (text.isEmpty() || text == manual_set_msg_) {
+            LOGI("Manu set, ignore.");
             return;
         }
 
@@ -48,22 +41,13 @@ namespace rgaa {
     }
 
     void ClipboardManager::SetText(const QString &msg) {
-        QTimer::singleShot(0, this, [=, this](){
-            StopMonitoringClipboard();
+        manual_set_msg_ = msg;
+        QMetaObject::invokeMethod(this, [=]() {
             clipboard_->setText(msg);
-            StartMonitoringClipboard();
-        });
-    }
-
-    void ClipboardManager::StartMonitoringClipboard() {
-        QTimer::singleShot(0, this, [=, this]() {
-            connect(clipboard_, &QClipboard::dataChanged, this,
-                             &ClipboardManager::OnClipboardDataChanged);
         });
     }
 
     void ClipboardManager::StopMonitoringClipboard() {
-        disconnect(clipboard_, &QClipboard::dataChanged, this,
-                            &ClipboardManager::OnClipboardDataChanged);
+        disconnect(clipboard_, &QClipboard::dataChanged, this, &ClipboardManager::OnClipboardDataChanged);
     }
 }

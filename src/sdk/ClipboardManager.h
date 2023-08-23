@@ -24,7 +24,7 @@ namespace rgaa {
     public:
 
         explicit ClipboardManager(const std::shared_ptr<SailfishSDK>& ctx);
-        ~ClipboardManager();
+        ~ClipboardManager() override;
 
         void Init();
         void SetText(const QString& msg);
@@ -33,8 +33,6 @@ namespace rgaa {
         void OnClipboardDataChanged();
 
     private:
-
-        void StartMonitoringClipboard();
         void StopMonitoringClipboard();
 
     private:
@@ -42,6 +40,8 @@ namespace rgaa {
         std::shared_ptr<SailfishSDK> sdk_ = nullptr;
 
         QClipboard* clipboard_ = nullptr;
+
+        QString manual_set_msg_;
 
     };
 
