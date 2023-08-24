@@ -16,6 +16,7 @@ namespace rgaa {
     class Context;
     class FloatButton;
     class FloatMenu;
+    class DebugWidget;
 
     class WorkspaceCover : public QWidget {
     public:
@@ -37,6 +38,8 @@ namespace rgaa {
         StreamItem item_;
 
         bool debug_showing_ = false;
+
+        DebugWidget* debug_widget_ = nullptr;
 
     };
 

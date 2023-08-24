@@ -8,6 +8,7 @@
 #include "messages.pb.h"
 #include "rgaa_common/RData.h"
 #include "rgaa_common/RCloser.h"
+#include "Statistics.h"
 
 #include <libyuv.h>
 #include <iostream>
@@ -104,7 +105,7 @@ namespace rgaa {
         }
 
         auto decode_usage = RegionTimeCount::Make([](uint64_t count) {
-            //Statistics::Instance()->AppendVideoDecode(count);
+            Statistics::Instance()->AppendVideoDecode(count);
         });
 
         av_frame_unref(av_frame);

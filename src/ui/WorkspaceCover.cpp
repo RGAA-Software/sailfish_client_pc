@@ -17,6 +17,7 @@
 #include "rgaa_common/RLog.h"
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
+#include "debug/DebugWidget.h"
 
 namespace rgaa {
 
@@ -58,6 +59,17 @@ namespace rgaa {
         float_menu_layout->addStretch();
         root_layout->addLayout(float_menu_layout);
 
+        root_layout->addSpacing(50);
+        auto debug_layout = new QHBoxLayout();
+        WidgetHelper::ClearMargin(debug_layout);
+        debug_widget_ = new DebugWidget(context_, this);
+        debug_widget_->setFixedSize(800, 600);
+        debug_widget_->hide();
+        debug_layout->addStretch();
+        debug_layout->addWidget(debug_widget_);
+        debug_layout->addStretch();
+        root_layout->addLayout(debug_layout);
+
         root_layout->addStretch();
         setLayout(root_layout);
 
@@ -73,6 +85,12 @@ namespace rgaa {
 
         float_menu->SetOnDebugStatusCallback([this](bool status) {
             this->debug_showing_ = status;
+            if (this->debug_showing_) {
+                debug_widget_->show();
+            }
+            else {
+                debug_widget_->hide();
+            }
             update();
         });
     }
