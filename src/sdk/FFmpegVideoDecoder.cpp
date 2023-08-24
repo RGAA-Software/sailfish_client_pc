@@ -9,13 +9,15 @@
 #include "rgaa_common/RData.h"
 #include "rgaa_common/RCloser.h"
 #include "Statistics.h"
+#include "SailfishSDK.h"
 
 #include <libyuv.h>
 #include <iostream>
 
 namespace rgaa {
 
-    FFmpegVideoDecoder::FFmpegVideoDecoder(bool to_rgb) {
+    FFmpegVideoDecoder::FFmpegVideoDecoder(const std::shared_ptr<SailfishSDK>& sdk, bool to_rgb) {
+        this->sdk_ = sdk;
         this->cvt_to_rgb = to_rgb;
     }
 
@@ -104,8 +106,8 @@ namespace rgaa {
             return nullptr;
         }
 
-        auto decode_usage = RegionTimeCount::Make([](uint64_t count) {
-            Statistics::Instance()->AppendVideoDecode(count);
+        auto decode_usage = RegionTimeCount::Make([this](uint64_t count) {
+            sdk_->GetStatistics()->AppendVideoDecode(count);
         });
 
         av_frame_unref(av_frame);

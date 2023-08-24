@@ -10,13 +10,17 @@
 #include "AppMessage.h"
 #include "Context.h"
 #include "sdk/RawImage.h"
+#include "Statistics.h"
+#include "SailfishSDK.h"
 
 #include <utility>
 
 namespace rgaa {
 
-    MessageParser::MessageParser(const std::shared_ptr<Context>& ctx) {
+    MessageParser::MessageParser(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk) {
         context_ = ctx;
+        sdk_ = sdk;
+        statistics_ = sdk_->GetStatistics();
     }
 
     std::shared_ptr<NetMessage> MessageParser::ParseMessage(const std::string& msg) {
@@ -33,6 +37,30 @@ namespace rgaa {
 
         }
         else if (type == MessageType::kVideoFrame) {
+            // statistics begin
+            auto& frame = net_msg->video_frame();
+            auto current_time = GetCurrentTimestamp();
+            if (last_recv_video_time == 0) {
+                last_recv_video_time = current_time;
+            }
+            auto diff = current_time - last_recv_video_time;
+            last_recv_video_time = current_time;
+            statistics_->AppendVideoFrame(frame.data().size(), diff);
+
+            video_recv_fps++;
+            if (last_recv_video_fps_time == 0) {
+                last_recv_video_fps_time = current_time;
+            }
+            auto fps_diff = current_time - last_recv_video_fps_time;
+            if (fps_diff >= 1000) {
+                statistics_->video_recv_fps = video_recv_fps;
+                last_recv_video_fps_time = current_time;
+                video_recv_fps = 0;
+            }
+
+            statistics_->frame_index = frame.frame_index();
+            // statistics end
+
             if (video_frame_cbk_) {
                 video_frame_cbk_(net_msg, net_msg->video_frame());
             }

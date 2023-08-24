@@ -59,7 +59,7 @@ namespace rgaa {
         setLayout(layout);
         this->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
 
-        cover_ = new WorkspaceCover(context_, stream_item_, this);
+        cover_ = new WorkspaceCover(context_, sdk_, stream_item_, this);
         cover_->show();
         installEventFilter(this);
 

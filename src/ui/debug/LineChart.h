@@ -11,7 +11,7 @@ namespace rgaa
 	class LineChart : public QWidget {
 	public:
 
-		LineChart(QWidget* parent = nullptr);
+		LineChart(const QString& title, QWidget* parent = nullptr);
 		~LineChart();
 
 		void paintEvent(QPaintEvent* event) override;
@@ -22,6 +22,7 @@ namespace rgaa
 	private:
 		
 		std::vector<uint32_t> chart_data;
+        QString title_;
 
 	};
 }

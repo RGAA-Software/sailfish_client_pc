@@ -17,17 +17,19 @@ namespace rgaa {
     class FloatButton;
     class FloatMenu;
     class DebugWidget;
+    class SailfishSDK;
 
     class WorkspaceCover : public QWidget {
     public:
 
-        explicit WorkspaceCover(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent = nullptr);
+        explicit WorkspaceCover(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, const StreamItem& item, QWidget* parent = nullptr);
         ~WorkspaceCover() override;
 
         void paintEvent(QPaintEvent *event) override;
 
     private:
 
+        std::shared_ptr<SailfishSDK> sdk_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
 
         FloatButton* float_button_ = nullptr;

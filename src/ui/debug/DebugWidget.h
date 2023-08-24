@@ -16,11 +16,12 @@ namespace rgaa {
     class Context;
     class Statistics;
     class LineChart;
+    class SailfishSDK;
 
     class DebugWidget : public QWidget {
     public:
 
-        explicit DebugWidget(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
+        explicit DebugWidget(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, QWidget* parent = nullptr);
         ~DebugWidget() override;
 
         void paintEvent(QPaintEvent *event) override;
@@ -31,9 +32,12 @@ namespace rgaa {
 
     private:
 
+        std::shared_ptr<SailfishSDK> sdk_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
-        Statistics* statistics_ = nullptr;
+        std::shared_ptr<Statistics> statistics_ = nullptr;
         LineChart* decode_time_chart_ = nullptr;
+        LineChart* video_frame_time_chart_ = nullptr;
+        LineChart* encode_time_chart_ = nullptr;
 
         QTimer* timer_ = nullptr;
 

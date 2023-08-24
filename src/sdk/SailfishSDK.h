@@ -25,6 +25,7 @@ namespace rgaa {
     class Timer;
     class ClipboardManager;
     class Context;
+    class Statistics;
 
     using OnVideoFrameDecodedCallback = std::function<void(int dup_idx, const std::shared_ptr<RawImage>&)>;
     using OnNetMessageCallback = std::function<void(const std::shared_ptr<NetMessage>&)>;
@@ -43,6 +44,8 @@ namespace rgaa {
 
         StreamConfig GetStreamConfig();
         std::shared_ptr<MessageParser> GetMsgParser();
+
+        std::shared_ptr<Statistics> GetStatistics();
 
     private:
 
@@ -77,6 +80,8 @@ namespace rgaa {
         std::shared_ptr<Context> context_ = nullptr;
 
         int clipboard_task_id_ = -1;
+
+        std::shared_ptr<Statistics> statistics_ = nullptr;
 
     };
 

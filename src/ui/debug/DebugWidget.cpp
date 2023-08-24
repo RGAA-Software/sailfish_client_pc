@@ -6,6 +6,7 @@
 
 #include "Context.h"
 #include "sdk/Statistics.h"
+#include "sdk/SailfishSDK.h"
 
 #include <QPainter>
 #include <QPen>
@@ -16,27 +17,44 @@
 
 namespace rgaa {
 
-    DebugWidget::DebugWidget(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+    DebugWidget::DebugWidget(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, QWidget* parent) : QWidget(parent) {
         context_ = ctx;
-        statistics_ = Statistics::Instance();
+        sdk_ = sdk;
+        statistics_ = sdk_->GetStatistics();
 
         auto root_layout = new QHBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
-
+        root_layout->addSpacing(20);
         // left
         {
             auto layout = new QVBoxLayout();
             WidgetHelper::ClearMargin(layout);
-            decode_time_chart_ = new LineChart(this);
-            decode_time_chart_->setFixedSize(500, 200);
+            layout->addSpacing(20);
+            decode_time_chart_ = new LineChart(tr("Video decode time(Client)"), this);
+            decode_time_chart_->setFixedSize(450, 120);
             layout->addWidget(decode_time_chart_);
 
+            layout->addSpacing(30);
+
+            video_frame_time_chart_ = new LineChart(tr("Video receive gaps(Client)"), this);
+            video_frame_time_chart_->setFixedSize(450, 120);
+            layout->addWidget(video_frame_time_chart_);
+
+            layout->addSpacing(30);
+
+            encode_time_chart_ = new LineChart(tr("Video encode time(Server)"), this);
+            encode_time_chart_->setFixedSize(450, 120);
+            layout->addWidget(encode_time_chart_);
+
+            layout->addStretch();
             root_layout->addLayout(layout);
         }
         // right
         {
             root_layout->addStretch();
         }
+
+        root_layout->addSpacing(20);
         setLayout(root_layout);
 
         timer_ = new QTimer(this);
@@ -64,6 +82,7 @@ namespace rgaa {
 
     void DebugWidget::UpdateStatistics() {
         decode_time_chart_->UpdateData(statistics_->video_decode_times);
+        video_frame_time_chart_->UpdateData(statistics_->video_recv_diff_times);
     }
 
 }

@@ -22,11 +22,12 @@ namespace rgaa {
 
     class Data;
     class RawImage;
+    class SailfishSDK;
 
     class FFmpegVideoDecoder {
     public:
 
-        explicit FFmpegVideoDecoder(bool to_rgb);
+        explicit FFmpegVideoDecoder(const std::shared_ptr<SailfishSDK>& sdk, bool to_rgb);
         ~FFmpegVideoDecoder();
 
         int Init(int codec_type, int width, int height);
@@ -36,6 +37,9 @@ namespace rgaa {
         bool NeedReConstruct(int codec_type, int width, int height);
 
     private:
+
+        std::shared_ptr<SailfishSDK> sdk_ = nullptr;
+
         int codec_type_ = -1;
         int frame_width_ = 0;
         int frame_height_ = 0;

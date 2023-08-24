@@ -18,12 +18,14 @@
 #include "ClipboardManager.h"
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
+#include "Statistics.h"
 
 namespace rgaa {
 
     SailfishSDK::SailfishSDK(const std::shared_ptr<Context> ctx, const StreamItem& item) {
         context_ = ctx;
         stream_item_ = item;
+        statistics_ = std::make_shared<Statistics>();
     }
 
     SailfishSDK::~SailfishSDK() {
@@ -39,7 +41,7 @@ namespace rgaa {
 
         InitTimers();
 
-        msg_parser_ = std::make_shared<MessageParser>(context_);
+        msg_parser_ = std::make_shared<MessageParser>(context_, shared_from_this());
         msg_parser_->SetOnVideoFrameCallback([this](const std::shared_ptr<NetMessage>& msg, const VideoFrameSync& frame) {
             InitVideoDecoderIfNeeded(frame.dup_idx(), frame.type(), frame.width(), frame.height());
             auto data = Data::Make(frame.data().data(), frame.data().size());
@@ -88,7 +90,7 @@ namespace rgaa {
 
     void SailfishSDK::InitVideoDecoderIfNeeded(int dup_idx, int type, int width, int height) {
         auto func_create_decoder = [=, this]() {
-            auto video_decoder = std::make_shared<FFmpegVideoDecoder>(false);
+            auto video_decoder = std::make_shared<FFmpegVideoDecoder>(shared_from_this(), false);
             video_decoder->Init(type, width, height);
             video_decoders_.insert(std::make_pair(dup_idx, video_decoder));
         };
@@ -151,6 +153,10 @@ namespace rgaa {
 
     std::shared_ptr<MessageParser> SailfishSDK::GetMsgParser() {
         return msg_parser_;
+    }
+
+    std::shared_ptr<Statistics> SailfishSDK::GetStatistics() {
+        return statistics_;
     }
 
     void SailfishSDK::Exit() {

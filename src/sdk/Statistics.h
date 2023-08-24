@@ -10,11 +10,6 @@ namespace rgaa
 	class Statistics {
 	public:
 
-		static Statistics* Instance() {
-			static Statistics ins;
-			return &ins;
-		}
-
 		void AppendVideoFrame(uint32_t bytes, uint32_t diff_time);
 		uint32_t FormatVideoFrameMB();
 		void AppendVideoDecode(uint32_t time);

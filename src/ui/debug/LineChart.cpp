@@ -10,8 +10,8 @@
 namespace rgaa
 {
 
-	LineChart::LineChart(QWidget* parent) : QWidget(parent) {
-
+	LineChart::LineChart(const QString& title, QWidget* parent) : QWidget(parent) {
+        title_ = title;
 	}
 
 	LineChart::~LineChart() {
@@ -25,9 +25,19 @@ namespace rgaa
 		painter.drawLine(0, height(), width(), height());
 
         {
-            QPen pen(QColor(0xff, 0xff, 0xff, 0x55));
-            pen.setWidth(1);
+            QPen pen(QColor(0xffffff));
+            QFont font;
+            font.setPointSize(12);
+            QFontMetrics fm(font);
+            auto rect = fm.boundingRect(title_);
+            //int pixelsWide = fm.width("What's the width of this text?");
+            //int pixelsHigh = fm.height();
+
             painter.setPen(pen);
+            painter.setFont(font);
+            painter.setRenderHint(QPainter::TextAntialiasing, true);
+            painter.drawText((this->width() - rect.width())/2, rect.height()*2/3, title_);
+            painter.setRenderHint(QPainter::TextAntialiasing, false);
         }
 
         painter.drawLine(1, 0, 1, this->height());
@@ -36,7 +46,18 @@ namespace rgaa
 		int segments = std::min(5, height() / 20);
 		for (int i = 1; i < segments; i++) {
 			int target_height = height() - i * 20;
+            QPen pen_line(QColor(0xff, 0xff, 0xff, 0x55));
+            pen_line.setWidth(1);
+            painter.setPen(pen_line);
 			painter.drawLine(0, target_height, width(), target_height);
+
+            QPen pen_font(QColor(0xff, 0xff, 0xff, 0xff));
+            pen_font.setWidth(1);
+            painter.setPen(pen_font);
+            QFont font;
+            font.setPointSize(10);
+            painter.setFont(font);
+            painter.drawText(0, target_height, QString::number(i*20) + "ms");
 		}
 
 		int data_size = chart_data.size();

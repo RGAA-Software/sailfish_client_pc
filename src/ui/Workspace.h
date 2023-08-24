@@ -22,6 +22,7 @@ namespace rgaa {
     class NetMessage;
     class SDLWidgetWrapper;
     class WorkspaceCover;
+    class SailfishSDK;
 
     class Workspace : public QWidget {
     public:

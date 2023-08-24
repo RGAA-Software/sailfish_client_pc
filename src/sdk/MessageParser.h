@@ -17,6 +17,8 @@ namespace rgaa {
     class Decoder;
     class Context;
     class RawImage;
+    class Statistics;
+    class SailfishSDK;
 
     using OnVideoFrameCallback = std::function<void(const std::shared_ptr<NetMessage>&, const VideoFrameSync&)>;
     using OnCursorCallback = std::function<void(int dup_idx, int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>&)>;
@@ -25,7 +27,7 @@ namespace rgaa {
     class MessageParser : public QObject {
     public:
 
-        explicit MessageParser(const std::shared_ptr<Context>& ctx);
+        explicit MessageParser(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk);
 
         std::shared_ptr<NetMessage> ParseMessage(const std::string& msg);
 
@@ -39,11 +41,18 @@ namespace rgaa {
         OnVideoFrameCallback video_frame_cbk_;
         OnCursorCallback cursor_cbk_;
 
+        std::shared_ptr<SailfishSDK> sdk_ = nullptr;
+
         std::shared_ptr<Decoder> audio_decoder_ = nullptr;
         std::shared_ptr<AudioPlayer> audio_player_ = nullptr;
         std::shared_ptr<Context> context_ = nullptr;
 
         bool exit_ = false;
+
+        uint64_t last_recv_video_time = 0;
+        uint64_t last_recv_video_fps_time = 0;
+        uint32_t video_recv_fps = 0;
+        std::shared_ptr<Statistics> statistics_ = nullptr;
 
     };
 

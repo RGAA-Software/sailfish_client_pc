@@ -21,7 +21,8 @@
 
 namespace rgaa {
 
-    WorkspaceCover::WorkspaceCover(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent) : QWidget(parent) {
+    WorkspaceCover::WorkspaceCover(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, const StreamItem& item, QWidget* parent) : QWidget(parent) {
+        this->sdk_ = sdk;
         this->context_ = ctx;
         this->item_ = item;
         setWindowFlags(Qt::FramelessWindowHint | Qt::Tool );
@@ -59,11 +60,11 @@ namespace rgaa {
         float_menu_layout->addStretch();
         root_layout->addLayout(float_menu_layout);
 
-        root_layout->addSpacing(50);
+        root_layout->addSpacing(30);
         auto debug_layout = new QHBoxLayout();
         WidgetHelper::ClearMargin(debug_layout);
-        debug_widget_ = new DebugWidget(context_, this);
-        debug_widget_->setFixedSize(800, 600);
+        debug_widget_ = new DebugWidget(context_, sdk_, this);
+        debug_widget_->setFixedSize(960, 700);
         debug_widget_->hide();
         debug_layout->addStretch();
         debug_layout->addWidget(debug_widget_);
