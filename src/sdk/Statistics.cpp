@@ -4,8 +4,10 @@
 #include <iomanip>
 #include <iostream>
 
-constexpr auto kMaxDiffTimes = 180;
-constexpr auto kMaxDecodeTimes = 180;
+constexpr auto kMaxDiffTimes = 120;
+constexpr auto kMaxDecodeTimes = 120;
+constexpr auto kMaxEncodeTimes = 120;
+constexpr auto kMaxNetworkTimes = 120;
 
 namespace rgaa
 {
@@ -42,5 +44,27 @@ namespace rgaa
 
 		return oss.str();
 	}
+
+    void Statistics::AppendEncodeTime(int dup_idx, uint32_t time) {
+        if (encode_times_.find(dup_idx) == encode_times_.end()) {
+            std::deque<uint32_t> times;
+            times.push_back(time);
+            encode_times_.insert({dup_idx, times});
+        }
+        else {
+            auto& times = encode_times_[dup_idx];
+            times.push_back(time);
+            if (times.size() > kMaxEncodeTimes) {
+                times.pop_front();
+            }
+        }
+    }
+
+    void Statistics::AppendNetworkTime(uint32_t time) {
+        network_times_.push_back(time);
+        if (network_times_.size() > kMaxNetworkTimes) {
+            network_times_.pop_front();
+        }
+    }
 
 }

@@ -30,21 +30,27 @@ namespace rgaa {
             auto layout = new QVBoxLayout();
             WidgetHelper::ClearMargin(layout);
             layout->addSpacing(20);
-            decode_time_chart_ = new LineChart(tr("Video decode time(Client)"), this);
+            decode_time_chart_ = new LineChart(tr("Video decode duration(Client)"), this);
             decode_time_chart_->setFixedSize(450, 120);
             layout->addWidget(decode_time_chart_);
 
             layout->addSpacing(30);
 
-            video_frame_time_chart_ = new LineChart(tr("Video receive gaps(Client)"), this);
+            video_frame_time_chart_ = new LineChart(tr("Video frame gaps"), this);
             video_frame_time_chart_->setFixedSize(450, 120);
             layout->addWidget(video_frame_time_chart_);
 
             layout->addSpacing(30);
 
-            encode_time_chart_ = new LineChart(tr("Video encode time(Server)"), this);
+            encode_time_chart_ = new LineChart(tr("[Capture + Encode] duration(Server)"), this);
             encode_time_chart_->setFixedSize(450, 120);
             layout->addWidget(encode_time_chart_);
+
+            layout->addSpacing(30);
+
+            network_time_chart_ = new LineChart(tr("Server -> Client duration"), this);
+            network_time_chart_->setFixedSize(450, 120);
+            layout->addWidget(network_time_chart_);
 
             layout->addStretch();
             root_layout->addLayout(layout);
@@ -83,6 +89,10 @@ namespace rgaa {
     void DebugWidget::UpdateStatistics() {
         decode_time_chart_->UpdateData(statistics_->video_decode_times);
         video_frame_time_chart_->UpdateData(statistics_->video_recv_diff_times);
+        if (statistics_->encode_times_.find(0) != statistics_->encode_times_.end()) {
+            encode_time_chart_->UpdateData(statistics_->encode_times_[0]);
+        }
+        network_time_chart_->UpdateData(statistics_->network_times_);
     }
 
 }

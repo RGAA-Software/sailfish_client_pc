@@ -64,7 +64,7 @@ namespace rgaa {
         auto debug_layout = new QHBoxLayout();
         WidgetHelper::ClearMargin(debug_layout);
         debug_widget_ = new DebugWidget(context_, sdk_, this);
-        debug_widget_->setFixedSize(960, 700);
+        debug_widget_->setFixedSize(960, 600);
         debug_widget_->hide();
         debug_layout->addStretch();
         debug_layout->addWidget(debug_widget_);

@@ -57,7 +57,7 @@ namespace rgaa
             QFont font;
             font.setPointSize(10);
             painter.setFont(font);
-            painter.drawText(0, target_height, QString::number(i*20) + "ms");
+            painter.drawText(3, target_height-3, QString::number(i*20) + "ms");
 		}
 
 		int data_size = chart_data.size();

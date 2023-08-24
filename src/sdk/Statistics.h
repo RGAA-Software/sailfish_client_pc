@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <deque>
+#include <map>
 
 namespace rgaa
 {
@@ -14,6 +15,8 @@ namespace rgaa
 		uint32_t FormatVideoFrameMB();
 		void AppendVideoDecode(uint32_t time);
 		std::string FormatStreamingTime();
+        void AppendEncodeTime(int dup_idx, uint32_t time);
+        void AppendNetworkTime(uint32_t time);
 
 	public:
 
@@ -24,6 +27,8 @@ namespace rgaa
 		uint64_t frame_index = 0;
 		std::deque<uint32_t> video_recv_diff_times;
 		std::deque<uint32_t> video_decode_times;
+        std::map<int, std::deque<uint32_t>> encode_times_;
+        std::deque<uint32_t> network_times_;
 
 		std::string video_encode_format;
 		uint32_t video_width = 0;

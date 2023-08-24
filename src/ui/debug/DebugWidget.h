@@ -38,6 +38,7 @@ namespace rgaa {
         LineChart* decode_time_chart_ = nullptr;
         LineChart* video_frame_time_chart_ = nullptr;
         LineChart* encode_time_chart_ = nullptr;
+        LineChart* network_time_chart_ = nullptr;
 
         QTimer* timer_ = nullptr;
 

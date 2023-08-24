@@ -59,6 +59,12 @@ namespace rgaa {
             }
 
             statistics_->frame_index = frame.frame_index();
+
+            statistics_->AppendEncodeTime(frame.dup_idx(), frame.encode_time());
+
+            auto network_time = GetCurrentTimestamp() - net_msg->send_time();
+            statistics_->AppendNetworkTime(network_time);
+
             // statistics end
 
             if (video_frame_cbk_) {
