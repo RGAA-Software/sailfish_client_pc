@@ -20,6 +20,9 @@ namespace rgaa {
         msg_thread_ = std::make_shared<Thread>([=, this]() {
             msg_queue_->PollBlocked();
         }, "msg thread", false);
+
+        task_thread_ = Thread::Make("context_thread", 128);
+        task_thread_->Poll();
     }
 
     Context::~Context() {
