@@ -149,7 +149,7 @@ namespace rgaa {
 
     std::map<int, bool> QtKeyConverter::GetSysKeyStatus() {
         std::map<int, bool> status;
-
+#if WIN32
         auto func_is_pressed = [](int vk) -> bool {
             return GetKeyState(vk) < 0;
         };
@@ -166,7 +166,7 @@ namespace rgaa {
         status.insert(std::make_pair(VK_LBUTTON, func_is_pressed(VK_LBUTTON)));
         status.insert(std::make_pair(VK_RBUTTON, func_is_pressed(VK_RBUTTON)));
         status.insert(std::make_pair(VK_MBUTTON, func_is_pressed(VK_MBUTTON)));
-
+#endif
         return status;
     }
 

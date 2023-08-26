@@ -13,6 +13,7 @@
 
 #include <libyuv.h>
 #include <iostream>
+#include <thread>
 
 namespace rgaa {
 
@@ -83,7 +84,8 @@ namespace rgaa {
 
         std::cout << "thread count : " << codec_context->thread_count << std::endl;
 
-        av_init_packet(&packet);
+        //av_init_packet(&packet);
+        packet = av_packet_alloc();
         av_frame = av_frame_alloc();
 
         avcodec_parameters_free(&codec_params);
@@ -112,12 +114,12 @@ namespace rgaa {
 
         av_frame_unref(av_frame);
 
-        packet.data = (uint8_t*)frame->CStr();
-        packet.size = frame->Size();
+        packet->data = (uint8_t*)frame->CStr();
+        packet->size = frame->Size();
 
         auto format = codec_context->pix_fmt;
 
-        int ret = avcodec_send_packet(codec_context, &packet);
+        int ret = avcodec_send_packet(codec_context, packet);
         if (ret != 0) {
             return nullptr;
         }
@@ -184,12 +186,12 @@ namespace rgaa {
         }
 
         if (av_frame != nullptr) {
-            av_packet_unref(&packet);
+            av_packet_unref(packet);
             av_free(av_frame);
             av_frame = nullptr;
         }
 
-        av_packet_unref(&packet);
+        av_packet_free(&packet);
     }
 
     bool FFmpegVideoDecoder::NeedReConstruct(int codec_type, int width, int height) {

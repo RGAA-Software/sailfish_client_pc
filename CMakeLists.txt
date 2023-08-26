@@ -14,34 +14,37 @@ include(env.cmake)
 #
 #endif ()
 
+set(CMAKE_PREFIX_PATH ${QT_ROOT}/lib/cmake)
 SET(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
-include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+#include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 project(sailfish_client_pc)
+
+include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+set(CMAKE_CXX_FLAGS "-Wno-error=deprecated-declarations -Wno-deprecated-declarations ")
+
 # config for each platform
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(WIN32)
     message("Config for Windows")
 
     add_definitions(-DOS_WINDOWS)
     add_compile_options(/bigobj)
 
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message("Config for Linux")
+elseif(APPLE)
+    message("Config for Apple")
 
-    add_definitions(-DOS_LINUX)
-    add_compile_options(-Wa,-mbig-obj)
+    find_package(FFMPEG REQUIRED)
 
 endif ()
 # config end
 
 # find packages
-#find_package(FFMPEG REQUIRED)
 find_package(SqliteOrm CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(libyuv CONFIG REQUIRED)

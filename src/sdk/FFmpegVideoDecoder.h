@@ -46,7 +46,7 @@ namespace rgaa {
         bool stop_ = false;
         AVCodecContext* codec_context = nullptr;
         AVCodec* codec = nullptr;
-        AVPacket packet;
+        AVPacket* packet = nullptr;
         AVFrame* av_frame = nullptr;
 
         std::shared_ptr<RawImage> decoded_image_ = nullptr;

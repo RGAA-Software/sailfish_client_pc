@@ -14,8 +14,9 @@ using namespace rgaa;
 
 int main(int argc, char** argv) {
 
+#ifdef WIN32
     CaptureDump();
-
+#endif
     QApplication app(argc, argv);
 
 #if 0
