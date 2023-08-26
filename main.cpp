@@ -19,12 +19,10 @@ int main(int argc, char** argv) {
 #endif
 
 #ifdef __APPLE__
-    QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
-    fmt.setVersion(3, 3);
+    QSurfaceFormat fmt;
     fmt.setProfile(QSurfaceFormat::CoreProfile);
-    fmt.setSwapInterval(0);
-    //fmt.setSamples(4);
-    fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    fmt.setVersion(3, 3);
+    fmt.setSwapInterval(1);
     QSurfaceFormat::setDefaultFormat(fmt);
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif

@@ -8,7 +8,6 @@ static const char* kMainVertexShader = R"(
     in vec3 aColor;
     in vec2 aTex;
 
-    out vec3 outColor;
     out vec2 outTex;
 
     uniform mat4 model;
@@ -18,7 +17,6 @@ static const char* kMainVertexShader = R"(
     void main()
     {   
         gl_Position = vec4(aPos.x, aPos.y * -1.0, 0.0, 1.0);
-        outColor = aColor;
         outTex = aTex;
     }
 
@@ -164,7 +162,7 @@ static const char* kI420FragmentShader = R"(
         //FragColor = vec4(r, g, b, 1.0); 
         FragColor = vec4(r, g, b, 1.0);
         //FragColor = vec4(1.0, outColor.r, outTex.g, 1.0);
-        //FragColor = vec4(1.0, 0.0, 0.8, 1.0);
+        //FragColor = vec4(r, r, r, 1.0);
     }
 
 )";

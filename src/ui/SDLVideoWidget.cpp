@@ -174,7 +174,7 @@ namespace rgaa
 	void SDLVideoWidget::resizeEvent(QResizeEvent* event) {
 		VideoWidget::resizeEvent(event);
 		VideoWidgetEvent::OnWidgetResize(event->size().width(), event->size().height());
-        
+
 //        qreal devicePixelRatio = this->windowHandle()->screen()->devicePixelRatio();
 
     }
