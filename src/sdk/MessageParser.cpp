@@ -63,7 +63,7 @@ namespace rgaa {
 
             statistics_->AppendEncodeTime(frame.dup_idx(), frame.encode_time());
 
-            auto network_time = GetCurrentTimestamp() - net_msg->send_time();
+            auto network_time = frame.previous_network_time();
             statistics_->AppendNetworkTime(network_time);
 
             //LOGI("Network : {}", network_time);

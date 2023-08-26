@@ -48,7 +48,7 @@ namespace rgaa {
 
             layout->addSpacing(30);
 
-            network_time_chart_ = new LineChart(tr("Server -> Client duration"), this);
+            network_time_chart_ = new LineChart(tr("Server -> Client -> Server duration"), this);
             network_time_chart_->setFixedSize(450, 120);
             layout->addWidget(network_time_chart_);
 
