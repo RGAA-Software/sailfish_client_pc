@@ -27,8 +27,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_FLAGS "-Wno-error=deprecated-declarations -Wno-deprecated-declarations ")
-
 # config for each platform
 if(WIN32)
     message("Config for Windows")
@@ -40,6 +38,7 @@ elseif(APPLE)
     message("Config for Apple")
 
     find_package(FFMPEG REQUIRED)
+    set(CMAKE_CXX_FLAGS "-Wno-error=deprecated-declarations -Wno-deprecated-declarations ")
 
 endif ()
 # config end
