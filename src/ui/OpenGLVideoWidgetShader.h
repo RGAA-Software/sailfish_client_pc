@@ -164,7 +164,7 @@ static const char* kI420FragmentShader = R"(
         //FragColor = vec4(r, g, b, 1.0); 
         FragColor = vec4(r, g, b, 1.0);
         //FragColor = vec4(1.0, outColor.r, outTex.g, 1.0);
-        //FragColor = vec4(y, y, y, 1.0);
+        //FragColor = vec4(1.0, 0.0, 0.8, 1.0);
     }
 
 )";

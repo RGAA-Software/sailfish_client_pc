@@ -17,6 +17,19 @@ int main(int argc, char** argv) {
 #ifdef WIN32
     CaptureDump();
 #endif
+
+#ifdef __APPLE__
+    QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
+    fmt.setVersion(3, 3);
+    fmt.setProfile(QSurfaceFormat::CoreProfile);
+    fmt.setSwapInterval(0);
+    //fmt.setSamples(4);
+    fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    QSurfaceFormat::setDefaultFormat(fmt);
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
+
+    //qputenv("QT_SCALE_FACTOR", QByteArray::number(2));
     QApplication app(argc, argv);
 
 #if 0

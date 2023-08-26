@@ -25,12 +25,13 @@ namespace rgaa {
 	class Context;
 	class ShaderProgram;
 	class Statistics;
+    class SailfishSDK;
 
 	class OpenGLVideoWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core, public VideoWidgetEvent {
 	public:
 
-		explicit OpenGLVideoWidget(std::shared_ptr<Context> ctx, RawImageFormat format, QWidget* parent = nullptr);
-		~OpenGLVideoWidget();
+		explicit OpenGLVideoWidget(std::shared_ptr<Context> ctx, const std::shared_ptr<SailfishSDK>& sdk, RawImageFormat format, QWidget* parent = nullptr);
+		~OpenGLVideoWidget() override;
 
 		void RefreshRGBImage(const std::shared_ptr<RawImage>& image);
 		void RefreshRGBBuffer(const char* buf, int width, int height, int channel);

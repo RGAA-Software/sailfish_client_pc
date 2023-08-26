@@ -14,6 +14,8 @@
 #include <QString>
 #include <QMimeData>
 #include <QApplication>
+#include <QWindow>
+#include <QScreen>
 
 namespace rgaa
 {
@@ -31,17 +33,19 @@ namespace rgaa
 		}
 
         sdl_window_ = SDL_CreateWindowFrom((void*)this->winId());
+        //sdl_window_ = SDL_CreateWindow("High DPI Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_ALLOW_HIGHDPI);
 		if (sdl_window_ == nullptr) {
 			LOGE("Could not create window: {}", SDL_GetError());
 			return;
 		}
+        SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
 
         sdl_renderer_ = SDL_CreateRenderer(sdl_window_, -1, 0);
 		if (!sdl_renderer_) {
 			LOGE("Create renderer failed!");
 			return;
 		}
-		
+
 		grabKeyboard();
         setMouseTracking(true);
 
@@ -170,7 +174,10 @@ namespace rgaa
 	void SDLVideoWidget::resizeEvent(QResizeEvent* event) {
 		VideoWidget::resizeEvent(event);
 		VideoWidgetEvent::OnWidgetResize(event->size().width(), event->size().height());
-	}
+        
+//        qreal devicePixelRatio = this->windowHandle()->screen()->devicePixelRatio();
+
+    }
 
 	void SDLVideoWidget::mouseMoveEvent(QMouseEvent* e) {
 		VideoWidget::mouseMoveEvent(e);

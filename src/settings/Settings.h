@@ -33,7 +33,7 @@ namespace rgaa {
         int ws_width_ = 1280;
         int ws_height_ = 768;
 
-        VideoRenderType render_type_ = VideoRenderType::kSDL;
+        VideoRenderType render_type_ = VideoRenderType::kOpenGL;
 
     };
 

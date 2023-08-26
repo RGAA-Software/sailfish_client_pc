@@ -21,14 +21,20 @@
 namespace rgaa
 {
 
-	OpenGLVideoWidget::OpenGLVideoWidget(std::shared_ptr<Context> ctx, RawImageFormat format, QWidget* parent) 
-		: QOpenGLWidget(parent), VideoWidgetEvent(ctx, nullptr, 0) {
+	OpenGLVideoWidget::OpenGLVideoWidget(std::shared_ptr<Context> ctx, const std::shared_ptr<SailfishSDK>& sdk, RawImageFormat format, QWidget* parent)
+		: QOpenGLWidget(parent), VideoWidgetEvent(ctx, sdk, 0) {
 		context = ctx;
 		raw_image_format = format;
 //		statistics = Statistics::Instance();
 
 		setFocusPolicy(Qt::StrongFocus);
 		setMouseTracking(true);
+
+        auto timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, [this]() {
+            this->update();
+        });
+        timer->start(17);
 	}
 
 	OpenGLVideoWidget::~OpenGLVideoWidget()
@@ -195,8 +201,8 @@ namespace rgaa
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-//		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-//		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		if (raw_image_format == RawImageFormat::kRGBA || raw_image_format == RawImageFormat::kRGB) {
 
@@ -232,6 +238,7 @@ namespace rgaa
 				glBindTexture(GL_TEXTURE_2D, v_texture_id);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_width / 2, tex_height / 2, GL_LUMINANCE, GL_UNSIGNED_BYTE, v_buffer);
 			}
+            LOGI("//update//");
 		}
 
 		if (raw_image_format == RawImageFormat::kRGB || raw_image_format == RawImageFormat::kRGBA) {

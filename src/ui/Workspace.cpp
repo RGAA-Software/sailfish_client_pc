@@ -40,7 +40,7 @@ namespace rgaa {
 
         auto render_type = settings_->GetVideoRenderType();
         if (render_type == VideoRenderType::kOpenGL) {
-            gl_video_widget_ = new OpenGLVideoWidget(context_, RawImageFormat::kI420, this);
+            gl_video_widget_ = new OpenGLVideoWidget(context_, sdk_, RawImageFormat::kI420, this);
             gl_video_widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
             layout->addWidget(gl_video_widget_);
         }
@@ -117,19 +117,18 @@ namespace rgaa {
         });
 
         sdk_->RegisterVideoFrameDecodedCallback([=, this](int dup_idx, const std::shared_ptr<RawImage>& image) {
-            if (video_widgets_.find(dup_idx) == video_widgets_.end()) {
-                return;
-            }
-
-            auto video_widget = video_widgets_[dup_idx];
 
             auto render_type = settings_->GetVideoRenderType();
             if (render_type == VideoRenderType::kOpenGL && gl_video_widget_) {
                 gl_video_widget_->RefreshI420Image(image);
-                gl_video_widget_->update();
+                //gl_video_widget_->update();
             }
 
             QMetaObject::invokeMethod(this, [=, this](){
+                if (video_widgets_.find(dup_idx) == video_widgets_.end()) {
+                    return;
+                }
+                auto video_widget = video_widgets_[dup_idx];
                 if (render_type == VideoRenderType::kSDL && video_widget) {
                     video_widget->widget_->Init(image->img_width, image->img_height);
                     video_widget->widget_->RefreshI420Image(image);
@@ -146,7 +145,9 @@ namespace rgaa {
         sdk_->Init();
 
         sdk_->GetMsgParser()->SetOnCursorCallback([=, this](int dup_idx, int x, int y, int hpx, int hpy, const RawImagePtr& image) {
-            if (video_widgets_.find(dup_idx) == video_widgets_.end()) {
+            auto render_type = settings_->GetVideoRenderType();
+            // only sdl have implemented ...
+            if (video_widgets_.find(dup_idx) == video_widgets_.end() || render_type != VideoRenderType::kSDL) {
                 return;
             }
             QMetaObject::invokeMethod(this, [=, this](){
