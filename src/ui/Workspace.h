@@ -12,6 +12,9 @@
 
 #include "sdk/StreamItem.h"
 
+#define RENDER_OPENGL 1
+#define RENDER_SDL !RENDER_OPENGL
+
 namespace rgaa {
 
     class Settings;
@@ -23,6 +26,7 @@ namespace rgaa {
     class SDLWidgetWrapper;
     class WorkspaceCover;
     class SailfishSDK;
+    class OpenGLWidgetWrapper;
 
     class Workspace : public QWidget {
     public:
@@ -51,10 +55,16 @@ namespace rgaa {
         std::shared_ptr<Context> context_ = nullptr;
         Settings* settings_ = nullptr;
 
-        OpenGLVideoWidget* gl_video_widget_ = nullptr;
+        //OpenGLVideoWidget* gl_video_widget_ = nullptr;
         QLabel* qt_video_label_ = nullptr;
 
-        std::map<int, SDLWidgetWrapper*> video_widgets_;
+#if RENDER_SDL
+        std::map<int, SDLWidgetWrapper*> sdl_video_widgets_;
+#endif
+
+#if RENDER_OPENGL
+        std::map<int, OpenGLWidgetWrapper*> gl_video_widgets_;
+#endif
 
         StreamItem stream_item_;
 

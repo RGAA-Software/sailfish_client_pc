@@ -37,21 +37,26 @@ namespace rgaa {
 
         auto layout = new QVBoxLayout();
         WidgetHelper::ClearMargin(layout);
+        int default_dup_idx = 0;
 
         auto render_type = settings_->GetVideoRenderType();
+#if RENDER_OPENGL
         if (render_type == VideoRenderType::kOpenGL) {
-            gl_video_widget_ = new OpenGLVideoWidget(context_, sdk_, RawImageFormat::kI420, this);
-            gl_video_widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
-            layout->addWidget(gl_video_widget_);
-        }
-        else if (render_type == VideoRenderType::kSDL) {
-            int default_dup_idx = 0;
-            auto video_widget = new SDLWidgetWrapper(context_, sdk_, stream_item_, default_dup_idx, RawImageFormat::kI420, this);
-            video_widgets_.insert(std::make_pair(default_dup_idx, video_widget));
+            auto video_widget = new OpenGLWidgetWrapper(context_, sdk_, stream_item_, default_dup_idx, RawImageFormat::kI420, this);
+            gl_video_widgets_.insert({default_dup_idx, video_widget});
             video_widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
             layout->addWidget(video_widget);
         }
-        else if (render_type == VideoRenderType::kTestQPixmap) {
+#endif
+#if RENDER_SDL
+        if (render_type == VideoRenderType::kSDL) {
+            auto video_widget = new SDLWidgetWrapper(context_, sdk_, stream_item_, default_dup_idx, RawImageFormat::kI420, this);
+            sdl_video_widgets_.insert(std::make_pair(default_dup_idx, video_widget));
+            video_widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
+            layout->addWidget(video_widget);
+        }
+#endif
+        if (render_type == VideoRenderType::kTestQPixmap) {
             qt_video_label_ = new QLabel(this);
             layout->addWidget(qt_video_label_);
         }
@@ -67,7 +72,12 @@ namespace rgaa {
         fullscreen_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeFullscreen, [=, this](auto& msg) {
             context_->PostUITask([=, this]() {
                 showFullScreen();
-                for (const auto& [idx, w] : video_widgets_) {
+#if RENDER_SDL
+                for (const auto& [idx, w] : sdl_video_widgets_) {
+#endif
+#if RENDER_OPENGL
+                for (const auto& [idx, w] : gl_video_widgets_) {
+#endif
                     if (idx == 0) {
                         continue;
                     }
@@ -79,7 +89,12 @@ namespace rgaa {
         exit_fullscreen_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeExitFullscreen, [=, this](auto& msg) {
             context_->PostUITask([=, this]() {
                 showNormal();
-                for (const auto& [idx, w] : video_widgets_) {
+#if RENDER_SDL
+                for (const auto& [idx, w] : sdl_video_widgets_) {
+#endif
+#if RENDER_OPENGL
+                for (const auto& [idx, w] : gl_video_widgets_) {
+#endif
                     if (idx == 0) {
                         continue;
                     }
@@ -102,9 +117,10 @@ namespace rgaa {
             LOGI("Screen size : {}", screen_size);
             QMetaObject::invokeMethod(this, [=]() {
                 for (int dup_idx = 1; dup_idx < screen_size; dup_idx++) {
+#if RENDER_SDL
                     auto widget = new SDLWidgetWrapper(context_, sdk_, stream_item_, dup_idx, RawImageFormat::kI420, nullptr);
                     widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
-                    video_widgets_[dup_idx] = widget;
+                    sdl_video_widgets_[dup_idx] = widget;
                     widget->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
                     widget->show();
 
@@ -112,28 +128,53 @@ namespace rgaa {
                         auto msg = ClearWorkspace::Make(stream_item_);
                         context_->SendAppMessage(msg);
                     });
+#endif
+#if RENDER_OPENGL
+                    auto widget = new OpenGLWidgetWrapper(context_, sdk_, stream_item_, dup_idx, RawImageFormat::kI420, nullptr);
+                    widget->widget_->RegisterMouseKeyboardEventCallback(std::bind(&Workspace::OnMouseKeyboardEventCallback, this, std::placeholders::_1, std::placeholders::_2));
+                    gl_video_widgets_[dup_idx] = widget;
+                    widget->resize(settings_->GetWSWidth(), settings_->GetWSHeight());
+                    widget->show();
+
+                    connect(widget, &OpenGLWidgetWrapper::OnCloseEvent, this, [=, this]() {
+                        auto msg = ClearWorkspace::Make(stream_item_);
+                        context_->SendAppMessage(msg);
+                    });
+#endif
                 }
             });
         });
 
         sdk_->RegisterVideoFrameDecodedCallback([=, this](int dup_idx, const std::shared_ptr<RawImage>& image) {
-
+#if RENDER_OPENGL
             auto render_type = settings_->GetVideoRenderType();
-            if (render_type == VideoRenderType::kOpenGL && gl_video_widget_) {
-                gl_video_widget_->RefreshI420Image(image);
-                //gl_video_widget_->update();
-            }
+            if (render_type == VideoRenderType::kOpenGL) {
 
-            QMetaObject::invokeMethod(this, [=, this](){
-                if (video_widgets_.find(dup_idx) == video_widgets_.end()) {
+                if (gl_video_widgets_.find(dup_idx) == gl_video_widgets_.end()) {
                     return;
                 }
-                auto video_widget = video_widgets_[dup_idx];
+                auto video_widget = gl_video_widgets_[dup_idx];
+                if (video_widget) {
+                    //video_widget->widget_->Init(image->img_width, image->img_height);
+                    video_widget->widget_->RefreshI420Image(image);
+                }
+
+                return;
+            }
+#endif
+
+            QMetaObject::invokeMethod(this, [=, this](){
+#if RENDER_SDL
+                if (sdl_video_widgets_.find(dup_idx) == sdl_video_widgets_.end()) {
+                    return;
+                }
+                auto video_widget = sdl_video_widgets_[dup_idx];
                 if (render_type == VideoRenderType::kSDL && video_widget) {
                     video_widget->widget_->Init(image->img_width, image->img_height);
                     video_widget->widget_->RefreshI420Image(image);
                 }
-                else if (render_type == VideoRenderType::kTestQPixmap && qt_video_label_) {
+#endif
+                if (render_type == VideoRenderType::kTestQPixmap && qt_video_label_) {
                     QImage to_image((uint8_t*)image->img_buf, image->img_width, image->img_height, QImage::Format_RGB888);
                     auto pixmap = QPixmap::fromImage(to_image);
                     qt_video_label_->setPixmap(pixmap);
@@ -146,14 +187,24 @@ namespace rgaa {
 
         sdk_->GetMsgParser()->SetOnCursorCallback([=, this](int dup_idx, int x, int y, int hpx, int hpy, const RawImagePtr& image) {
             auto render_type = settings_->GetVideoRenderType();
-            // only sdl have implemented ...
-            if (video_widgets_.find(dup_idx) == video_widgets_.end() || render_type != VideoRenderType::kSDL) {
+
+#if RENDER_SDL
+            if (sdl_video_widgets_.find(dup_idx) == sdl_video_widgets_.end()) {
                 return;
             }
             QMetaObject::invokeMethod(this, [=, this](){
-                auto video_widget = video_widgets_[dup_idx];
+                auto video_widget = sdl_video_widgets_[dup_idx];
                 video_widget->widget_->RefreshCursor(x, y, hpx, hpy, image);
             });
+#endif
+#if RENDER_OPENGL
+            if (gl_video_widgets_.find(dup_idx) == gl_video_widgets_.end()) {
+                return;
+            }
+            auto video_widget = gl_video_widgets_[dup_idx];
+            video_widget->widget_->RefreshCursor(x, y, hpx, hpy, image);
+#endif
+
         });
 
         show();
@@ -206,13 +257,22 @@ namespace rgaa {
         }
 
         Exit();
-
-        for (auto& [k, v] : video_widgets_) {
+#if RENDER_SDL
+        for (auto& [k, v] : sdl_video_widgets_) {
             v->widget_->Exit();
             if (k != 0) {
                 v->deleteLater();
             }
         }
+#endif
+#if RENDER_OPENGL
+        for (auto& [k, v] : gl_video_widgets_) {
+            v->widget_->Exit();
+            if (k != 0) {
+                v->deleteLater();
+            }
+        }
+#endif
         LOGI("Exit sdl video widget..");
 
         context_->SendAppMessage(CloseWorkspace::Make(stream_item_));

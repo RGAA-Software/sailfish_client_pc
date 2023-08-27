@@ -12,10 +12,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <QVBoxLayout>
 
 #include "sdk/RawImage.h"
 #include "messages.pb.h"
 #include "VideoWidgetEvent.h"
+#include "sdk/StreamItem.h"
 
 namespace rgaa {
 
@@ -30,13 +32,17 @@ namespace rgaa {
 	class OpenGLVideoWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core, public VideoWidgetEvent {
 	public:
 
-		explicit OpenGLVideoWidget(std::shared_ptr<Context> ctx, const std::shared_ptr<SailfishSDK>& sdk, RawImageFormat format, QWidget* parent = nullptr);
+		explicit OpenGLVideoWidget(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, RawImageFormat format, QWidget* parent = nullptr);
 		~OpenGLVideoWidget() override;
 
 		void RefreshRGBImage(const std::shared_ptr<RawImage>& image);
 		void RefreshRGBBuffer(const char* buf, int width, int height, int channel);
 		void RefreshI420Image(const std::shared_ptr<RawImage>& image);
 		void RefreshI420Buffer(const char* y, int y_size, const char* u, int u_size, const char* v, int v_size, int width, int height);
+
+        void RefreshCursor(int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor);
+
+        void Exit();
 
 	protected:
 		void resizeEvent(QResizeEvent* event) override;
@@ -95,5 +101,48 @@ namespace rgaa {
 
 		Statistics* statistics = nullptr;
 	};
+
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+    class OpenGLWidgetWrapper : public QWidget {
+    Q_OBJECT
+    public:
+
+        OpenGLWidgetWrapper(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, const StreamItem& item, int dup_idx, RawImageFormat format, QWidget* parent) {
+            this->context_ = ctx;
+            this->item_ = item;
+            QString title = "Sailfish client window [ " + QString::number(dup_idx+1) + " ]";
+            setWindowTitle(title);
+
+            auto layout = new QVBoxLayout();
+            layout->setSpacing(0);
+            layout->setContentsMargins(0,0,0,0);
+            widget_ = new OpenGLVideoWidget(ctx, sdk, dup_idx, format, this);
+            layout->addWidget(widget_);
+            setLayout(layout);
+
+            setAcceptDrops(true);
+        }
+
+    signals:
+
+        void OnCloseEvent();
+
+    protected:
+
+        void closeEvent(QCloseEvent *event) override;
+        void dragEnterEvent(QDragEnterEvent *event) override;
+        void dragLeaveEvent(QDragLeaveEvent *event) override;
+        void dropEvent(QDropEvent *event) override;
+
+    public:
+
+        OpenGLVideoWidget* widget_ = nullptr;
+        std::shared_ptr<Context> context_ = nullptr;
+
+        StreamItem item_;
+
+    };
 
 }

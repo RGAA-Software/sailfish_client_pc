@@ -4,6 +4,13 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QWheelEvent>
+#include <QMouseEvent>
+#include <QString>
+#include <QMimeData>
+#include <QApplication>
+#include <QWindow>
+#include <QScreen>
+
 #include <fstream>
 #include <iostream>
 #include <chrono>
@@ -21,8 +28,8 @@
 namespace rgaa
 {
 
-	OpenGLVideoWidget::OpenGLVideoWidget(std::shared_ptr<Context> ctx, const std::shared_ptr<SailfishSDK>& sdk, RawImageFormat format, QWidget* parent)
-		: QOpenGLWidget(parent), VideoWidgetEvent(ctx, sdk, 0) {
+	OpenGLVideoWidget::OpenGLVideoWidget(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, int dup_idx, RawImageFormat format, QWidget* parent)
+		: QOpenGLWidget(parent), VideoWidgetEvent(ctx, sdk, dup_idx) {
 		context = ctx;
 		raw_image_format = format;
 //		statistics = Statistics::Instance();
@@ -39,27 +46,7 @@ namespace rgaa
 
 	OpenGLVideoWidget::~OpenGLVideoWidget()
 	{
-		makeCurrent();
-		glDeleteVertexArrays(1, &vao);
-		glDeleteBuffers(1, &vbo);
-		glDeleteProgram(shader_program->GetProgramId());
 
-		if (y_texture_id) {
-			glDeleteTextures(1, &y_texture_id);
-		}
-		if (uv_texture_id) {
-			glDeleteTextures(1, &uv_texture_id);
-		}
-		if (u_texture_id) {
-			glDeleteTextures(1, &u_texture_id);
-		}
-		if (v_texture_id) {
-			glDeleteTextures(1, &v_texture_id);
-		}
-		if (rgb_texture_id) {
-			glDeleteTextures(1, &rgb_texture_id);
-		}
-		doneCurrent();
 	}
 
 	void OpenGLVideoWidget::initializeGL()
@@ -297,6 +284,10 @@ namespace rgaa
         LOGI("Init I420 texture : {} x {} ", tex_width, tex_height);
 	}
 
+    void OpenGLVideoWidget::RefreshCursor(int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor) {
+
+    }
+
 	void OpenGLVideoWidget::resizeGL(int width, int height) {
 		VideoWidgetEvent::OnWidgetResize(width, height);
 		glViewport(0, 0, width, height);
@@ -335,4 +326,61 @@ namespace rgaa
 		QOpenGLWidget::keyReleaseEvent(e);
 		VideoWidgetEvent::OnKeyReleaseEvent(e);
 	}
+
+    void OpenGLVideoWidget::Exit() {
+        makeCurrent();
+        glDeleteVertexArrays(1, &vao);
+        glDeleteBuffers(1, &vbo);
+        if (shader_program) {
+            shader_program->Release();
+        }
+
+        if (y_texture_id) {
+            glDeleteTextures(1, &y_texture_id);
+        }
+        if (uv_texture_id) {
+            glDeleteTextures(1, &uv_texture_id);
+        }
+        if (u_texture_id) {
+            glDeleteTextures(1, &u_texture_id);
+        }
+        if (v_texture_id) {
+            glDeleteTextures(1, &v_texture_id);
+        }
+        if (rgb_texture_id) {
+            glDeleteTextures(1, &rgb_texture_id);
+        }
+        doneCurrent();
+    }
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+    void OpenGLWidgetWrapper::closeEvent(QCloseEvent *event) {
+        event->ignore();
+        emit OnCloseEvent();
+    }
+
+    void OpenGLWidgetWrapper::dragEnterEvent(QDragEnterEvent *event) {
+        if (event->mimeData()->hasUrls()) {
+            event->acceptProposedAction();
+        }
+    }
+
+    void OpenGLWidgetWrapper::dragLeaveEvent(QDragLeaveEvent *event) {
+
+    }
+
+    void OpenGLWidgetWrapper::dropEvent(QDropEvent *event) {
+        if (!event->mimeData()->hasUrls()) {
+            return;
+        }
+
+        auto urls = event->mimeData()->urls();
+        for (auto& url : urls) {
+            LOGI("URL : {}", url.toLocalFile().toStdString());
+        }
+    }
+
+
+
 }
