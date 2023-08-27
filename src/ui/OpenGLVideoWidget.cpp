@@ -23,6 +23,8 @@
 #include "rgaa_common/RCloser.h"
 #include "rgaa_common/RLog.h"
 #include "sdk/RawImage.h"
+#include "Director.h"
+#include "Sprite.h"
 //#include "statistics/Statistics.h"
 
 namespace rgaa
@@ -55,6 +57,8 @@ namespace rgaa
 
 		auto functions = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_3_3_Core>(QOpenGLContext::currentContext());
 		functions->initializeOpenGLFunctions();
+
+        director_ = Director::Make(functions);
 
 		auto vertex_shader = kMainVertexShader;
 		char* fragment_shader = nullptr;
@@ -112,6 +116,8 @@ namespace rgaa
 
 		glBindVertexArray(0);
 
+        // cursor
+        cursor_ = std::make_shared<Sprite>(director_);
 	}
 
 	void OpenGLVideoWidget::RefreshRGBImage(const std::shared_ptr<RawImage>& image) {
@@ -242,10 +248,16 @@ namespace rgaa
 
 		model = glm::mat4(1.0f);
 		shader_program->SetUniformMatrix("model", model);
+        shader_program->SetUniformMatrix("view", director_->GetView());
+        shader_program->SetUniformMatrix("projection", director_->GetProjection());
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		shader_program->Release();
+
+        if (cursor_) {
+            cursor_->Render(0);
+        }
 
 		render_fps += 1;
 		auto current_time = GetCurrentTimestamp();
@@ -285,12 +297,35 @@ namespace rgaa
 	}
 
     void OpenGLVideoWidget::RefreshCursor(int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor) {
+        if (!cursor_ || tex_width == 0 || tex_height == 0) {
+            return;
+        }
 
+        float xp = x * 1.0f / tex_width;
+        float yp = y * 1.0f / tex_height;
+        //LOGI("xp : {}, yp : {}, size: {}x{}", xp, yp, cursor->img_width, cursor->img_height);
+        cursor_->UpdateTranslationPercentWindow(xp, yp);
+
+        float ratio_x = QWidget::width() * 1.0f / tex_width;
+        float ratio_y = QWidget::height() * 1.0f / tex_height;
+        float adjust_x = hpx * ratio_x;
+        float adjust_y = hpy * ratio_y;
+
+        cursor_->ForceImageSize(cursor->img_width * ratio_x, cursor->img_height * ratio_y);
+
+        cursor_->UpdateTranslationAdjuster(-adjust_x, adjust_y);
+        cursor_->UpdateImage(cursor);
     }
 
 	void OpenGLVideoWidget::resizeGL(int width, int height) {
 		VideoWidgetEvent::OnWidgetResize(width, height);
 		glViewport(0, 0, width, height);
+
+        director_->Init(width, height);
+        glViewport(0, 0, width, height);
+        if (cursor_) {
+            cursor_->OnWindowResized(width, height);
+        }
 	}
 
 	void OpenGLVideoWidget::mouseMoveEvent(QMouseEvent* e) {

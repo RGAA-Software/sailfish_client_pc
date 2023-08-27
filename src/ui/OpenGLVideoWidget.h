@@ -93,8 +93,8 @@ namespace rgaa {
 
 		RawImageFormat  raw_image_format;
 
-		std::shared_ptr<Director> director = nullptr;
-		std::shared_ptr<Sprite> cursor = nullptr;
+		std::shared_ptr<Director> director_ = nullptr;
+		std::shared_ptr<Sprite> cursor_ = nullptr;
 
 		int render_fps = 0;
 		uint64_t last_update_fps_time = 0;

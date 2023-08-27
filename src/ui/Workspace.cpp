@@ -273,7 +273,6 @@ namespace rgaa {
             }
         }
 #endif
-        LOGI("Exit sdl video widget..");
 
         context_->SendAppMessage(CloseWorkspace::Make(stream_item_));
 
