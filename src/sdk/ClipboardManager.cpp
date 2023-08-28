@@ -35,6 +35,11 @@ namespace rgaa {
             return;
         }
 
+        if (text.startsWith("file:///")) {
+            LOGI("Ignore file...");
+            return;
+        }
+
         LOGI("clip board : {} {}", text.toStdString(), (void*)this);
         auto msg = MessageMaker::MakeClipboard(text.toStdString());
         sdk_->PostNetMessage(msg);
@@ -49,5 +54,6 @@ namespace rgaa {
 
     void ClipboardManager::StopMonitoringClipboard() {
         disconnect(clipboard_, &QClipboard::dataChanged, this, &ClipboardManager::OnClipboardDataChanged);
+        LOGI("Stop clipboard monitoring...");
     }
 }

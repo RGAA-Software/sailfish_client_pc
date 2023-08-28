@@ -38,7 +38,7 @@ namespace rgaa
 
 		functions->glGenBuffers(1, &vbo);
 		functions->glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		functions->glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		functions->glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
 		int posLoc = functions->glGetAttribLocation(shader_program->GetProgramId(), "aPos");
 		functions->glVertexAttribPointer(posLoc, 3, GL_FLOAT, false, 8 * 4, 0);
@@ -59,8 +59,8 @@ namespace rgaa
 
 		functions->glGenTextures(1, &texture_id);
 		functions->glBindTexture(GL_TEXTURE_2D, texture_id);
-		functions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		functions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		functions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		functions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		functions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		functions->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		//functions->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);

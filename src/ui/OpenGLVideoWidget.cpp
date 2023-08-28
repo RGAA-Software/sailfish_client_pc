@@ -301,9 +301,14 @@ namespace rgaa
             return;
         }
 
+//        auto buf = (uint32_t *)cursor->img_buf;
+//        for (int row = 0; row < cursor->img_height; row++) {
+//            auto last_pixel = buf + row * cursor->img_width + (cursor->img_width - 1);
+//            *last_pixel = 0x00000000;
+//        }
+
         float xp = x * 1.0f / tex_width;
         float yp = y * 1.0f / tex_height;
-        //LOGI("xp : {}, yp : {}, size: {}x{}", xp, yp, cursor->img_width, cursor->img_height);
         cursor_->UpdateTranslationPercentWindow(xp, yp);
 
         float ratio_x = QWidget::width() * 1.0f / tex_width;
@@ -315,6 +320,8 @@ namespace rgaa
 
         cursor_->UpdateTranslationAdjuster(-adjust_x, adjust_y);
         cursor_->UpdateImage(cursor);
+
+        //LOGI("xp : {}, yp : {}, size: {}x{}", xp, yp, cursor->img_width, cursor->img_height);
     }
 
 	void OpenGLVideoWidget::resizeGL(int width, int height) {
