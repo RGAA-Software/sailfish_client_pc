@@ -233,15 +233,22 @@ namespace rgaa {
     void Workspace::resizeEvent(QResizeEvent *event) {
         QWidget::resizeEvent(event);
         // use Widget size!!! QResizeEvent give a different size of the widget.
-        cover_->setFixedSize(this->size());
+        //cover_->setFixedSize(this->size());
+        if (cover_) {
+            cover_->OnWindowResize();
+        }
     }
 
     bool Workspace::eventFilter(QObject *watched, QEvent *event) {
         if (watched == this) {
             if (event->type() == QEvent::Move) {
-                auto move_event = dynamic_cast<QMoveEvent*>(event);
+//                auto move_event = dynamic_cast<QMoveEvent*>(event);
+//                if (cover_) {
+//                    cover_->move(move_event->pos());
+//                }
+
                 if (cover_) {
-                    cover_->move(move_event->pos());
+                    cover_->OnWindowMove();
                 }
             }
         }

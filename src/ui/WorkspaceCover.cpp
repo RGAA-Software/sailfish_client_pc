@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QEvent>
+#include <QStyle>
 
 #include "WidgetHelper.h"
 #include "FloatButton.h"
@@ -39,8 +40,9 @@ namespace rgaa {
         float_button_ = float_btn;
         float_button_->ShowWithAnim();
         float_button_->SetOnClickCallback([=, this]() {
-            float_menu_->ShowWithAnim();
+            float_menu_->Show();
             float_button_->Hide();
+            Resize(float_menu_->size());
         });
 
         float_btn->setFixedSize(100, 26);
@@ -77,9 +79,13 @@ namespace rgaa {
         mouse_pressed_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeMousePressed, [=, this](auto& msg) {
             context_->PostUITask([=]() {
                 if (!float_menu_->isHidden()) {
-                    float_menu_->HideWithAnim([=](){
-                        float_button_->ShowWithAnim();
-                    });
+//                    float_menu_->HideWithAnim([=](){
+//                        float_button_->ShowWithAnim();
+//                    });
+                    float_menu_->Hide();
+                    float_button_->Show();
+
+                    Resize(float_button_->size());
                 }
             });
         }));
@@ -88,12 +94,18 @@ namespace rgaa {
             this->debug_showing_ = status;
             if (this->debug_showing_) {
                 debug_widget_->show();
+
+                Resize(((QWidget*)this->parent())->size());
             }
             else {
                 debug_widget_->hide();
+
+                Resize(float_menu_->size());
             }
             update();
         });
+
+        Resize(float_button_->size());
     }
 
     WorkspaceCover::~WorkspaceCover() {
@@ -107,6 +119,33 @@ namespace rgaa {
             painter.setBrush(QBrush(QColor(0x33, 0x33, 0x33, 0xbb)));
             painter.drawRect(0, 0, QWidget::width(), QWidget::height());
         }
+//        QPainter painter(this);
+//        painter.setBrush(QBrush(QColor(0xF3, 0x33, 0x33, 0xbb)));
+//        painter.drawRect(0, 0, QWidget::width(), QWidget::height());
+    }
+
+    void WorkspaceCover::Resize(const QSize& size) {
+        this->setFixedSize(size);
+        AdjustPosition();
+    }
+
+    void WorkspaceCover::OnWindowResize() {
+        AdjustPosition();
+    }
+
+    void WorkspaceCover::OnWindowMove() {
+        AdjustPosition();
+    }
+
+    void WorkspaceCover::AdjustPosition() {
+        auto parent_widget = (QWidget*)this->parent();
+        QSize parent_size = parent_widget->size();
+        QPoint pos = parent_widget->pos();
+        int left = (parent_size.width() - this->width()) / 2;
+
+        int title_bar = style()->pixelMetric(QStyle::PM_TitleBarHeight);
+
+        move(left + pos.x(), pos.y() + title_bar);
     }
 
 }

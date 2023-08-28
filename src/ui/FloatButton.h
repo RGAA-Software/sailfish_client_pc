@@ -30,6 +30,7 @@ namespace rgaa {
 
         void ShowWithAnim();
         void HideWithAnim(std::function<void()>&& finished_task = nullptr);
+        void Show();
         void Hide();
 
     private:

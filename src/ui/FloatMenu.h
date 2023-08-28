@@ -63,6 +63,7 @@ namespace rgaa {
         void leaveEvent(QEvent *event) override;
         void paintEvent(QPaintEvent *event) override;
 
+        void Show();
         void ShowWithAnim();
         void Hide();
         void HideWithAnim(std::function<void()>&& finished_task = nullptr);

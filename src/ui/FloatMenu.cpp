@@ -264,6 +264,11 @@ namespace rgaa {
         show();
     }
 
+    void FloatMenu::Show() {
+        this->transparency_ = 1.0;
+        show();
+    }
+
     void FloatMenu::Hide() {
         this->transparency_ = 0;
         hide();

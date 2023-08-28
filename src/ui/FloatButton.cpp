@@ -104,6 +104,11 @@ namespace rgaa {
         animation->start();
     }
 
+    void FloatButton::Show() {
+        this->transparency_ = 1;
+        show();
+    }
+
     void FloatButton::Hide() {
         this->transparency_ = 0;
         hide();

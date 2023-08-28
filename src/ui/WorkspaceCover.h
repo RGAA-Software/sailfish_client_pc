@@ -6,6 +6,7 @@
 #define SAILFISH_CLIENT_PC_WORKSPACECOVER_H
 
 #include <QWidget>
+#include <QSize>
 
 #include <memory>
 
@@ -26,6 +27,14 @@ namespace rgaa {
         ~WorkspaceCover() override;
 
         void paintEvent(QPaintEvent *event) override;
+
+        void OnWindowResize();
+        void OnWindowMove();
+
+    private:
+
+        void Resize(const QSize& size);
+        void AdjustPosition();
 
     private:
 
