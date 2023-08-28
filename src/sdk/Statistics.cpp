@@ -4,6 +4,9 @@
 #include <iomanip>
 #include <iostream>
 
+#include "rgaa_common/RTime.h"
+#include "rgaa_common/RLog.h"
+
 constexpr auto kMaxDiffTimes = 120;
 constexpr auto kMaxDecodeTimes = 120;
 constexpr auto kMaxEncodeTimes = 120;
@@ -19,6 +22,20 @@ namespace rgaa
 		if (video_recv_diff_times.size() > kMaxDiffTimes) {
 			video_recv_diff_times.pop_front();
 		}
+
+        auto current_time = GetCurrentTimestamp();
+        video_recv_fps_count_++;
+        if (last_recv_video_fps_time == 0) {
+            last_recv_video_fps_time = current_time;
+        }
+        auto fps_diff = current_time - last_recv_video_fps_time;
+        if (fps_diff >= 1000) {
+            this->video_recv_fps = video_recv_fps_count_;
+            last_recv_video_fps_time = current_time;
+            video_recv_fps_count_ = 0;
+            LOGI("//recv fps : {}", video_recv_fps);
+        }
+
 	}
 
 	uint32_t Statistics::FormatVideoFrameMB() {

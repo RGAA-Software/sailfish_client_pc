@@ -50,8 +50,6 @@ namespace rgaa {
         bool exit_ = false;
 
         uint64_t last_recv_video_time = 0;
-        uint64_t last_recv_video_fps_time = 0;
-        uint32_t video_recv_fps = 0;
         std::shared_ptr<Statistics> statistics_ = nullptr;
 
     };

@@ -37,6 +37,9 @@ namespace rgaa
 
 		uint64_t streaming_time = 0;
 
+    private:
+        uint32_t video_recv_fps_count_ = 0;
+        uint64_t last_recv_video_fps_time = 0;
 	};
 
 }

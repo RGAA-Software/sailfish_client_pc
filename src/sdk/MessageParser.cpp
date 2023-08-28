@@ -48,17 +48,6 @@ namespace rgaa {
             last_recv_video_time = current_time;
             statistics_->AppendVideoFrame(frame.data().size(), diff);
 
-            video_recv_fps++;
-            if (last_recv_video_fps_time == 0) {
-                last_recv_video_fps_time = current_time;
-            }
-            auto fps_diff = current_time - last_recv_video_fps_time;
-            if (fps_diff >= 1000) {
-                statistics_->video_recv_fps = video_recv_fps;
-                last_recv_video_fps_time = current_time;
-                video_recv_fps = 0;
-            }
-
             statistics_->frame_index = frame.frame_index();
 
             statistics_->AppendEncodeTime(frame.dup_idx(), frame.encode_time());
