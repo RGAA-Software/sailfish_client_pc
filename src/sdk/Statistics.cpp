@@ -83,4 +83,16 @@ namespace rgaa
         }
     }
 
+    void Statistics::AppendAudioBytes(uint32_t bytes) {
+        audio_bytes_ += bytes;
+    }
+
+    std::string Statistics::FormatAudioFrameMB() {
+        int kb = audio_bytes_ / 1024;
+        int mb = kb / 1024;
+        kb = kb % 1024;
+
+        return std::to_string(mb) + " MB " + std::to_string(kb) + " KB";
+    }
+
 }

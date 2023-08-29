@@ -49,7 +49,14 @@ namespace rgaa {
             statistics_->AppendVideoFrame(frame.data().size(), diff);
 
             statistics_->frame_index = frame.frame_index();
-
+            statistics_->video_width = frame.width();
+            statistics_->video_height = frame.height();
+            if (frame.type() == VideoType::kH264) {
+                statistics_->video_encode_format = "H264";
+            }
+            else if (frame.type() == VideoType::kH265) {
+                statistics_->video_encode_format = "H265";
+            }
             statistics_->AppendEncodeTime(frame.dup_idx(), frame.encode_time());
 
             auto network_time = frame.previous_network_time();
@@ -93,6 +100,10 @@ namespace rgaa {
             std::vector<uint8_t> target_data;
             target_data.resize(audio_data.size());
             memcpy(target_data.data(), audio_data.data(), audio_data.size());
+
+            statistics_->AppendAudioBytes(audio_data.size());
+            statistics_->audio_channel_ = channels;
+            statistics_->audio_samples_ = samples;
 
             std::vector<opus_int16> decoded_frame = audio_decoder_->Decode(target_data, frame.frame_size(), false);
             int bytes_size = decoded_frame.size() * 2;

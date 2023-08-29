@@ -18,6 +18,8 @@ namespace rgaa
 		std::string FormatStreamingTime();
         void AppendEncodeTime(int dup_idx, uint32_t time);
         void AppendNetworkTime(uint32_t time);
+        void AppendAudioBytes(uint32_t bytes);
+        std::string FormatAudioFrameMB();
 
 	public:
 
@@ -36,6 +38,11 @@ namespace rgaa
 		uint32_t video_height = 0;
 
 		uint64_t streaming_time = 0;
+
+        std::string audio_format_{"OPUS"};
+        uint32_t audio_bytes_ = 0;
+        uint32_t audio_channel_;
+        uint32_t audio_samples_;
 
     private:
         uint32_t video_recv_fps_count_ = 0;

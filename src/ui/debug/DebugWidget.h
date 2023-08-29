@@ -7,6 +7,8 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QGridLayout>
+#include <QLabel>
 
 #include <functional>
 #include <memory>
@@ -41,6 +43,19 @@ namespace rgaa {
         LineChart* network_time_chart_ = nullptr;
 
         QTimer* timer_ = nullptr;
+
+        QGridLayout* right_grid_ = nullptr;
+        QLabel* recv_fps_ = nullptr;
+        QLabel* recv_video_bytes_ = nullptr;
+        QLabel* video_encode_format_ = nullptr;
+        QLabel* video_width_ = nullptr;
+        QLabel* video_height_ = nullptr;
+        QLabel* streaming_time_ = nullptr;
+
+        QLabel* audio_bytes_ = nullptr;
+        QLabel* audio_channel_ = nullptr;
+        QLabel* audio_samples_ = nullptr;
+        QLabel* audio_format_ = nullptr;
 
     };
 

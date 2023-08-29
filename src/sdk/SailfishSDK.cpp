@@ -88,6 +88,8 @@ namespace rgaa {
         timer_ = std::make_shared<Timer>();
         auto timer_1s_id = timer_->add(std::chrono::milliseconds(10), [=, this](rgaa::timer_id id) {
             HeartBeat();
+
+            statistics_->streaming_time++;
         }, std::chrono::seconds(1));
         timer_ids_.push_back(timer_1s_id);
     }
