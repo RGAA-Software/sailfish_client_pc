@@ -27,6 +27,7 @@ namespace rgaa {
 
         auto msg_label = new QLabel(this);
         msg_label->setText(msg_);
+        msg_label->setWordWrap(true);
         msg_layout->addSpacing(30);
         msg_layout->addWidget(msg_label);
         msg_layout->addSpacing(30);
