@@ -74,6 +74,8 @@ namespace rgaa {
 
         float transparency_ = 0.0f;
 
+        FloatMenuItem* item_clipboard_ = nullptr;
+        FloatMenuItem* item_audio_ = nullptr;
         std::vector<FloatMenuItem*> menu_items_;
         std::shared_ptr<Context> context_ = nullptr;
         StreamItem item_;

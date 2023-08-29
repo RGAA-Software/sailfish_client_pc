@@ -33,9 +33,8 @@ namespace rgaa
             this->video_recv_fps = video_recv_fps_count_;
             last_recv_video_fps_time = current_time;
             video_recv_fps_count_ = 0;
-            LOGI("//recv fps : {}", video_recv_fps);
+            //LOGI("//recv fps : {}", video_recv_fps);
         }
-
 	}
 
 	uint32_t Statistics::FormatVideoFrameMB() {

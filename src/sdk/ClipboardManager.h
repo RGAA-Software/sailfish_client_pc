@@ -28,6 +28,10 @@ namespace rgaa {
 
         void Init();
         void SetText(const QString& msg);
+        void Exit();
+
+        void Enable();
+        void Disable();
 
     private slots:
         void OnClipboardDataChanged();
@@ -42,6 +46,8 @@ namespace rgaa {
         QClipboard* clipboard_ = nullptr;
 
         QString manual_set_msg_;
+
+        bool enable_ = false;
 
     };
 

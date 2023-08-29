@@ -21,4 +21,13 @@ namespace rgaa {
     VideoRenderType Settings::GetVideoRenderType() {
         return render_type_;
     }
+
+    bool Settings::IsAudioEnabled() {
+        return audio_on_;
+    }
+
+    bool Settings::IsClipboardEnabled() {
+        return clipboard_on_;
+    }
+
 }

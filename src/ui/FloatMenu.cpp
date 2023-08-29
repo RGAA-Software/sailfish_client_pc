@@ -14,6 +14,7 @@
 #include "Context.h"
 #include "AppMessage.h"
 #include "rgaa_common/RMessageQueue.h"
+#include "settings/Settings.h"
 
 namespace rgaa {
 
@@ -161,26 +162,26 @@ namespace rgaa {
         });
 
         // 2.
-        auto item_clipboard = new FloatMenuItem(tr("Clipboard"), ":/resources/image/ic_clipboard_off.svg", ":/resources/image/ic_clipboard_on.svg", this);
-        item_layout->addWidget(item_clipboard);
+        item_clipboard_ = new FloatMenuItem(tr("Clipboard"), ":/resources/image/ic_clipboard_off.svg", ":/resources/image/ic_clipboard_on.svg", this);
+        item_layout->addWidget(item_clipboard_);
         item_layout->addStretch();
-        menu_items_.push_back(item_clipboard);
-        item_clipboard->SetOnClickCallback([=, this] () {
-            auto expand = item_clipboard->GetExpand();
+        menu_items_.push_back(item_clipboard_);
+        item_clipboard_->SetOnClickCallback([=, this] () {
+            auto expand = item_clipboard_->GetExpand();
             auto to_status = !expand;
-            item_clipboard->SetExpand(to_status);
+            item_clipboard_->SetExpand(to_status);
             context_->SendAppMessage(ClipboardStatusMessage::Make(to_status));
         });
 
         // 3.
-        auto item_audio = new FloatMenuItem(tr("Audio"), ":/resources/image/ic_audio_off.svg", ":/resources/image/ic_audio_on.svg", this);
-        item_layout->addWidget(item_audio);
+        item_audio_ = new FloatMenuItem(tr("Audio"), ":/resources/image/ic_audio_off.svg", ":/resources/image/ic_audio_on.svg", this);
+        item_layout->addWidget(item_audio_);
         item_layout->addStretch();
-        menu_items_.push_back(item_audio);
-        item_audio->SetOnClickCallback([=, this] () {
-            auto expand = item_audio->GetExpand();
+        menu_items_.push_back(item_audio_);
+        item_audio_->SetOnClickCallback([=, this] () {
+            auto expand = item_audio_->GetExpand();
             auto to_status = !expand;
-            item_audio->SetExpand(to_status);
+            item_audio_->SetExpand(to_status);
             context_->SendAppMessage(AudioStatusMessage::Make(to_status));
         });
 
@@ -216,6 +217,14 @@ namespace rgaa {
         root_layout->addLayout(item_layout);
         root_layout->addStretch();
         setLayout(root_layout);
+
+        //
+        auto clipboard_on = Settings::Instance()->IsClipboardEnabled();
+        item_clipboard_->SetExpand(clipboard_on);
+
+        auto audio_on = Settings::Instance()->IsAudioEnabled();
+        item_audio_->SetExpand(audio_on);
+
     }
 
     FloatMenu::~FloatMenu() {

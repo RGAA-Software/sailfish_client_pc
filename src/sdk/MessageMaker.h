@@ -20,6 +20,10 @@ namespace rgaa
         static std::shared_ptr<NetMessage> MakeStopRecording();
         static std::shared_ptr<NetMessage> MakeHeartBeat(uint64_t idx);
 		static std::shared_ptr<NetMessage> MakeClipboard(const std::string& text);
+        static std::shared_ptr<NetMessage> MakeClipboardStatus(bool on);
+        static std::shared_ptr<NetMessage> MakeDebugStatus(bool on);
+        static std::shared_ptr<NetMessage> MakeAudioStatus(bool on);
+
 	};
 
 }

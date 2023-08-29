@@ -19,6 +19,7 @@
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
 #include "Statistics.h"
+#include "settings/Settings.h"
 
 namespace rgaa {
 
@@ -26,6 +27,7 @@ namespace rgaa {
         context_ = ctx;
         stream_item_ = item;
         statistics_ = std::make_shared<Statistics>();
+        settings_ = Settings::Instance();
     }
 
     SailfishSDK::~SailfishSDK() {
@@ -67,6 +69,8 @@ namespace rgaa {
                 if (config_msg_cbk_) {
                     config_msg_cbk_(net_msg);
                 }
+
+                this->ReportConfig();
             }
         });
 
@@ -159,8 +163,61 @@ namespace rgaa {
         return statistics_;
     }
 
+    void SailfishSDK::EnableClipboard() {
+        clipboard_manager_->Enable();
+        PostNetMessage(MessageMaker::MakeClipboardStatus(true));
+    }
+
+    void SailfishSDK::DisableClipboard() {
+        clipboard_manager_->Disable();
+        PostNetMessage(MessageMaker::MakeClipboardStatus(false));
+    }
+
+    void SailfishSDK::EnableAudio() {
+        PostNetMessage(MessageMaker::MakeAudioStatus(true));
+    }
+
+    void SailfishSDK::DisableAudio() {
+        PostNetMessage(MessageMaker::MakeAudioStatus(false));
+    }
+
+    void SailfishSDK::StartDebug() {
+        debug_ = true;
+        PostNetMessage(MessageMaker::MakeDebugStatus(true));
+    }
+
+    void SailfishSDK::StopDebug() {
+        debug_ = false;
+        PostNetMessage(MessageMaker::MakeDebugStatus(false));
+    }
+
+    bool SailfishSDK::IsDebugging() {
+        return debug_;
+    }
+
+    void SailfishSDK::ReportConfig() {
+        auto audio_on = settings_->IsAudioEnabled();
+        if (audio_on) {
+            EnableAudio();
+        }
+        else {
+            DisableAudio();
+        }
+
+        auto clipboard_on = settings_->IsClipboardEnabled();
+        if (clipboard_on) {
+            EnableClipboard();
+        }
+        else {
+            DisableClipboard();
+        }
+    }
+
     void SailfishSDK::Exit() {
         exit_ = true;
+        if (clipboard_manager_) {
+            clipboard_manager_->Exit();
+        }
 
         context_->RemoveMessageTask(clipboard_task_id_);
 

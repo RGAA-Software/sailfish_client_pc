@@ -45,6 +45,8 @@ namespace rgaa {
         FloatMenu* float_menu_ = nullptr;
 
         int mouse_pressed_task_id_ = -1;
+        int clipboard_task_id_ = -1;
+        int audio_task_id_ = -1;
 
         StreamItem item_;
 

@@ -94,4 +94,31 @@ namespace rgaa
 		return message;
 	}
 
+    std::shared_ptr<NetMessage> MessageMaker::MakeClipboardStatus(bool on) {
+        auto message = std::make_shared<NetMessage>();
+        message->set_type(MessageType::kClientCommandReport);
+        auto cmd = new ClientCommandReport();
+        cmd->set_type(on ? ClientCommandType::kEnableClipboard : ClientCommandType::kDisableClipboard);
+        message->set_allocated_client_cmd_report(cmd);
+        return message;
+    }
+
+    std::shared_ptr<NetMessage> MessageMaker::MakeDebugStatus(bool on) {
+        auto message = std::make_shared<NetMessage>();
+        message->set_type(MessageType::kClientCommandReport);
+        auto cmd = new ClientCommandReport();
+        cmd->set_type(on ? ClientCommandType::kStartDebug : ClientCommandType::kStopDebug);
+        message->set_allocated_client_cmd_report(cmd);
+        return message;
+    }
+
+    std::shared_ptr<NetMessage> MessageMaker::MakeAudioStatus(bool on) {
+        auto message = std::make_shared<NetMessage>();
+        message->set_type(MessageType::kClientCommandReport);
+        auto cmd = new ClientCommandReport();
+        cmd->set_type(on ? ClientCommandType::kEnableAudio : ClientCommandType::kDisableAudio);
+        message->set_allocated_client_cmd_report(cmd);
+        return message;
+    }
+
 }

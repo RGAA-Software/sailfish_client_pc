@@ -26,6 +26,7 @@ namespace rgaa {
     class ClipboardManager;
     class Context;
     class Statistics;
+    class Settings;
 
     using OnVideoFrameDecodedCallback = std::function<void(int dup_idx, const std::shared_ptr<RawImage>&)>;
     using OnNetMessageCallback = std::function<void(const std::shared_ptr<NetMessage>&)>;
@@ -47,6 +48,14 @@ namespace rgaa {
 
         std::shared_ptr<Statistics> GetStatistics();
 
+        void EnableClipboard();
+        void DisableClipboard();
+        void EnableAudio();
+        void DisableAudio();
+        void StartDebug();
+        void StopDebug();
+        bool IsDebugging();
+
     private:
 
         void InitTimers();
@@ -54,6 +63,8 @@ namespace rgaa {
         void HeartBeat();
         std::shared_ptr<FFmpegVideoDecoder> GetDecoderByDupIndex(int idx);
         void ParseConfig(const std::shared_ptr<NetMessage>& msg);
+
+        void ReportConfig();
 
     private:
 
@@ -82,6 +93,10 @@ namespace rgaa {
         int clipboard_task_id_ = -1;
 
         std::shared_ptr<Statistics> statistics_ = nullptr;
+
+        bool debug_ = false;
+
+        Settings* settings_ = nullptr;
 
     };
 

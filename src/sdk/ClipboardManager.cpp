@@ -18,7 +18,7 @@ namespace rgaa {
     }
 
     ClipboardManager::~ClipboardManager() {
-        LOGI("~~~ClipboardManager");
+        clipboard_->clear();
         StopMonitoringClipboard();
     }
 
@@ -30,13 +30,17 @@ namespace rgaa {
     void ClipboardManager::OnClipboardDataChanged() {
         QClipboard *clipboard = QApplication::clipboard();
         auto text = clipboard->text();
+        if (!enable_) {
+            LOGI("monitor, clipboard disabled.");
+            return;
+        }
         if (text.isEmpty() || text == manual_set_msg_) {
             LOGI("Manu set, ignore.");
             return;
         }
 
         if (text.startsWith("file:///")) {
-            LOGI("Ignore file...");
+            LOGI("Ignore file.");
             return;
         }
 
@@ -46,6 +50,10 @@ namespace rgaa {
     }
 
     void ClipboardManager::SetText(const QString &msg) {
+        if (!enable_) {
+            LOGI("setText, clipboard disabled.");
+            return;
+        }
         manual_set_msg_ = msg;
         QMetaObject::invokeMethod(this, [=]() {
             clipboard_->setText(msg);
@@ -54,6 +62,18 @@ namespace rgaa {
 
     void ClipboardManager::StopMonitoringClipboard() {
         disconnect(clipboard_, &QClipboard::dataChanged, this, &ClipboardManager::OnClipboardDataChanged);
-        LOGI("Stop clipboard monitoring...");
+        disconnect(clipboard_, &QClipboard::dataChanged, nullptr, nullptr);
+    }
+
+    void ClipboardManager::Exit() {
+        StopMonitoringClipboard();
+    }
+
+    void ClipboardManager::Enable() {
+        enable_ = true;
+    }
+
+    void ClipboardManager::Disable() {
+        enable_ = false;
     }
 }

@@ -59,10 +59,13 @@ namespace rgaa {
 
             // statistics end
 
-            context_->PostTask([=, this](){
-                auto msg = MessageMaker::MakeACK(MessageType::kVideoFrame, net_msg->send_time(), frame.frame_index());
-                sdk_->PostNetMessage(msg);
-            });
+            if (sdk_->IsDebugging()) {
+                context_->PostTask([=, this]() {
+                    auto msg = MessageMaker::MakeACK(MessageType::kVideoFrame, net_msg->send_time(),
+                                                     frame.frame_index());
+                    sdk_->PostNetMessage(msg);
+                });
+            }
 
             if (video_frame_cbk_) {
                 video_frame_cbk_(net_msg, net_msg->video_frame());

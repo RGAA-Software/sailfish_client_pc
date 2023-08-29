@@ -26,6 +26,9 @@ namespace rgaa {
         int GetWSWidth();
         int GetWSHeight();
 
+        bool IsAudioEnabled();
+        bool IsClipboardEnabled();
+
         VideoRenderType GetVideoRenderType();
 
     private:
@@ -34,6 +37,9 @@ namespace rgaa {
         int ws_height_ = 768;
 
         VideoRenderType render_type_ = VideoRenderType::kOpenGL;
+
+        bool audio_on_ = false;
+        bool clipboard_on_ = true;
 
     };
 

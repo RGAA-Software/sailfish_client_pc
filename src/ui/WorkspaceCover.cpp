@@ -19,6 +19,7 @@
 #include "rgaa_common/RMessageQueue.h"
 #include "AppMessage.h"
 #include "debug/DebugWidget.h"
+#include "sdk/SailfishSDK.h"
 
 #ifdef WIN32
 #include <dwmapi.h>
@@ -82,11 +83,11 @@ namespace rgaa {
         setLayout(root_layout);
 
         mouse_pressed_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeMousePressed, [=, this](auto& msg) {
-            context_->PostUITask([=]() {
+            context_->PostUITask([=, this]() {
                 if (!float_menu_->isHidden()) {
-//                    float_menu_->HideWithAnim([=](){
-//                        float_button_->ShowWithAnim();
-//                    });
+                    //float_menu_->HideWithAnim([=](){
+                    //    float_button_->ShowWithAnim();
+                    //});
                     float_menu_->Hide();
                     float_button_->Show();
 
@@ -95,17 +96,37 @@ namespace rgaa {
             });
         }));
 
+        clipboard_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeClipboardStatus, [=, this](auto& msg) {
+            auto target_msg = std::dynamic_pointer_cast<ClipboardStatusMessage>(msg);
+            if (target_msg->on) {
+                sdk_->EnableClipboard();
+            }
+            else {
+                sdk_->DisableClipboard();
+            }
+        }));
+
+        audio_task_id_ = context_->RegisterMessageTask(MessageTask::Make(kCodeAudioStatus, [=, this](auto& msg) {
+            auto target_msg = std::dynamic_pointer_cast<AudioStatusMessage>(msg);
+            if (target_msg->on) {
+                sdk_->EnableAudio();
+            }
+            else {
+                sdk_->DisableAudio();
+            }
+        }));
+
         float_menu->SetOnDebugStatusCallback([this](bool status) {
             this->debug_showing_ = status;
             if (this->debug_showing_) {
                 debug_widget_->show();
-
                 Resize(((QWidget*)this->parent())->size());
+                sdk_->StartDebug();
             }
             else {
                 debug_widget_->hide();
-
                 Resize(float_menu_->size());
+                sdk_->StopDebug();
             }
             update();
         });
@@ -114,8 +135,9 @@ namespace rgaa {
     }
 
     WorkspaceCover::~WorkspaceCover() {
-        LOGI("~~~WorkspaceCover");
         context_->RemoveMessageTask(mouse_pressed_task_id_);
+        context_->RemoveMessageTask(clipboard_task_id_);
+        context_->RemoveMessageTask(audio_task_id_);
     }
 
     void WorkspaceCover::paintEvent(QPaintEvent *event) {
@@ -124,9 +146,6 @@ namespace rgaa {
             painter.setBrush(QBrush(QColor(0x33, 0x33, 0x33, 0xbb)));
             painter.drawRect(0, 0, QWidget::width(), QWidget::height());
         }
-//        QPainter painter(this);
-//        painter.setBrush(QBrush(QColor(0xF3, 0x33, 0x33, 0xbb)));
-//        painter.drawRect(0, 0, QWidget::width(), QWidget::height());
     }
 
     void WorkspaceCover::Resize(const QSize& size) {
