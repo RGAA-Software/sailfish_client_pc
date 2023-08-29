@@ -20,6 +20,11 @@
 #include "AppMessage.h"
 #include "debug/DebugWidget.h"
 
+#ifdef WIN32
+#include <dwmapi.h>
+#pragma comment(lib, "Dwmapi.lib")
+#endif
+
 namespace rgaa {
 
     WorkspaceCover::WorkspaceCover(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, const StreamItem& item, QWidget* parent) : QWidget(parent) {
@@ -137,14 +142,32 @@ namespace rgaa {
         AdjustPosition();
     }
 
+#ifdef WIN32
+    static inline int get_title_bar_thickness(const HWND window_handle) {
+        RECT window_rectangle, client_rectangle;
+        int height, width;
+        GetWindowRect(window_handle, &window_rectangle);
+        GetClientRect(window_handle, &client_rectangle);
+        height = (window_rectangle.bottom - window_rectangle.top) -
+                 (client_rectangle.bottom - client_rectangle.top);
+        width = (window_rectangle.right - window_rectangle.left) -
+                (client_rectangle.right - client_rectangle.left);
+        return height - (width/2);
+    }
+#endif
+
     void WorkspaceCover::AdjustPosition() {
         auto parent_widget = (QWidget*)this->parent();
         QSize parent_size = parent_widget->size();
         QPoint pos = parent_widget->pos();
         int left = (parent_size.width() - this->width()) / 2;
 
-        int title_bar = style()->pixelMetric(QStyle::PM_TitleBarHeight);
-
+        int title_bar = 0;
+#ifdef WIN32
+        title_bar = get_title_bar_thickness((HWND)parent_widget->winId());
+#else
+        title_bar = style()->pixelMetric(QStyle::PM_TitleBarHeight);
+#endif
         move(left + pos.x(), pos.y() + title_bar);
     }
 
