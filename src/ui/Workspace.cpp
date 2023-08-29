@@ -242,14 +242,12 @@ namespace rgaa {
     bool Workspace::eventFilter(QObject *watched, QEvent *event) {
         if (watched == this) {
             if (event->type() == QEvent::Move) {
-//                auto move_event = dynamic_cast<QMoveEvent*>(event);
-//                if (cover_) {
-//                    cover_->move(move_event->pos());
-//                }
-
                 if (cover_) {
                     cover_->OnWindowMove();
                 }
+            }
+            else if (event->type() == QEvent::NonClientAreaMouseButtonPress) {
+                context_->SendAppMessage(MousePressedMessage::Make());
             }
         }
 

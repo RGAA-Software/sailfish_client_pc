@@ -181,13 +181,14 @@ namespace rgaa {
         QPoint pos = parent_widget->pos();
         int left = (parent_size.width() - this->width()) / 2;
 
-        int title_bar = 0;
+        int title_bar_height = 0;
 #ifdef WIN32
-        title_bar = get_title_bar_thickness((HWND)parent_widget->winId());
+        title_bar_height = get_title_bar_thickness((HWND)parent_widget->winId());
 #else
-        title_bar = style()->pixelMetric(QStyle::PM_TitleBarHeight);
+        title_bar_height = style()->pixelMetric(QStyle::PM_TitleBarHeight);
 #endif
-        move(left + pos.x(), pos.y() + title_bar);
+        //LOGI("title bar height: {}  , y : {}", title_bar_height, pos.y());
+        move(left + pos.x(), pos.y() /*+ title_bar_height*/);
     }
 
 }
