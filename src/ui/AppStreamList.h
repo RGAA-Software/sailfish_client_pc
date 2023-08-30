@@ -19,6 +19,7 @@
 #include <QPaintEvent>
 
 #include "sdk/StreamItem.h"
+#include "RoundRectWidget.h"
 
 namespace rgaa {
 
@@ -29,7 +30,7 @@ namespace rgaa {
 
     using OnItemDoubleClickedCallback = std::function<void(const StreamItem&)>;
 
-    class AppStreamList : public QWidget {
+    class AppStreamList : public RoundRectWidget {
     public:
 
         explicit AppStreamList(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);

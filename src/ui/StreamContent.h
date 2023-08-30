@@ -45,7 +45,7 @@ namespace rgaa {
     public:
 
         explicit StreamContent(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
-        ~StreamContent();
+        ~StreamContent() override;
 
         void SetOnStartingStreamCallback(OnStartingStreamCallback&& cbk);
 

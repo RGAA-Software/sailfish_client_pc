@@ -40,7 +40,7 @@ namespace rgaa {
 
     // - - -- - - -- - - - -- -
 
-    AppStreamList::AppStreamList(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+    AppStreamList::AppStreamList(const std::shared_ptr<Context>& ctx, QWidget* parent) : RoundRectWidget(0xEAF7FF, 10, parent) {
         context_ = ctx;
         db_mgr_ = context_->GetDBManager();
         stream_content_ = (StreamContent*)parent;
@@ -80,9 +80,9 @@ namespace rgaa {
         stream_list_->setResizeMode(QListWidget::Adjust);
         stream_list_->setContextMenuPolicy(Qt::CustomContextMenu);
         stream_list_->setSpacing(10);
+        //background-color: #DEF0FE;
         stream_list_->setStyleSheet(R"(
             QListWidget::item {
-                background-color: #DEF0FE;
                 color: #000000;
                 border: transparent;
                 border-bottom: 0px solid #dbdbdb;

@@ -257,4 +257,11 @@ namespace rgaa {
         return true;
     }
 
+    void CreateStreamDialog::paintEvent(QPaintEvent *event) {
+        QPainter painter(this);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QBrush(QColor(0xffffff)));
+        painter.drawRect(0, 0, this->width(), this->height());
+    }
+
 }

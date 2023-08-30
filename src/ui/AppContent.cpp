@@ -12,7 +12,7 @@
 
 namespace rgaa {
 
-    AppContent::AppContent(const std::shared_ptr<Context>& ctx, QWidget* parent) : QWidget(parent) {
+    AppContent::AppContent(const std::shared_ptr<Context>& ctx, QWidget* parent) : RoundRectWidget(0xEAF7FF, 10, parent) {
         context_ = ctx;
         settings_ = Settings::Instance();
     }
@@ -22,7 +22,7 @@ namespace rgaa {
     }
 
     void AppContent::paintEvent(QPaintEvent *event) {
-        QWidget::paintEvent(event);
+        RoundRectWidget::paintEvent(event);
 
 //        QPainter painter(this);
 //        painter.setPen(Qt::NoPen);

@@ -14,6 +14,7 @@
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QComboBox>
+#include <QPainter>
 
 #include "sdk/StreamItem.h"
 
@@ -26,7 +27,9 @@ namespace rgaa {
 
         explicit CreateStreamDialog(const std::shared_ptr<Context>& ctx, QWidget* parent = nullptr);
         CreateStreamDialog(const std::shared_ptr<Context>& ctx, const StreamItem& item, QWidget* parent = nullptr);
-        ~CreateStreamDialog();
+        ~CreateStreamDialog() override;
+
+        void paintEvent(QPaintEvent *event) override;
 
     private:
         void CreateLayout();

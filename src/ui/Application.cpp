@@ -46,9 +46,11 @@ namespace rgaa {
     }
 
     void Application::CreateLayout() {
-        auto root_widget = new QWidget(this);
+        auto root_widget = new RoundRectWidget(0xffffff, 0, this);
         auto root_layout = new QHBoxLayout();
         WidgetHelper::ClearMargin(root_layout);
+        int margin = 20;
+        root_layout->setContentsMargins(0, margin, margin, margin);
 
         // 1. app menu
         content_widget_ = new QStackedWidget(this);
