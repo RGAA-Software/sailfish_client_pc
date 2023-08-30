@@ -85,6 +85,7 @@ namespace rgaa {
             auto& frame = net_msg->audio_frame();
             int samples = frame.samples();
             int channels = frame.channels();
+            int bits = frame.bits();
             if (!audio_decoder_) {
                 audio_decoder_ = std::make_shared<Decoder>(samples, channels);
             }
@@ -104,6 +105,7 @@ namespace rgaa {
             statistics_->AppendAudioBytes(audio_data.size());
             statistics_->audio_channel_ = channels;
             statistics_->audio_samples_ = samples;
+            statistics_->audio_bits_ = bits;
 
             std::vector<opus_int16> decoded_frame = audio_decoder_->Decode(target_data, frame.frame_size(), false);
             int bytes_size = decoded_frame.size() * 2;

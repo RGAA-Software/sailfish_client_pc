@@ -88,6 +88,11 @@ namespace rgaa {
                     //float_menu_->HideWithAnim([=](){
                     //    float_button_->ShowWithAnim();
                     //});
+                    this->debug_showing_ = false;
+                    sdk_->StopDebug();
+                    debug_widget_->hide();
+                    float_menu_->SetDebugItemStatus(false);
+
                     float_menu_->Hide();
                     float_button_->Show();
 

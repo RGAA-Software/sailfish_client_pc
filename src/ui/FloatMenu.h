@@ -68,6 +68,8 @@ namespace rgaa {
         void Hide();
         void HideWithAnim(std::function<void()>&& finished_task = nullptr);
 
+        void SetDebugItemStatus(bool on);
+
         void SetOnDebugStatusCallback(std::function<void(bool)>&& cbk);
 
     private:
@@ -76,6 +78,7 @@ namespace rgaa {
 
         FloatMenuItem* item_clipboard_ = nullptr;
         FloatMenuItem* item_audio_ = nullptr;
+        FloatMenuItem* item_debug_ = nullptr;
         std::vector<FloatMenuItem*> menu_items_;
         std::shared_ptr<Context> context_ = nullptr;
         StreamItem item_;

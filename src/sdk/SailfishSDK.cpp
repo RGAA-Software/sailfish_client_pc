@@ -23,7 +23,7 @@
 
 namespace rgaa {
 
-    SailfishSDK::SailfishSDK(const std::shared_ptr<Context> ctx, const StreamItem& item) {
+    SailfishSDK::SailfishSDK(const std::shared_ptr<Context>& ctx, const StreamItem& item) {
         context_ = ctx;
         stream_item_ = item;
         statistics_ = std::make_shared<Statistics>();

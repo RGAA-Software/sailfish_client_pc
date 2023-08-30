@@ -34,7 +34,7 @@ namespace rgaa {
     class SailfishSDK : public std::enable_shared_from_this<SailfishSDK> {
     public:
 
-        explicit SailfishSDK(const std::shared_ptr<Context> ctx, const StreamItem& item);
+        explicit SailfishSDK(const std::shared_ptr<Context>& ctx, const StreamItem& item);
         ~SailfishSDK();
 
         void Init();

@@ -43,6 +43,7 @@ namespace rgaa
         uint32_t audio_bytes_ = 0;
         uint32_t audio_channel_;
         uint32_t audio_samples_;
+        uint32_t audio_bits_;
 
     private:
         uint32_t video_recv_fps_count_ = 0;

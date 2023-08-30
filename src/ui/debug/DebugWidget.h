@@ -56,7 +56,7 @@ namespace rgaa {
         QLabel* audio_channel_ = nullptr;
         QLabel* audio_samples_ = nullptr;
         QLabel* audio_format_ = nullptr;
-
+        QLabel* audio_bits_ = nullptr;
     };
 
 }

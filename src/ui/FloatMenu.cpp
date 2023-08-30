@@ -149,6 +149,7 @@ namespace rgaa {
 
         // 1.
         auto item_debug = new FloatMenuItem(tr("Debug"), ":/resources/image/ic_debug_off.svg", ":/resources/image/ic_debug_on.svg", this);
+        item_debug_ = item_debug;
         item_layout->addWidget(item_debug);
         item_layout->addStretch();
         menu_items_.push_back(item_debug);
@@ -229,6 +230,10 @@ namespace rgaa {
 
     FloatMenu::~FloatMenu() {
 
+    }
+
+    void FloatMenu::SetDebugItemStatus(bool on) {
+        item_debug_->SetExpand(on);
     }
 
     void FloatMenu::enterEvent(QEnterEvent *event) {

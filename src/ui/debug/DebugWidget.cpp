@@ -15,6 +15,7 @@
 
 #include "ui/WidgetHelper.h"
 #include "LineChart.h"
+#include "rgaa_common/RLog.h"
 
 namespace rgaa {
 
@@ -198,16 +199,30 @@ namespace rgaa {
             {
                 auto label = new QLabel(this);
                 label->setStyleSheet("color:#ffffff;");
-                label->setText(tr("Audio format"));
+                label->setText(tr("Audio bits"));
                 label->setFixedSize(size);
                 right_grid_->addWidget(label, 9, 0);
+
+                auto value = new QLabel(this);
+                audio_bits_ = value;
+                value->setStyleSheet("color:#ffffff;");
+                value->setFixedSize(size);
+                value->setText(tr("60"));
+                right_grid_->addWidget(value, 9, 1);
+            }
+            {
+                auto label = new QLabel(this);
+                label->setStyleSheet("color:#ffffff;");
+                label->setText(tr("Audio format"));
+                label->setFixedSize(size);
+                right_grid_->addWidget(label, 10, 0);
 
                 auto value = new QLabel(this);
                 audio_format_ = value;
                 value->setStyleSheet("color:#ffffff;");
                 value->setFixedSize(size);
                 value->setText(tr("60"));
-                right_grid_->addWidget(value, 9, 1);
+                right_grid_->addWidget(value, 10, 1);
             }
             right_layout->addStretch();
         }
@@ -257,6 +272,7 @@ namespace rgaa {
         audio_channel_->setText(QString::number(statistics_->audio_channel_));
         audio_samples_->setText(QString::number(statistics_->audio_samples_));
         audio_format_->setText(statistics_->audio_format_.c_str());
+        audio_bits_->setText(QString::number(statistics_->audio_bits_));
 
     }
 
