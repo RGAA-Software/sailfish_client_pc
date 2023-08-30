@@ -255,9 +255,13 @@ namespace rgaa {
     }
 
     bool Workspace::CloseWorkspace() {
-
-        auto dialog = MessageDialog::Make(context_, tr("Do you want to exit the stream ?"));
-        if (dialog->exec() == DialogButton::kCancel) {
+        if (exit_dialog_) {
+            exit_dialog_->done(DialogButton::kCancel);
+            exit_dialog_.reset();
+            exit_dialog_ = nullptr;
+        }
+        exit_dialog_ = MessageDialog::Make(context_, tr("Do you want to exit the stream ?"));
+        if (exit_dialog_->exec() == DialogButton::kCancel) {
             return false;
         }
 

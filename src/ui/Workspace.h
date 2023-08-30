@@ -27,6 +27,7 @@ namespace rgaa {
     class WorkspaceCover;
     class SailfishSDK;
     class OpenGLWidgetWrapper;
+    class MessageDialog;
 
     class Workspace : public QWidget {
     public:
@@ -72,6 +73,8 @@ namespace rgaa {
 
         int fullscreen_task_id_ = -1;
         int exit_fullscreen_task_id_ = -1;
+
+        std::shared_ptr<MessageDialog> exit_dialog_ = nullptr;
 
     };
 
