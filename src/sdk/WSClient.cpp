@@ -60,6 +60,9 @@ namespace rgaa {
                     ws_client->connect(conn);
                     ws_client->run();
 
+                    if (!stop_connecting) {
+                        std::this_thread::sleep_for(std::chrono::seconds(2));
+                    }
                 }
                 catch (websocketpp::exception const& e) {
                     std::cout << "error : " << e.what() << " will retry." << std::endl;
@@ -104,6 +107,7 @@ namespace rgaa {
 
     void WSClient::OnClose(client* c, websocketpp::connection_hdl hdl) {
         target_server.reset();
+        LOGI("close...");
     }
 
     void WSClient::OnMessage(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
