@@ -9,8 +9,9 @@ set(CMAKE_AUTORCC ON)
 aux_source_directory(. UI_SRCS)
 aux_source_directory(./ext EXT_SRCS)
 aux_source_directory(./debug DEBUG_SRCS)
+aux_source_directory(./widgets WIDGET_SRCS)
 
-add_library(ui ${UI_SRCS} ${EXT_SRCS} ${FORM_UI_SRCS} ${DEBUG_SRCS})
+add_library(ui ${UI_SRCS} ${EXT_SRCS} ${FORM_UI_SRCS} ${DEBUG_SRCS} ${WIDGET_SRCS})
 target_link_libraries(ui sdk)
 target_link_libraries(ui Qt6::Widgets Qt6::Core Qt6::Gui Qt6::OpenGL Qt6::OpenGLWidgets Qt6::Multimedia)
 target_link_libraries(ui

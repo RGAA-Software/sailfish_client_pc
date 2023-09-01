@@ -38,7 +38,7 @@ namespace rgaa {
             ss << "Gave them back to the sprites" << std::endl;
             ss << "I am gifted melliferous toffee today" << std::endl;
             ss << "We will sit at the beach in the future" << std::endl;
-            ss << "Wait for free wind to full in my sleeves" << std::endl;
+            ss << "Wait for free wind to full in our sleeves" << std::endl;
 
             auto label = new QLabel(this);
             label->setText(ss.str().c_str());
