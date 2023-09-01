@@ -30,17 +30,8 @@ int main(int argc, char** argv) {
     //qputenv("QT_SCALE_FACTOR", QByteArray::number(2));
     QApplication app(argc, argv);
 
-#if 0
-    int fontId = QFontDatabase::addApplicationFont(":/resources/font/SourceHanSansCN-Regular.otf");
-    if (fontId != -1) {
-        QStringList fontFamilies = QFontDatabase::applicationFontFamilies(fontId);
-        if (!fontFamilies.isEmpty()) {
-            QFont customFont(fontFamilies.at(0), 16);
-            customFont.setStyleStrategy(QFont::PreferAntialias);
-            app.setFont(customFont);
-        }
-    }
-#endif
+    auto id = QFontDatabase::addApplicationFont(":/resources/font/blade.ttf");
+    qDebug() << "font family : " << QFontDatabase::applicationFontFamilies(id) ;
 
     QFont font;
     font.setPointSize(10);

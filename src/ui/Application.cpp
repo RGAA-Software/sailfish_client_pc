@@ -22,6 +22,7 @@
 #include "WidgetHelper.h"
 #include "StreamContent.h"
 #include "SettingsContent.h"
+#include "AboutContent.h"
 
 namespace rgaa {
 
@@ -59,6 +60,7 @@ namespace rgaa {
         std::vector<QString> menus = {
                 tr("STREAMS"),
                 tr("SETTINGS"),
+                tr("ABOUT")
         };
         app_menu_ = new AppMenu(menus, this);
         app_menu_->SetOnItemClickedCallback([this](const QString& name, int idx) {
@@ -79,6 +81,10 @@ namespace rgaa {
         // settings
         auto settings_content = new SettingsContent(context_, this);
         content_widget_->addWidget(settings_content);
+
+        // about
+        auto about_content = new AboutContent(context_, this);
+        content_widget_->addWidget(about_content);
 
         root_layout->addWidget(content_widget_);
         root_widget->setLayout(root_layout);
