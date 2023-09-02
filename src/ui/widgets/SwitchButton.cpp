@@ -4,6 +4,7 @@
 
 #include "SwitchButton.h"
 #include <QVariant>
+#include <QTimer>
 #include <QPropertyAnimation>
 
 namespace rgaa {
@@ -38,6 +39,7 @@ namespace rgaa {
         if (thumb_point_ == 0) {
             thumb_point_ = left_point_;
         }
+
         if (selected) {
             painter.setBrush(QBrush(QColor(selected_thumb_color)));
         }
@@ -46,6 +48,17 @@ namespace rgaa {
         }
 
         painter.drawEllipse(QPoint(thumb_point_, this->height()/2), circle_radius, circle_radius);
+
+        if (left_point_ > 0 && right_point_ > 0 && need_repair_) {
+            need_repair_ = false;
+            QMetaObject::invokeMethod(this, [=] () {
+                ExecAnimation(selected);
+            });
+        }
+    }
+
+    void SwitchButton::resizeEvent(QResizeEvent *event) {
+
     }
 
     void SwitchButton::enterEvent(QEnterEvent *event) {
@@ -60,6 +73,24 @@ namespace rgaa {
         selected = !selected;
         update();
 
+        ExecAnimation(selected);
+        if (click_cbk_) {
+            click_cbk_(selected);
+        }
+    }
+
+    void SwitchButton::SetStatus(bool enabled) {
+        selected = enabled;
+        if (thumb_point_ != 0) {
+            ExecAnimation(selected);
+        }
+        if (left_point_ == 0 && right_point_ == 0) {
+            need_repair_ = true;
+        }
+        qDebug() << "left : " << left_point_ << " right : " << right_point_;
+    }
+
+    void SwitchButton::ExecAnimation(bool selected) {
         if (selected) {
             // left => right
             auto anim = new QPropertyAnimation();
@@ -92,7 +123,6 @@ namespace rgaa {
             anim->setDuration(300);
             anim->start();
         }
-
     }
 
 }

@@ -19,6 +19,14 @@ namespace rgaa {
         void enterEvent(QEnterEvent *event) override;
         void leaveEvent(QEvent *event) override;
         void mouseReleaseEvent(QMouseEvent *event) override;
+        void resizeEvent(QResizeEvent *event) override;
+        void SetStatus(bool enabled);
+
+        void SetClickCallback(std::function<void(bool)>&& cbk) { click_cbk_ = cbk; }
+
+    private:
+
+        void ExecAnimation(bool selected);
 
     private:
 
@@ -27,13 +35,17 @@ namespace rgaa {
         int normal_bg_color_ = 0xffffff;
         int selected_bg_color_ = 0xffffff;
         int normal_thumb_color = 0xaaaaaa;
-        int selected_thumb_color = 0x2e317c;
+        int selected_thumb_color = 0x6894b7;
 
         bool selected = false;
 
         int left_point_ = 0;
         int right_point_ = 0;
         int thumb_point_ = 0;
+
+        std::function<void(bool)> click_cbk_;
+
+        bool need_repair_ = false;
 
     };
 

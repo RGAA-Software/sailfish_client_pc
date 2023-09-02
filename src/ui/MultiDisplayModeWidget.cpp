@@ -17,15 +17,20 @@ namespace rgaa {
     void MultiDisplayModeWidget::paintEvent(QPaintEvent *event) {
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
-        painter.setPen(Qt::NoPen);
+
+        int bg_gap = 1;
         int radius = 10;
-        if (enter_) {
+        if (enter_ || selected_) {
+            QPen pen(0x386487);
+            pen.setWidth(2);
+            painter.setPen(pen);
             painter.setBrush(QColor(0xC0DCF2));
         }
         else {
+            painter.setPen(Qt::NoPen);
             painter.setBrush(QColor(0xffffff));
         }
-        painter.drawRoundedRect(0, 0, this->width(), this->height(), radius, radius);
+        painter.drawRoundedRect(bg_gap, bg_gap, this->width()-2*bg_gap, this->height()-2*bg_gap, radius, radius);
 
         QPen pen(QColor(0x386487));
         pen.setWidth(1);
@@ -40,7 +45,7 @@ namespace rgaa {
         //painter.setBrush(Qt::NoBrush);
 
         if (display_mode_ == MultiDisplayMode::kSeparated) {
-            int x_border_gap = 4;
+            int x_border_gap = 13;
             int y_border_gap = 10;
             int width = (this->width() - x_border_gap*3)/2;
             painter.drawRoundedRect(x_border_gap, y_border_gap, width, this->height()-y_border_gap*2, radius, radius);
@@ -73,7 +78,12 @@ namespace rgaa {
         if (click_cbk_) {
             click_cbk_();
         }
+        SetSelected(true);
     }
 
+    void MultiDisplayModeWidget::SetSelected(bool selected) {
+        selected_ = selected;
+        update();
+    }
 
 }

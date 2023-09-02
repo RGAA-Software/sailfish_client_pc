@@ -5,6 +5,9 @@
 #ifndef SAILFISH_CLIENT_PC_SETTINGS_H
 #define SAILFISH_CLIENT_PC_SETTINGS_H
 
+#include <memory>
+#include <string>
+
 namespace rgaa {
 
     enum class VideoRenderType {
@@ -18,6 +21,8 @@ namespace rgaa {
         kCombined,
     };
 
+    class SharedPreference;
+
     class Settings {
     public:
 
@@ -26,6 +31,7 @@ namespace rgaa {
             return &sts;
         }
 
+        void SetSharedPreference(const std::shared_ptr<SharedPreference>& sp);
         void LoadSettings();
 
         int GetWSWidth();
@@ -33,8 +39,14 @@ namespace rgaa {
 
         bool IsAudioEnabled();
         bool IsClipboardEnabled();
-
+        bool IsFixAtTop();
+        MultiDisplayMode GetMultiDisplayMode();
         VideoRenderType GetVideoRenderType();
+
+        void SetAudioEnabled(bool enabled);
+        void SetClipboardEnabled(bool enabled);
+        void SetFixAtTop(bool fix);
+        void SetMultiDisplayMode(MultiDisplayMode mode);
 
     private:
 
@@ -45,6 +57,10 @@ namespace rgaa {
 
         bool audio_on_ = false;
         bool clipboard_on_ = true;
+        bool fix_at_top_ = true;
+        MultiDisplayMode display_mode_ = MultiDisplayMode::kSeparated;
+
+        std::shared_ptr<SharedPreference> sp_ = nullptr;
 
     };
 

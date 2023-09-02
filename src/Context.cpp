@@ -8,12 +8,17 @@
 #include "rgaa_common/RMessageQueue.h"
 #include "rgaa_common/RThread.h"
 #include "sdk/SharedPreference.h"
+#include "Settings.h"
 
 namespace rgaa {
 
     Context::Context() : QObject(nullptr) {
         sp_ = std::make_shared<SharedPreference>();
         sp_->Init("", "sp.data");
+
+        auto settings = Settings::Instance();
+        settings->SetSharedPreference(sp_);
+        settings->LoadSettings();
 
         db_mgr_ = std::make_shared<StreamDBManager>();
         msg_queue_ = std::make_shared<MessageQueue>();

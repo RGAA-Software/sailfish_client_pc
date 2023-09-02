@@ -21,7 +21,7 @@ namespace rgaa {
             auto title = new QLabel(this);
             title_layout->addWidget(title);
             title->setText(tr("TOGETHER"));
-            title->setStyleSheet("font-size: 32pt; font-family: 'Archaic1897'; color:#2e317c;");
+            title->setStyleSheet("font-size: 29pt; font-family: 'Quixotic'; color:#6894b7;");
             title_layout->addStretch();
             root_layout->addLayout(title_layout);
         }
@@ -42,7 +42,7 @@ namespace rgaa {
 
             auto label = new QLabel(this);
             label->setText(ss.str().c_str());
-            label->setStyleSheet("font-size: 27pt; font-family: 'Archaic1897'; color:#2e317c;");
+            label->setStyleSheet("font-size: 25pt; font-family: 'Quixotic'; color:#6894b7;");
             poem_layout->addStretch();
             poem_layout->addWidget(label);
             poem_layout->addStretch();
@@ -59,7 +59,7 @@ namespace rgaa {
             auto title = new QLabel(this);
             title_layout->addWidget(title);
             title->setText(tr("BEST"));
-            title->setStyleSheet("font-size: 23pt; font-family: 'Archaic1897'; color:#2e317c;");
+            title->setStyleSheet("font-size: 21pt; font-family: 'Quixotic'; color:#6894b7;");
             title_layout->addSpacing(30);
             root_layout->addLayout(title_layout);
             root_layout->addSpacing(30);

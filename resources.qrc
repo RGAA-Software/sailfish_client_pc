@@ -15,6 +15,6 @@
         <file>resources/image/ic_fullscreen.svg</file>
 
         <file>resources/font/blade.ttf</file>
-        <file>resources/font/Archaic1897-2.ttf</file>
+        <file>resources/font/quixotic-1.otf</file>
     </qresource>
 </RCC>

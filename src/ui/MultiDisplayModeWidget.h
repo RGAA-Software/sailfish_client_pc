@@ -23,6 +23,7 @@ namespace rgaa {
         void leaveEvent(QEvent *event) override;
         void mouseReleaseEvent(QMouseEvent *event) override;
 
+        void SetSelected(bool selected);
         void SetOnClickCallback(std::function<void()>&& cbk) { click_cbk_ = std::move(cbk); }
 
     private:
@@ -30,6 +31,7 @@ namespace rgaa {
         MultiDisplayMode display_mode_;
 
         bool enter_ = false;
+        bool selected_ = false;
         std::function<void()> click_cbk_;
 
     };

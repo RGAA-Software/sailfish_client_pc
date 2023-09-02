@@ -9,6 +9,9 @@
 
 namespace rgaa {
 
+    class Settings;
+    class MultiDisplayModeWidget;
+
     class SettingsContent : public AppContent {
     public:
 
@@ -17,6 +20,12 @@ namespace rgaa {
 
         void OnContentShow() override;
         void OnContentHide() override;
+
+    private:
+
+        Settings* settings_ = nullptr;
+        MultiDisplayModeWidget* combined_;
+        MultiDisplayModeWidget* separated_;
     };
 
 }

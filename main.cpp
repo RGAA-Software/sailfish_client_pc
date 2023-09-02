@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
     //qputenv("QT_SCALE_FACTOR", QByteArray::number(2));
     QApplication app(argc, argv);
 
-    auto id = QFontDatabase::addApplicationFont(":/resources/font/Archaic1897-2.ttf");
+    auto id = QFontDatabase::addApplicationFont(":/resources/font/quixotic-1.otf");
     qDebug() << "font family : " << QFontDatabase::applicationFontFamilies(id) ;
 
     QFont font;
