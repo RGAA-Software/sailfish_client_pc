@@ -14,7 +14,7 @@
 #include "Context.h"
 #include "AppMessage.h"
 #include "rgaa_common/RMessageQueue.h"
-#include "settings/Settings.h"
+#include "src/Settings.h"
 
 namespace rgaa {
 

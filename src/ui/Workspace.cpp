@@ -4,7 +4,7 @@
 
 #include "Workspace.h"
 
-#include "settings/Settings.h"
+#include "src/Settings.h"
 #include "OpenGLVideoWidget.h"
 #include "SDLVideoWidget.h"
 #include "Context.h"

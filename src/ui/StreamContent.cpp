@@ -4,7 +4,7 @@
 
 #include "StreamContent.h"
 
-#include "settings/Settings.h"
+#include "src/Settings.h"
 #include "rgaa_common/RLog.h"
 #include "Context.h"
 #include "AppStreamList.h"

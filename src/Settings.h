@@ -13,6 +13,11 @@ namespace rgaa {
         kTestQPixmap,
     };
 
+    enum class MultiDisplayMode {
+        kSeparated,
+        kCombined,
+    };
+
     class Settings {
     public:
 

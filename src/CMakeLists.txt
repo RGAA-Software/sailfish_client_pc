@@ -4,7 +4,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(sdk)
 add_subdirectory(ui)
-add_subdirectory(settings)
 add_subdirectory(test)
 
 aux_source_directory(. SRCS)

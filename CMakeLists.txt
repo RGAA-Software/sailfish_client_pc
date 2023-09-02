@@ -78,7 +78,7 @@ add_subdirectory(deps)
 set(RES resources/font.qrc resources/main.qrc resources/qss.qrc resources.qrc)
 
 add_executable(sailfish_client_pc main.cpp logo.rc ${RES})
-target_link_libraries(sailfish_client_pc main sdk ui settings common opus_codec)
+target_link_libraries(sailfish_client_pc main sdk ui common opus_codec)
 
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
