@@ -19,6 +19,7 @@ namespace rgaa {
     class FloatMenu;
     class DebugWidget;
     class SailfishSDK;
+    class Settings;
 
     class WorkspaceCover : public QWidget {
     public:
@@ -53,6 +54,8 @@ namespace rgaa {
         bool debug_showing_ = false;
 
         DebugWidget* debug_widget_ = nullptr;
+
+        Settings* settings_ = nullptr;
 
     };
 

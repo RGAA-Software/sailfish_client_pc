@@ -20,6 +20,7 @@
 #include "AppMessage.h"
 #include "debug/DebugWidget.h"
 #include "sdk/SailfishSDK.h"
+#include "Settings.h"
 
 #ifdef WIN32
 #include <dwmapi.h>
@@ -32,6 +33,7 @@ namespace rgaa {
         this->sdk_ = sdk;
         this->context_ = ctx;
         this->item_ = item;
+        settings_ = Settings::Instance();
         setWindowFlags(Qt::FramelessWindowHint | Qt::Tool );
         setAttribute(Qt::WA_TranslucentBackground);
         setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -193,7 +195,8 @@ namespace rgaa {
         title_bar_height = style()->pixelMetric(QStyle::PM_TitleBarHeight);
 #endif
         //LOGI("title bar height: {}  , y : {}", title_bar_height, pos.y());
-        move(left + pos.x(), pos.y() /*+ title_bar_height*/);
+        int target_y = pos.y() + (settings_->IsFixAtTop() ? 0 : title_bar_height);
+        move(left + pos.x(), target_y);
     }
 
 }
