@@ -57,7 +57,7 @@ namespace rgaa {
         });
 
         LOGI("Will connect to {} {} ", stream_item_.stream_host, stream_item_.stream_port);
-        ws_client_ = std::make_shared<WSClient>(stream_item_.stream_host, stream_item_.stream_port);
+        ws_client_ = std::make_shared<WSClient>(stream_item_);
         ws_client_->SetOnMessageCallback([this](const std::string& msg) {
             auto net_msg = msg_parser_->ParseMessage(msg);
             if (!net_msg) {

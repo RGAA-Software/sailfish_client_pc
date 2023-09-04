@@ -12,14 +12,16 @@
 #include "rgaa_common/RThread.h"
 
 #include "MessageMaker.h"
+#include "Settings.h"
 
 #define DEBUG_VIDEO_FILE 0
 
 namespace rgaa {
 
-    WSClient::WSClient(const std::string& ip, int port) {
-        this->ip_ = ip;
-        this->port_ = port;
+    WSClient::WSClient(const StreamItem& item) {
+        this->stream_item_ = item;
+        this->ip_ = stream_item_.stream_host;
+        this->port_ = stream_item_.stream_port;
         this->target_url = "ws://" + ip_ + ":" + std::to_string(port_);
 
 #if DEBUG_VIDEO_FILE
@@ -100,7 +102,9 @@ namespace rgaa {
     void WSClient::OnOpen(client* c, websocketpp::connection_hdl hdl) {
         target_server = hdl;
 
-        auto msg = MessageMaker::MakeStartRecording(true);
+        bool audio_on = Settings::Instance()->IsAudioEnabled();
+
+        auto msg = MessageMaker::MakeStartRecording(audio_on, stream_item_.encode_bps, stream_item_.encode_fps);
         auto msg_str = msg->SerializeAsString();
         c->send(hdl, msg_str, binary);
     }

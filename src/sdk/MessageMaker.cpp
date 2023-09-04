@@ -59,11 +59,13 @@ namespace rgaa
 		return message;
 	}
 
-    std::shared_ptr<NetMessage> MessageMaker::MakeStartRecording(bool audio) {
+    std::shared_ptr<NetMessage> MessageMaker::MakeStartRecording(bool audio, int bitrate, int approximate_fps) {
         auto message = std::make_shared<NetMessage>();
         message->set_type(MessageType::kStartRecording);
         auto info = new StartRecordingReport();
         info->set_audio(audio);
+        info->set_bitrate(bitrate);
+        info->set_approximate_fps(approximate_fps);
         message->set_allocated_start_recording(info);
         return message;
     }

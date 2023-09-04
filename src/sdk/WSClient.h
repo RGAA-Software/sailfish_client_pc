@@ -20,6 +20,8 @@ using websocketpp::frame::opcode::value::text;
 #include <memory>
 #include <fstream>
 
+#include "StreamItem.h"
+
 namespace rgaa {
 
     class Data;
@@ -30,7 +32,7 @@ namespace rgaa {
     class WSClient {
     public:
 
-        WSClient(const std::string& ip, int port);
+        explicit WSClient(const StreamItem& item);
         ~WSClient();
 
         void Connect();
@@ -64,6 +66,8 @@ namespace rgaa {
         OnMessageCallback msg_cbk_;
 
         std::ofstream debug_video_file_;
+
+        StreamItem stream_item_;
 
     };
 
