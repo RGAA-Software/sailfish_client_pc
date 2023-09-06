@@ -17,6 +17,7 @@ extern "C" {
 
 #include <memory>
 #include <functional>
+#include <mutex>
 
 namespace rgaa {
 
@@ -52,6 +53,9 @@ namespace rgaa {
         std::shared_ptr<RawImage> decoded_image_ = nullptr;
 
         bool cvt_to_rgb = false;
+
+        std::mutex decode_mtx_;
+
     };
 
 }

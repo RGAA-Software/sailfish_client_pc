@@ -125,7 +125,7 @@ namespace rgaa {
             auto info = net_msg->cursor_info();
             if (cursor_cbk_) {
                 auto raw_image = RawImage::MakeRGBA(const_cast<char *>(info.data().c_str()), info.data().size(), info.width(), info.height());
-                cursor_cbk_(0, info.x(), info.y(), info.hotspot_x(), info.hotspot_y(), raw_image);
+                cursor_cbk_(info.dup_idx(), info.x(), info.y(), info.tex_left(), info.tex_right(), info.hotspot_x(), info.hotspot_y(), raw_image);
             }
         }
 

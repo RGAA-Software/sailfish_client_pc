@@ -48,14 +48,15 @@ namespace rgaa {
     }
 
     float VideoWidgetEvent::CalculateX(int x) {
-//        int total_width = screen_size_ * this->width;
-//        if (total_width == 0) {
-//            return 0;
-//        }
-//        float target_x = x + dup_idx_ * width;
-//        float x_percent = target_x / total_width;
-
-        float x_percent = dup_idx_ + x * 1.0f / this->width;
+        // 2 monitors.
+        float x_percent = 0.0f;
+        if (is_multi_monitors_) {
+            x_percent = dup_idx_ * 0.5f + (x * 1.0f / this->width) * 0.5;
+        }
+        else {
+            x_percent = x * 1.0f / this->width;
+        }
+        LOGI("dup-idx: {}, is multi monitors: {}, x percent: {}", dup_idx_, is_multi_monitors_, x_percent);
         return x_percent;
     }
 
@@ -155,4 +156,7 @@ namespace rgaa {
         }
     }
 
+    void VideoWidgetEvent::SetMultipleMonitors(bool multi) {
+        is_multi_monitors_ = multi;
+    }
 }

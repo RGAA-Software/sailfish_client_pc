@@ -35,6 +35,8 @@ namespace rgaa {
 
         void RegisterMouseKeyboardEventCallback(const OnMouseKeyboardEventCallback& cbk);
 
+        void SetMultipleMonitors(bool multi);
+
     private:
 
         void SendCallback(const std::shared_ptr<NetMessage>& msg);
@@ -59,6 +61,8 @@ namespace rgaa {
         std::shared_ptr<SailfishSDK> sdk_ = nullptr;
         int dup_idx_ = 0;
         int screen_size_ = 0;
+
+        bool is_multi_monitors_ = false;
 	};
 
 }

@@ -92,7 +92,7 @@ namespace rgaa {
 
             auto label = new QLabel(this);
             label->setFixedSize(330, 40);
-            label->setText(tr("multiple monitor display mode"));
+            label->setText(tr("multiple monitors display mode"));
             label->setStyleSheet("font-size:12pt;");
             layout->addWidget(label);
             layout->addStretch();

@@ -21,7 +21,7 @@ namespace rgaa {
     class SailfishSDK;
 
     using OnVideoFrameCallback = std::function<void(const std::shared_ptr<NetMessage>&, const VideoFrameSync&)>;
-    using OnCursorCallback = std::function<void(int dup_idx, int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>&)>;
+    using OnCursorCallback = std::function<void(int dup_idx, int x, int y, int tex_left, int tex_right, int hpx, int hpy, const std::shared_ptr<RawImage>&)>;
 
 
     class MessageParser : public QObject {

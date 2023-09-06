@@ -40,7 +40,7 @@ namespace rgaa {
 		void RefreshI420Image(const std::shared_ptr<RawImage>& image);
 		void RefreshI420Buffer(const char* y, int y_size, const char* u, int u_size, const char* v, int v_size, int width, int height);
 
-        void RefreshCursor(int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor);
+        void RefreshCursor(int x, int y, int tex_left, int text_right, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor);
 
         void Exit();
 
@@ -100,6 +100,9 @@ namespace rgaa {
 		uint64_t last_update_fps_time = 0;
 
 		Statistics* statistics = nullptr;
+
+        int tex_rect_left_ = 0;
+        int tex_rect_right_ = 0;
 	};
 
 
@@ -112,7 +115,7 @@ namespace rgaa {
         OpenGLWidgetWrapper(const std::shared_ptr<Context>& ctx, const std::shared_ptr<SailfishSDK>& sdk, const StreamItem& item, int dup_idx, RawImageFormat format, QWidget* parent) {
             this->context_ = ctx;
             this->item_ = item;
-            QString title = "Sailfish client window [ " + QString::number(dup_idx+1) + " ]";
+            QString title = "Sailfish client window [ " + QString::number(dup_idx+1) + " ] [ " + item.stream_name.c_str() + " ]";
             setWindowTitle(title);
 
             auto layout = new QVBoxLayout();

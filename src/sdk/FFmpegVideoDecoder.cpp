@@ -108,6 +108,8 @@ namespace rgaa {
             return nullptr;
         }
 
+        std::lock_guard<std::mutex> guard(decode_mtx_);
+
         auto decode_usage = RegionTimeCount::Make([this](uint64_t count) {
             sdk_->GetStatistics()->AppendVideoDecode(count);
         });
@@ -179,6 +181,7 @@ namespace rgaa {
     }
 
     void FFmpegVideoDecoder::Release() {
+        std::lock_guard<std::mutex> guard(decode_mtx_);
         stop_ = true;
         if (codec_context != nullptr) {
             avcodec_free_context(&codec_context);

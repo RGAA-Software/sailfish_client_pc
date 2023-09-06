@@ -30,7 +30,7 @@ namespace rgaa {
         context_ = ctx;
         stream_item_ = item;
         settings_ = Settings::Instance();
-        QString title = "Sailfish client window [ 1 ]";
+        QString title = QString::fromStdString("Sailfish client window [ 1 ]") + " [ " + item.stream_name.c_str() + " ]";
         setWindowTitle(title);
 
         sdk_ = std::make_shared<SailfishSDK>(ctx, stream_item_);
@@ -116,6 +116,7 @@ namespace rgaa {
             int screen_size = config.screen_size();
             LOGI("Screen size : {}", screen_size);
             QMetaObject::invokeMethod(this, [=]() {
+
                 for (int dup_idx = 1; dup_idx < screen_size; dup_idx++) {
 #if RENDER_SDL
                     auto widget = new SDLWidgetWrapper(context_, sdk_, stream_item_, dup_idx, RawImageFormat::kI420, nullptr);
@@ -142,6 +143,13 @@ namespace rgaa {
                     });
 #endif
                 }
+
+                if (screen_size > 1) {
+                    for (int idx = 0; idx < screen_size; idx++) {
+                        gl_video_widgets_[idx]->widget_->SetMultipleMonitors(true);
+                    }
+                }
+
             });
         });
 
@@ -185,7 +193,7 @@ namespace rgaa {
 
         sdk_->Init();
 
-        sdk_->GetMsgParser()->SetOnCursorCallback([=, this](int dup_idx, int x, int y, int hpx, int hpy, const RawImagePtr& image) {
+        sdk_->GetMsgParser()->SetOnCursorCallback([=, this](int dup_idx, int x, int y, int tex_left, int tex_right, int hpx, int hpy, const RawImagePtr& image) {
             auto render_type = settings_->GetVideoRenderType();
 
 #if RENDER_SDL
@@ -202,7 +210,9 @@ namespace rgaa {
                 return;
             }
             auto video_widget = gl_video_widgets_[dup_idx];
-            video_widget->widget_->RefreshCursor(x, y, hpx, hpy, image);
+            video_widget->widget_->RefreshCursor(x, y, tex_left, tex_right, hpx, hpy, image);
+
+            LOGI("dup index : {}, x : {}, y : {}, left: {}, right: {}", dup_idx, x, y, tex_left, tex_right);
 #endif
 
         });

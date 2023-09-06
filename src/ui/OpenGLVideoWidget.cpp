@@ -296,7 +296,7 @@ namespace rgaa
         LOGI("Init I420 texture : {} x {} ", tex_width, tex_height);
 	}
 
-    void OpenGLVideoWidget::RefreshCursor(int x, int y, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor) {
+    void OpenGLVideoWidget::RefreshCursor(int x, int y, int tex_left, int tex_right, int hpx, int hpy, const std::shared_ptr<RawImage>& cursor) {
         if (!cursor_ || tex_width == 0 || tex_height == 0) {
             return;
         }
@@ -307,9 +307,15 @@ namespace rgaa
             *last_pixel = 0x00000000;
         }
 
-        float xp = x * 1.0f / tex_width;
+        int cal_tex_width = tex_right - tex_left;
+        int x_value_from_left = x - tex_left;
+        float x_percent_from_left = x_value_from_left * 1.0f / cal_tex_width;
+        float target_x = x_percent_from_left * cal_tex_width;
+        float xp = target_x * 1.0f / cal_tex_width;
         float yp = y * 1.0f / tex_height;
         cursor_->UpdateTranslationPercentWindow(xp, yp);
+
+        LOGI("target x: {}, xp: {}", target_x, xp);
 
         float ratio_x = QWidget::width() * 1.0f / tex_width;
         float ratio_y = QWidget::height() * 1.0f / tex_height;
