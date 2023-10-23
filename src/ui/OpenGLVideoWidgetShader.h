@@ -151,13 +151,17 @@ static const char* kI420FragmentShader = R"(
         u = texture(imageU, outTex).r;
         v = texture(imageV, outTex).r;        
         
-        y = 1.164 * (y - 16.0 / 255.0);
-        u = u - 128.0 / 255.0;
-        v = v - 128.0 / 255.0;
+//        y = 1.164 * (y - 16.0 / 255.0);
+//        u = u - 128.0 / 255.0;
+//        v = v - 128.0 / 255.0;
+//
+//        r = y + 1.596 * v;
+//        g = y - 0.391 * u - 0.813 * v;
+//        b = y + 2.018 * u;
 
-        r = y + 1.596 * v;
-        g = y - 0.391 * u - 0.813 * v;
-        b = y + 2.018 * u;
+        r = y + 1.402 * (v - 0.5);
+        g = y - 0.344136 * (u - 0.5) - 0.714136 * (v - 0.5);
+        b = y + 1.772 * (u - 0.5);
 
         //FragColor = vec4(r, g, b, 1.0); 
         FragColor = vec4(r, g, b, 1.0);

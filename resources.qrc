@@ -16,5 +16,6 @@
 
         <file>resources/font/blade.ttf</file>
         <file>resources/font/quixotic-1.otf</file>
+        <file>resources/font/LOVE-Queen-2.ttf</file>
     </qresource>
 </RCC>
